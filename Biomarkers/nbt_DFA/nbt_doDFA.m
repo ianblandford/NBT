@@ -76,12 +76,17 @@ else
     DFAobject.res_logbin = res_logbin;
 end
 
+% force fixed values for FitInterval and CalcInterval
+% FitInterval=[1 20];
+% CalcInterval=[0.1 110];
+
 % get parameters from Signalobject
 Fs = InfoObject.convertedSamplingFrequency;
 % set parameters in DFAobject
 DFAobject.FitInterval = FitInterval;
 DFAobject.CalcInterval = CalcInterval;
 DFAobject.Overlap = DFA_Overlap;
+
 
 
 
