@@ -1,5 +1,5 @@
 function [s,ModelVars,Bioms]=nbt_Classify(BCell,Outcome,s,Type, ChannelsOrRegionsToUse)
-NCrossVals=20;
+NCrossVals=100;
 
 %% create DataMatrix from BCell:
 
@@ -43,7 +43,10 @@ Outcome = Outcome.';
 %save Outcome Outcome  %also not saving s further down
 
 % Outcome = Outcome(randperm(length(Outcome)));
- DataMatrix = randn(size(DataMatrix,1),size(DataMatrix,2));
+ % DataMatrix = randn(size(DataMatrix,1),size(DataMatrix,2));
+%  for m = 1:size(DataMatrix,2)
+%      DataMatrix(:,m) = DataMatrix(randperm(size(DataMatrix,1)),m);
+%  end
 % DataMatrix = DataMatrix(randperm(size(DataMatrix,1)),:);
 % warning('random outcome')
 
@@ -88,30 +91,34 @@ switch lower(Type)
                     TestMatrix=TestMatrix(:,~isnan(TestMatrix(1,:)));
                     clear NewTestMatrix;
                 end
-                
-                %let's also balance the classes
-                             TargetNum = 2*length(find(TrainOutcome == 0 ));
-                             [TrainOutcome, sortIndex]= sort(TrainOutcome);
-                             TrainMatrix = TrainMatrix(sortIndex,:);
-                             TrainMatrix = TrainMatrix(1:TargetNum,:);
-                             TrainOutcome = TrainOutcome(1:TargetNum);
-                
-                %             TargetNum = 2*length(find(TestOutcome == 0 ));
-                %             TestMatrix = TestMatrix(1:TargetNum,:);
-                %             TestOutcome = TestOutcome(1:TargetNum);
-                
-                %              s.statfunc = 'elasticlogit';
-                %              [s] = nbt_TrainClassifier(TrainMatrix,TrainOutcome, s);
-                %              if(isempty(find(s.ModelVar(2:end))))
-                %                  [s] = nbt_TrainClassifier(TrainMatrix,TrainOutcome, s);
-                %              end
-                %              TrainMatrix = TrainMatrix(:,find(s.ModelVar(2:end)));
-                %              TestMatrix = TestMatrix(:,find(s.ModelVar(2:end)));
-                %              s.statfunc = 'lssvm';
-                [s] = nbt_TrainClassifier(TrainMatrix,TrainOutcome, s);
-                [pp, s ] = nbt_UseClassifier(TestMatrix, s);
-                [FPt, TPt, FNt, TNt, SEt, SPt, PPt, NNt, LPt, LNt, MMt, AUCt,H2] = ...
-                    nbt_evalOutcome(pp, TestOutcome);
+                TestMatrix = NewTestMatrix;
+                TestMatrix=TestMatrix(:,~isnan(TestMatrix(1,:)));
+                clear NewTestMatrix;
+            end
+            
+            %let's also balance the classes
+            TargetNum = floor(2*length(find(TrainOutcome == 0 )));
+            [TrainOutcome, sortIndex]= sort(TrainOutcome);
+            TrainMatrix = TrainMatrix(sortIndex,:);
+            TrainMatrix = TrainMatrix(1:TargetNum,:);
+            TrainOutcome = TrainOutcome(1:TargetNum);
+            
+%             TargetNum = 2*length(find(TestOutcome == 0 ));
+%             TestMatrix = TestMatrix(1:TargetNum,:);
+%             TestOutcome = TestOutcome(1:TargetNum);
+            
+%              s.statfunc = 'elasticlogit';
+%              [s] = nbt_TrainClassifier(TrainMatrix,TrainOutcome, s);
+%              if(isempty(find(s.ModelVar(2:end))))
+%                  [s] = nbt_TrainClassifier(TrainMatrix,TrainOutcome, s);
+%              end
+%              TrainMatrix = TrainMatrix(:,find(s.ModelVar(2:end)));
+%              TestMatrix = TestMatrix(:,find(s.ModelVar(2:end)));
+%              s.statfunc = 'lssvm';
+            [s] = nbt_TrainClassifier(TrainMatrix,TrainOutcome, s);
+            [pp, s ] = nbt_UseClassifier(TestMatrix, s);
+            [FPt, TPt, FNt, TNt, SEt, SPt, PPt, NNt, LPt, LNt, MMt, AUCt,H2] = ...
+                nbt_evalOutcome(pp, TestOutcome);
             catch
                 FPt = nan;
                 TPt = nan;
@@ -241,6 +248,18 @@ s.H_measure=H_measure;
 
 %% plotting
 %first calculate pp for the full matrix
+%% temp for unbalanced sets
+
+             [DataMatrix, BiomsToUse] = nbt_RemoveFeatures( DataMatrix,Outcome,'ttest2-MCP',ChannelsOrRegionsToUse, size(BCell{1},3));
+            
+ 
+            TargetNum = floor(2*length(find(Outcome == 0 )));
+            [TrainOutcome, sortIndex]= sort(Outcome);
+            TrainMatrix = DataMatrix(sortIndex,:);
+            TrainMatrix = TrainMatrix(1:TargetNum,:);
+            TrainOutcome = TrainOutcome(1:TargetNum);
+
+[s] = nbt_TrainClassifier(TrainMatrix,TrainOutcome, s);
 [pp] = nbt_UseClassifier(DataMatrix, s);
 % make pp values for each group
 pp1 = pp(Outcome == 0);
