@@ -61,5 +61,11 @@ classdef nbt_QBiomarker < nbt_CoreBiomarker
             BiomarkerObject.subjectInfo = subjectInfo;
             BiomarkerObject = setUniqueIdentifiers(BiomarkerObject);
         end
+        
+         
+        function BiomarkerObject = setUniqueIdentifiers(BiomarkerObject)
+            BiomarkerObject.uniqueIdentifiers = {}; %This is the default for Signal biomarkers
+        end
+        
     end %end methods
 end
