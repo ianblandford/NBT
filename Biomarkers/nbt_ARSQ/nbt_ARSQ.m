@@ -26,6 +26,9 @@ classdef nbt_ARSQ < nbt_QBiomarker
         Questions
         Answers
     end
+     properties (Constant)
+        biomarkerType = {'nbt_QBiomarker'};
+    end
     methods
         function ARSQobject = nbt_ARSQ(NumQ)
             ARSQobject.Questions = cell(NumQ,1);

@@ -24,8 +24,8 @@ classdef nbt_ttest < nbt_PairedStat
                     case 'nbt_SignalBiomarker'
                         try
                             sigBios = sigBios + 1;
-                            [D1, D2]=nbt_MatchVectors(Data1{bID,1}, Data2{bID,1}, getSubjectList(Data1,bID), getSubjectList(Data2,bID), 0, 0);
-                            [~, obj.sigPValues(:,sigBios)] = ttest(D1',D2','tail',  obj.testOptions.tail);
+                     %       [D1, D2]=nbt_MatchVectors(Data1{bID,1}, Data2{bID,1}, getSubjectList(Data1,bID), getSubjectList(Data2,bID), 0, 0);
+                            [~, obj.sigPValues(:,sigBios)] = ttest(Data1{bID,1}',Data2{bID,1}','tail',  obj.testOptions.tail);
                         catch me
                             disp(['Failed - ' num2str(bID) ' ' obj.group{1}.biomarkers{bID} '.' obj.group{1}.subBiomarkers{bID}  ' class ' obj.group{1}.classes{bID}]);
                         end
@@ -33,16 +33,16 @@ classdef nbt_ttest < nbt_PairedStat
                        try
                         ccBios = ccBios + 1;
                        
-                       [D1, D2]=nbt_MatchVectors(Data1{bID,1}, Data2{bID,1}, getSubjectList(Data1,bID), getSubjectList(Data2,bID), 0, 0);
-                       [~, obj.ccPValues(:,ccBios)] = ttest(D1',D2','tail',  obj.testOptions.tail);
+             %          [D1, D2]=nbt_MatchVectors(Data1{bID,1}, Data2{bID,1}, getSubjectList(Data1,bID), getSubjectList(Data2,bID), 0, 0);
+                       [~, obj.ccPValues(:,ccBios)] = ttest(Data1{bID,1}',Data2{bID,1}','tail',  obj.testOptions.tail);
                        catch me
                              disp(['Failed - ' num2str(bID) ' ' obj.group{1}.biomarkers{bID} '.' obj.group{1}.subBiomarkers{bID}  ' class ' obj.group{1}.classes{bID}]);
                        end
                        
                     case 'nbt_QBiomarker'
                         qBios = qBios + 1;
-                        [D1, D2]=nbt_MatchVectors(Data1{bID,1}, Data2{bID,1}, getSubjectList(Data1,bID), getSubjectList(Data2,bID), 0, 0);
-                        [~, obj.qPValues(:,qBios)] = ttest(D1',D2','tail',  obj.testOptions.tail);
+            %            [D1, D2]=nbt_MatchVectors(Data1{bID,1}, Data2{bID,1}, getSubjectList(Data1,bID), getSubjectList(Data2,bID), 0, 0);
+                        [~, obj.qPValues(:,qBios)] = ttest(Data1{bID,1}',Data2{bID,1}','tail',  obj.testOptions.tail);
                 end
                 %[~, obj.qPValues(:,qBios), ~, obj.statStruct{bID,1}] = ttest(D1',D2','tail',  obj.testOptions.tail);
                 

@@ -44,8 +44,13 @@ switch GrpObj.databaseType
             if(~isempty(bIdentifiers))
                 % we need to add biomarker identifiers
                 for bIdent = 1:size(bIdentifiers,1)
+                    
                    if(ischar(bIdentifiers{bIdent,2} ))
-                       NBTelementCall = [NBTelementCall  biomarker '_' bIdentifiers{bIdent,1} ',' '''' bIdentifiers{bIdent,2} '''' ';'];
+                       if strcmp(bIdentifiers{bIdent,1},'Signals')
+                        NBTelementCall = [NBTelementCall  bIdentifiers{bIdent,1} ',' '''' bIdentifiers{bIdent,2} '''' ';'];     
+                       else
+                        NBTelementCall = [NBTelementCall  biomarker '_' bIdentifiers{bIdent,1} ',' '''' bIdentifiers{bIdent,2} '''' ';'];
+                       end
                    else
                        NBTelementCall = [NBTelementCall  biomarker '_' bIdentifiers{bIdent,1} ',' num2str(bIdentifiers{bIdent,2}) ';'];
                    end
@@ -61,7 +66,7 @@ switch GrpObj.databaseType
             catch me
                 %Only one Subject?
              %   disp('Assuming only One subject?');
-                [DataObj.subjectList{bID,1}] = evalin('base', 'constant{nbt_searchvector(constant , {''Subject''}),2};');
+             %   [DataObj.subjectList{bID,1}] = evalin('base', 'constant{nbt_searchvector(constant , {''Subject''}),2};');
             end
         end
     case 'File'

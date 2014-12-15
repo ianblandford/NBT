@@ -52,6 +52,7 @@ if(index ==0)
         'n-way ANOVA', ...  
         'Kruskal-Wallis test', ...
         'Friedman test' ...
+        'Spider plot' ...
         };
     return
 end
@@ -126,6 +127,10 @@ switch index
         
     case 20 %Friedman test
         %s.statfuncname = 'Friedman test';
+        
+    case 21 % Spider plot
+        %s.statfuncname = 'Spider plot';
+        S = nbt_spiderplot;
         
     otherwise
         s = [];
