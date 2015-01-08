@@ -84,7 +84,7 @@ end
 hp4 = uipanel(StatSelection,'Title','SELECT GROUP(S)','FontSize',10,'Units','pixels','Position',[10 110 360 100],'BackgroundColor','w','fontweight','bold');
 ListGroup = uicontrol(hp4,'Units', 'pixels','style','listbox','Max',length(groupList),'Units', 'pixels','Position',[5 5 350 80],'fontsize',10,'String',groupList,'BackgroundColor','w','Tag','ListGroup');
 % run test
-RunButton = uicontrol(StatSelection,'Style','pushbutton','String','Run Test','Position',[500 5 100 50],'fontsize',10,'callback', 'nbt_runStatistics', 'Tag', 'NBTstatRunButton');
+RunButton = uicontrol(StatSelection,'Style','pushbutton','String','Run Test','Position',[500 5 100 50],'fontsize',10,'callback', 'nbt_runStatistics(1)', 'Tag', 'NBTstatRunButton');
 % join button
 joinButton = uicontrol(StatSelection,'Style','pushbutton','String','Join Groups','Position',[5 70 70 30],'fontsize',8,'callback',@join_groups);
 % create difference group button
