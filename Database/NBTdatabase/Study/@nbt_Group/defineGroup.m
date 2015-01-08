@@ -42,6 +42,7 @@ else
             disp([int2str(mm) ':' InfoCell{idxList(i),2}{1,mm}])
         end
         idxLabels = input('Please select labels above ');
+        eval(['GrpObj.parameters.' InfoCell{idxList(i),1} ' = [];']);
         for j = 1:length(idxLabels)
             eval(['GrpObj.parameters.' InfoCell{idxList(i),1} ' = [GrpObj.parameters.' InfoCell{idxList(i),1} '; InfoCell{idxList(i),2}{1,idxLabels(j)}];']);
         end
