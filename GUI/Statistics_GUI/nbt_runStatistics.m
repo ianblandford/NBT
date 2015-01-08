@@ -28,8 +28,14 @@ else %case of commandline
     
     disp('Biomarkers')
     bioms_name = NBTstudy.groups{1}.biomarkerList;
+    ll=0;
     for mm=1:length(bioms_name)
         disp([int2str(mm) ':' bioms_name{1,mm} ])
+        ll=ll+1;
+        if(ll ==20)
+            input('More (press enter)');
+            ll = 0;
+        end
     end
     bioms_ind = input('Please select biomarkers above ');
     
