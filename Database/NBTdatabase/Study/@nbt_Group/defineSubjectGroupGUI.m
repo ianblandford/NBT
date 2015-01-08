@@ -2,16 +2,7 @@ function GrpObj = defineSubjectGroupGUI(GrpObj, InfoCell, BioCell, IdentCell)
 %defineGroupGUI returns a nbt_Group object based on the selection made in
 %the GUI
 
-%first we transform the InfoCell numbers into strings
-for i=1:size(InfoCell,1)
-    if(isnumeric(InfoCell{i,2}))
-        for m = 1:length(InfoCell{i,2})
-            tmp{1,m} = num2str(InfoCell{i,2}(m));
-        end
-        InfoCell{i,2} = tmp;
-        clear tmp;
-    end
-end
+
 
 % %First we ask the user which parameters to use. 
 % ParameterSelection = figure('Units','pixels', 'name','NBT: Define parameters' ,'numbertitle','off','Position',[390.0000  456.7500  320  320], ...
