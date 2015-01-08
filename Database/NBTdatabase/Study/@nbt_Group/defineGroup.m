@@ -41,7 +41,7 @@ for i=1:length(idxList)
     disp('Labels:')
     for m=1:size(InfoCell,1)
         for mm=1:size(InfoCell{idxList(i),2},2)
-            disp([int2num(mm) ':' InfoCell{idxList(i),2}{1,mm}])
+            disp([int2str(mm) ':' InfoCell{idxList(i),2}{1,mm}])
         end
     end
     idxLabels = input('Please select labels above ');
