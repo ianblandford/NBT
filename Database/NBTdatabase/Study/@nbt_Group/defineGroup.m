@@ -25,25 +25,29 @@ end
 % in case of the GUI
 if(GUIswitch)
     GrpObj = defineSubjectGroupGUI(GrpObj, InfoCell, BioCell, IdentCell);
-end
-
-% command line
-idxNr = 0;
-disp('Parameters:')
-for i=1:size(InfoCell,1)
-   disp([ int2str(i) ':' InfoCell{i,1} ]) 
-end
-
-idxList = input('Please select parameters above ');
-
-for i=1:length(idxList)
-    disp(InfoCell{idxList(i),1});
-    disp('Labels:')
-    for m=1:size(InfoCell,1)
+else
+    % command line
+    idxNr = 0;
+    disp('Parameters:')
+    for i=1:size(InfoCell,1)
+        disp([ int2str(i) ':' InfoCell{i,1} ])
+    end
+    
+    idxList = input('Please select parameters above ');
+    
+    for i=1:length(idxList)
+        disp(InfoCell{idxList(i),1});
+        disp('Labels:')
         for mm=1:size(InfoCell{idxList(i),2},2)
             disp([int2str(mm) ':' InfoCell{idxList(i),2}{1,mm}])
         end
+        idxLabels = input('Please select labels above ');
+        for j = 1:length(idxLabels)
+            eval(['GrpObj.parameters.' InfoCell{idxList(i),1} ' = [GrpObj.parameters.' InfoCell{idxList(i),1} '; InfoCell{idxList(i),2){1,idxLabels(j)}];']);
+        end
     end
-    idxLabels = input('Please select labels above ');
+    GrpObj.biomarkerList = BioCell;
+    GrpObj.identList = IdentCell;
+    GrpObj.groupName = input('Group name? ','s');
 end
 end
