@@ -22,14 +22,14 @@ else %case of commandline
     
     disp('Groups:')
     for mm=1:length(NBTstudy.groups)
-        disp([mm ':' NBTstudy.groups{mm}.groupName])
+        disp([int2str(mm) ':' NBTstudy.groups{mm}.groupName])
     end
     S.groups = input('Please select groups above ');
     
     disp('Biomarkers')
     bioms_name = NBTstudy.groups{1}.biomarkerList;
     for mm=1:length(bioms_name)
-        disp([mm ':' bioms_name{1,mm} ])
+        disp([int2str(mm) ':' bioms_name{1,mm} ])
     end
     bioms_ind = input('Please select biomarkers above ');
     
