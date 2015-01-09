@@ -49,6 +49,7 @@ classdef (Abstract) nbt_CrossChannelBiomarker < nbt_CoreBiomarker
         filterSettings
         signalName % Name of the signal used to compute the biomaker
         signalID %signalDID of the signal used to compute the biomakrer
+        biomarkerType = {'nbt_CrossChannelBiomarker'};
     end
     methods
         function BiomarkerObject = nbt_CrossChannelBiomarker()

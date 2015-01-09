@@ -11,5 +11,4 @@ for i=1:nrGrp
     grpIdx = grpIdx + 1;
     NBTstudy.groups{grpIdx} = nbt_Group.defineGroup(nbt_Group);
 end
-
 end
