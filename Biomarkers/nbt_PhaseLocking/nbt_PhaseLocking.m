@@ -1,4 +1,4 @@
-% nbt_PhaseLocking - Creates a Phase Locking biomarker object 
+% nbt_PhaseLocking - Creates a Phase Locking biomarker object
 %
 % Usage:
 %   BiomarkerObject = nbt_PhaseLocking
@@ -8,24 +8,24 @@
 %   NumChannels
 %
 % Outputs:
-%   PhaseLocking BiomarkerObject    
+%   PhaseLocking BiomarkerObject
 %
 % Example:
-%   
+%
 % References:
-% 
-% See also: 
+%
+% See also:
 %   nbt_CrossPhaseLocking
-%  
-  
+%
+
 %------------------------------------------------------------------------------------
 % Originally created by Giuseppina Schiavone (2011), see NBT website (http://www.nbtwiki.net) for current email address
 %------------------------------------------------------------------------------------
 %
 % ChangeLog - see version control log at NBT website for details.
 %
-% Copyright (C) <year>  <Main Author>  (Neuronal Oscillations and Cognition group, 
-% Department of Integrative Neurophysiology, Center for Neurogenomics and Cognitive Research, 
+% Copyright (C) <year>  <Main Author>  (Neuronal Oscillations and Cognition group,
+% Department of Integrative Neurophysiology, Center for Neurogenomics and Cognitive Research,
 % Neuroscience Campus Amsterdam, VU University Amsterdam)
 %
 % Part of the Neurophysiological Biomarker Toolbox (NBT)
@@ -47,39 +47,31 @@
 % See Readme.txt for additional copyright information.
 % -------------------------------------------------------------------------
 
-    
-classdef nbt_PhaseLocking < nbt_CrossChannelBiomarker  
-    properties 
-        
-    Ratio 
-    PLV 
-    Instphase
-%     frequencyRange 
-    filterorder 
-    interval 
-%     synchlag
-    IndexE %index based on the Shannon entropy
-    IndexF %based on the intensity of the first Fourier mode of the distribution
-    IndexCP %based on the conditional probability
 
-    PLV_in_time
-    time_int
-    IndexE_in_time
-    IndexCP_in_time
-    IndexF_in_time
+classdef nbt_PhaseLocking < nbt_CrossChannelBiomarker
+    properties
+        Ratio
+        PLV
+        Instphase
+        %     frequencyRange
+        filterorder
+        interval
+        %     synchlag
+        IndexE %index based on the Shannon entropy
+        IndexF %based on the intensity of the first Fourier mode of the distribution
+        IndexCP %based on the conditional probability
+        PLV_in_time
+        time_int
+        IndexE_in_time
+        IndexCP_in_time
+        IndexF_in_time
     end
-    properties (Constant)
-         biomarkerType = {'nbt_CrossChannelBiomarker','nbt_CrossChannelBiomarker'};
-    end
-    
     methods
-       
+        
         function BiomarkerObject = nbt_PhaseLocking(LengthSign,NumChannels)
             if nargin == 0
                 LengthSign = 1;
-                NumChannels = 1;
-                
-            
+                NumChannels = 1;         
             end
             % assign values for this biomarker object:
             %% Define Phase Locking values
@@ -87,24 +79,21 @@ classdef nbt_PhaseLocking < nbt_CrossChannelBiomarker
             BiomarkerObject.PLV = nan(NumChannels,NumChannels);
             BiomarkerObject.Instphase = nan(LengthSign,NumChannels);
             BiomarkerObject.filterorder =  nan(1);
-            BiomarkerObject.interval =  nan(1,2); 
-%             BiomarkerObject.synchlag =  nan(2,NumChannels,NumChannels); 
+            BiomarkerObject.interval =  nan(1,2);
+            %             BiomarkerObject.synchlag =  nan(2,NumChannels,NumChannels);
             BiomarkerObject.IndexE = nan(NumChannels,NumChannels); %index based on the Shannon entropy
             BiomarkerObject.IndexCP = nan(NumChannels,NumChannels);%based on the conditional probability
-            BiomarkerObject.IndexF = nan(NumChannels,NumChannels);%based on the intensity of the first Fourier mode of the distribution     
+            BiomarkerObject.IndexF = nan(NumChannels,NumChannels);%based on the intensity of the first Fourier mode of the distribution
             %% Define fields for additional information
-            BiomarkerObject.DateLastUpdate = datestr(now);
-
-             BiomarkerObject.PLV_in_time = [];
-             BiomarkerObject.time_int = [];
+            BiomarkerObject.DateLastUpdate = datestr(now);         
+            BiomarkerObject.PLV_in_time = [];
+            BiomarkerObject.time_int = [];
             BiomarkerObject.IndexE_in_time = [];
             BiomarkerObject.IndexCP_in_time = [];
-            BiomarkerObject.IndexF_in_time = [];
-            
+            BiomarkerObject.IndexF_in_time = [];        
             BiomarkerObject.primaryBiomarker = 'PLV';
-            BiomarkerObject.biomarkers = {'PLV','Instphase'};
-           
-            
+            BiomarkerObject.biomarkers = {'PLV','Instphase'};         
+            BiomarkerObject.biomarkerType = {'nbt_CrossChannelBiomarker','nbt_CrossChannelBiomarker'};
         end
         function plot(obj)
             figure
@@ -118,6 +107,6 @@ classdef nbt_PhaseLocking < nbt_CrossChannelBiomarker
             plot(obj)
         end
     end
-
+    
 end
 

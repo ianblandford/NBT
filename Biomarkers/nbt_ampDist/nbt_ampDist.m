@@ -60,24 +60,20 @@ classdef nbt_ampDist < nbt_SignalBiomarker
         Range
         Cov
     end
-    properties (Constant)
-        biomarkerType = {'nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker', 'nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker'};
-    end
     methods
         function BiomarkerObject = nbt_ampDist(NumChannels)
             if nargin == 0
                 NumChannels = 1;
-            end
-            
+            end   
             BiomarkerObject.Kurtosis = nan(NumChannels, 1);
             BiomarkerObject.Skewness = nan(NumChannels, 1);
             BiomarkerObject.Iqr = nan(NumChannels, 1);
             BiomarkerObject.Median = nan(NumChannels, 1);
             BiomarkerObject.Range = nan(NumChannels, 1);
-            BiomarkerObject.Cov = nan(NumChannels, 1);
-            
+            BiomarkerObject.Cov = nan(NumChannels, 1);   
             BiomarkerObject.primaryBiomarker = 'Range';
             BiomarkerObject.biomarkers = {'Kurtosis','Skewness','Iqr', 'Median','Range','Cov'};
+            BiomarkerObject.biomarkerType = {'nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker', 'nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker'};
         end
     end
 end
