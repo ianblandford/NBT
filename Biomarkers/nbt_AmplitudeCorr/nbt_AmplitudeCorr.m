@@ -33,6 +33,9 @@ classdef nbt_AmplitudeCorr < nbt_CrossChannelBiomarker
         IQRCorr
         RangeCorr
     end
+    properties (Constant)
+        biomarkerType ={'nbt_CrossChannelBiomarker','nbt_SignalBiomarker', 'nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker'};
+    end
     methods
         function BiomarkerObject = nbt_AmplitudeCorr(NumChannels)
             if nargin == 0
@@ -50,7 +53,6 @@ classdef nbt_AmplitudeCorr < nbt_CrossChannelBiomarker
             BiomarkerObject.lastUpdate = datestr(now);
             BiomarkerObject.primaryBiomarker = 'MarkerValues';
             BiomarkerObject.biomarkers ={'MarkerValues','MaxCorr', 'MinCorr','MedianCorr','MeanCorr','StdCorr','IQRCorr','RangeCorr'};
-            BiomarkerObject.biomarkerType ={'nbt_CrossChannelBiomarker','nbt_SignalBiomarker', 'nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker'};
         end
         
         function Output=nbt_GetAmplitudeCorr(AmpCorrObject,SubjectRange, ChId1, ChId2)
