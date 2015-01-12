@@ -53,6 +53,9 @@ classdef nbt_Coher < nbt_CrossChannelBiomarker
         ICoherence
         interval
     end
+    properties (Constant)
+       biomarkerType = {'nbt_CrossChannelBiomarker', 'nbt_CrossChannelBiomarker'}; 
+    end
     methods
         function BiomarkerObject = nbt_Coher(NumChannels)
             if nargin == 0

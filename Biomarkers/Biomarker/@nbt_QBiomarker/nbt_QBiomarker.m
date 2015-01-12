@@ -34,6 +34,7 @@
 classdef nbt_QBiomarker < nbt_CoreBiomarker
     properties
     end
+    
     methods
         function BiomarkerObject = nbt_QBiomarker()
         end
