@@ -24,6 +24,9 @@ classdef nbt_HFO < nbt_SignalBiomarker
         THR
         channel_name
     end
+    properties (Constant)
+       biomarkerType = {'nbt_SignalBiomarker'}; 
+    end
     methods
         function HFOobj = nbt_HFO
             HFOobj.results = [];

@@ -48,7 +48,7 @@
 % See Readme.txt for additional copyright information.
 % -------------------------------------------------------------------------
 
-classdef nbt_CrossPhaseLocking < nbt_SignalBiomarker  
+classdef nbt_CrossPhaseLocking < nbt_CrossChannelBiomarker  
     properties 
         
         crossplf
@@ -58,6 +58,10 @@ classdef nbt_CrossPhaseLocking < nbt_SignalBiomarker
         
         
     end
+    properties (Constant)
+        biomarkerType = {'nbt_CrossChannelBiomarker','nbt_CrossChannelBiomarker'};
+    end
+    
     methods
        
         function BiomarkerObject = nbt_CrossPhaseLocking(NumChannels)

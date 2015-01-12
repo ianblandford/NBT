@@ -4,6 +4,9 @@ classdef nbt_DTW < nbt_SignalBiomarker
         d
         window
     end
+    properties (Constant)
+        biomarkerType = {'nbt_SignalBiomarker'};
+    end
     methods
         % Now follows the definition of the function that makes a biomarker
         % of the type "nbt_Biomarker_template". The name of this function should alway be

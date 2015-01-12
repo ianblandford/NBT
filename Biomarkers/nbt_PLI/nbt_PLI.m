@@ -7,6 +7,9 @@ classdef nbt_PLI < nbt_CrossChannelBiomarker
         IQR
         Std
     end
+    properties (Constant)
+        biomarkerType = {'nbt_CrossChannelBiomarker'};
+    end
     methods
         function BiomarkerObject = nbt_PLI(NumChannels)
             BiomarkerObject.pliVal = nan(NumChannels,NumChannels); 
