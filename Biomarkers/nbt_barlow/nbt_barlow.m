@@ -51,6 +51,10 @@ classdef nbt_barlow < nbt_SignalBiomarker
        frequency
        spi
    end
+
+   properties (Constant)
+        biomarkerType ={'nbt_SignalBiomarker', 'nbt_SignalBiomarker', 'nbt_SignalBiomarker'};
+   end
    methods
        function BiomarkerObject=nbt_barlow(NumChannels)
            BiomarkerObject.amplitude = nan(NumChannels,1);
@@ -58,7 +62,7 @@ classdef nbt_barlow < nbt_SignalBiomarker
            BiomarkerObject.spi = nan(NumChannels,1);
            BiomarkerObject.primaryBiomarker =  'amplitude';
            BiomarkerObject.biomarkers ={'amplitude', 'frequency', 'spi'};
-           BiomarkerObject.biomarkerType ={'nbt_SignalBiomarker', 'nbt_SignalBiomarker', 'nbt_SignalBiomarker'};
        end
+       
    end
 end 
