@@ -1,7 +1,5 @@
 classdef nbt_freqstability < nbt_SignalBiomarker
-    %NBT_FREQSTABILITY Summary of this class goes here
-    %   Detailed explanation goes here
-
+    %NBT_FREQSTABILITY 
     properties
         PhaseIQR
         PhaseStd
