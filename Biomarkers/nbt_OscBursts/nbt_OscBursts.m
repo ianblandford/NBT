@@ -68,13 +68,16 @@ classdef nbt_OscBursts < nbt_SignalBiomarker
         threshold
         WindowSwitch
         WindowSize
-       
+    end
+    properties (Constant)
+        biomarkerType = {'nbt_SignalBiomarker', 'nbt_SignalBiomarker', 'nbt_SignalBiomarker', 'nbt_SignalBiomarker'};
     end
     methods
         function OscBobject = nbt_OscBursts(NumChannels)
             if nargin == 0
                 NumChannels = 1;
-            end        
+            end
+            
             %% Define vector containers for life-time and waiting-times
             OscBobject.lifetimes = cell(NumChannels,1);
             OscBobject.waitingtimes = cell(NumChannels,1);
@@ -93,7 +96,9 @@ classdef nbt_OscBursts < nbt_SignalBiomarker
             OscBobject.Fs = NaN;
             OscBobject.primaryBiomarker = 'CumulativeLifetime';
             OscBobject.biomarkers = {'CumulativeLifetime', 'ShapeMarker', 'CumulativeSize', 'IntraBurstsCorr'};
-            OscBobject.biomarkerType = {'nbt_SignalBiomarker', 'nbt_SignalBiomarker', 'nbt_SignalBiomarker', 'nbt_SignalBiomarker'};
-        end     
+        end
+
+        
+        
     end
 end
