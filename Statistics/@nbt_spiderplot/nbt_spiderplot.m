@@ -14,7 +14,7 @@ classdef nbt_spiderplot < nbt_PairedStat
             
             for j=1:n_groups
                 
-                Data_groups{j} = StudyObj.groups{obj.groups(j)}.getData({obj,j}); 
+                Data_groups{j} = StudyObj.groups{obj.groups(j)}.getData(obj,j); 
                 
             end
             

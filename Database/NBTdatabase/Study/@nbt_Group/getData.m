@@ -1,9 +1,7 @@
-function  DataObj = getData(GrpObj,Parameters)
+function  DataObj = getData(GrpObj,StatObj,grpNumber)
 %Get data loads the data from a Database depending on the settings in the
 %Group Object and the Statistics Object.
 %grpNumber refers to the ordering in the StatObj
-StatObj = Parameters{1};
-grpNumber = Parameters{2};
 DataObj             = nbt_Data;
 DataObj.biomarkers  = StatObj.group{grpNumber}.biomarkers;
 DataObj.biomarkerIdentifiers = StatObj.group{grpNumber}.biomarkerIdentifiers;
