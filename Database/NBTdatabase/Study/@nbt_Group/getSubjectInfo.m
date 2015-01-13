@@ -48,10 +48,11 @@ switch GrpObj.databaseType
             if evalin('base',[flds{inds(i)} '.Identifier';])
                 m= m+1;
                 IdentCell{m,1} = flds{inds(i)};
-                IdentCell{m,2} = evalin('base',[flds{inds(i)} '.Data';]);
+                IdentCell{m,2} = evalin('base',[flds{inds(i)} '.Data;']);
             else
-                bios = evalin('base',[flds{inds(i)} '.Biomarkers';]);
-                if isempty(bios);
+                isBiomarker = evalin('base',[flds{inds(i)} '.isBiomarker;']);
+                bios = evalin('base',[flds{inds(i)} '.Biomarkers;']);
+                if ~isBiomarker;
                     k= k+1;
                     InfoCell{k,1} = flds{inds(i)};
                     InfoCell{k,2} = evalin('base',[flds{inds(i)} '.Data';]);
@@ -105,7 +106,6 @@ switch GrpObj.databaseType
                                 BioCell{n} = [nm '}.' bios{k}];
                             end
                         end
-                        
                     else
                         for j = 1:length(bios)
                             n = n+1;
