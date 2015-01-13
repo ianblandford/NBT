@@ -98,6 +98,18 @@ classdef nbt_NBTelement %< handle
             NBTelement.Info = [];
         end
         
+        function NBTelement = nbt_isBiomarkerSwitch(NBTelement,biomarkerClass)
+          if(NBTelement.isBiomarker)
+              NBTelement.isBiomarker = false;
+              NBTelement.Biomarkers = cell(0,0);
+              NBTelement.BiomarkerType = cell(0,0);
+          else %not a biomarker > switch
+              NBTelement.isBiomarker = true;
+              NBTelement.Biomarkers = {'Info'};
+              NBTelement.BiomarkerType = {biomarkerClass};
+          end
+        end
+        
         function [NewPoolID, NewKey] = nbt_LimitPool(NBTelement,UpPool, UpPoolKey, DataString)
             %% % first find DataString match => Pool of match keys
             if(~iscell(NBTelement.Data))
@@ -149,8 +161,6 @@ classdef nbt_NBTelement %< handle
                     end
                 end
             end
-            
-            
             
             % find NewPoolIDs
             NewPoolID = [];
@@ -224,8 +234,7 @@ classdef nbt_NBTelement %< handle
                 NewKey = UpPoolKey;
             end
         end
-    end
-    
+    end   
 end
 
 

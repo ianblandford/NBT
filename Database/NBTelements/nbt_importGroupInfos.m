@@ -66,7 +66,6 @@ for i=1:length(FileList)
         eval(['NBTelementClass = class(SubjectInfo.info.' NBTelementName(6:end) ');']);
         eval(['NBTelementData = SubjectInfo.info.' NBTelementName(6:end) ';']);
         
-        
         addflag = ~exist(NBTelementName,'var');
         if(addflag)
             eval([NBTelementName '= nbt_NBTelement(' int2str(NextID) ',''' int2str(NextID) '.3.2.1'', 3);']);
