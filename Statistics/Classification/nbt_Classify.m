@@ -1,5 +1,6 @@
 function [s,ModelVars,Bioms]=nbt_Classify(BCell,Outcome,s,Type, ChannelsOrRegionsToUse)
-
+% New format :
+% ClassificationStatObj = nbt_Classify(ClassifcationStatObj, StudyObj)
 NCrossVals=100;
 
 %% create DataMatrix from BCell:
