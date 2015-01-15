@@ -76,9 +76,11 @@ switch GrpObj.databaseType
                         ids = evalin('base',[flds{identStore(1)} '.ID']);
                         idsStore = zeros(length(ids),length(identStore));
                         for id = 1:length(ids)
-                            stt = strsplit(ids{id},'.');
+                          %  stt = strsplit(ids{id},'.');
+                          [stt, idKeep] = strtok(ids{id},'.');
                             for j = 1:length(identStore)
-                                idsStore(id,j) = str2num(stt{j});
+                                idsStore(id,j) = str2num(stt);
+                                [stt, idKeep] = strtok(idKeep,'.');
                             end
                         end
                         uniqueIds = unique(idsStore,'rows');
