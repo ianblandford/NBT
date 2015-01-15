@@ -57,6 +57,9 @@ classdef nbt_DFA < nbt_SignalBiomarker
         Overlap
         res_logbin
     end
+    properties (Constant)
+        biomarkerType = {'nbt_SignalBiomarker'};
+    end
     methods
         function DFAobject= nbt_DFA(NumChannels)
             if nargin == 0

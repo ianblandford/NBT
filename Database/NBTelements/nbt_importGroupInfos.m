@@ -20,12 +20,16 @@ Subject = nbt_NBTelement(2, '2.1',1);
 Condition = nbt_NBTelement(3,'3.2.1',2);
 
 Project.Class = 'subjectInfo';
+Project.isBiomarker = false;
 Subject.Class = 'subjectInfo';
+Subject.isBiomarker = false;
 Condition.Class = 'subjectInfo';
-   
+Condition.isBiomarker = false;
+
 Signals = nbt_NBTelement(4,'4.3.2.1',3);
 Signals.Identifier = true;
 Signals.Class = 'Identifier';
+Signals.isBiomarker = false;
 
 
 % could include last Update
@@ -62,11 +66,11 @@ for i=1:length(FileList)
         eval(['NBTelementClass = class(SubjectInfo.info.' NBTelementName(6:end) ');']);
         eval(['NBTelementData = SubjectInfo.info.' NBTelementName(6:end) ';']);
         
-        
         addflag = ~exist(NBTelementName,'var');
         if(addflag)
             eval([NBTelementName '= nbt_NBTelement(' int2str(NextID) ',''' int2str(NextID) '.3.2.1'', 3);']);
             eval([NBTelementName '.Class = NBTelementClass;']);
+            eval([NBTelementName '.isBiomarker = false;']);
             NextID = NextID + 1;
         end
         
@@ -137,6 +141,7 @@ for i=1:length(FileList)
                     eval([NBTelementName '_' NumIdentifiers{ni} '= nbt_NBTelement(' int2str(NextID) ',''' newkey ''',' uplink ');']); 
                     eval([NBTelementName '_' NumIdentifiers{ni} '.Identifier = true;']);
                     eval([NBTelementName '_' NumIdentifiers{ni} '.Class = ''Identifier'';']);
+                    eval([NBTelementName '_' NumIdentifiers{ni} '.isBiomarker = false;']);
                     NextID = NextID + 1;
                 end
                 

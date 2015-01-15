@@ -27,6 +27,9 @@ classdef nbt_Power < nbt_SignalBiomarker
         Power      
         Frequencybins
     end
+    properties (Constant)
+       biomarkerType = {'nbt_SignalBiomarker'}; 
+    end
     methods
         function BiomarkerObject = nbt_Power(NumChannels,fbins,Unit)
             if nargin == 0

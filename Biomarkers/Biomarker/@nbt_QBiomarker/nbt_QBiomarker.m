@@ -31,10 +31,10 @@
 % -
 
 
-classdef (Abstract) nbt_QBiomarker < nbt_CoreBiomarker
+classdef nbt_QBiomarker < nbt_CoreBiomarker
     properties
-        biomarkerType = {'nbt_QBiomarker'};
     end
+    
     methods
         function BiomarkerObject = nbt_QBiomarker()
         end

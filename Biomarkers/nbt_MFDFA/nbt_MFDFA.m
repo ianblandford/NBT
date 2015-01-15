@@ -36,6 +36,9 @@ classdef nbt_MFDFA < nbt_SignalBiomarker
         alphaRange
         HqRange
     end
+    properties (Constant)
+       biomarkerType = {'nbt_SignalBiomarker', 'nbt_SignalBiomarker'}; 
+    end
 
     methods
         function biomarkerObject = nbt_MFDFA(NumChannels)

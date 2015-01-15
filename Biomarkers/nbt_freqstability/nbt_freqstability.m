@@ -1,4 +1,5 @@
 classdef nbt_freqstability < nbt_SignalBiomarker
+    %NBT_FREQSTABILITY 
     properties
         PhaseIQR
         PhaseStd
@@ -13,6 +14,11 @@ classdef nbt_freqstability < nbt_SignalBiomarker
         CentralFrqStd
         CentralFrq
     end
+    properties (Constant)
+        biomarkerType ={'nbt_SignalBiomarker', 'nbt_SignalBiomarker', 'nbt_SignalBiomarker', 'nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker',...
+                'nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker'};
+    end
+
     methods
         function biomarkerObject=nbt_freqstability(NumChannels)
             biomarkerObject.CentralFrqIQR = nan(NumChannels,1);
@@ -27,11 +33,10 @@ classdef nbt_freqstability < nbt_SignalBiomarker
             biomarkerObject.PhasePIQR = nan(NumChannels,1);
             biomarkerObject.PhaseP = nan(NumChannels,1);
             biomarkerObject.PhasePStd=nan(NumChannels,1);
-            biomarkerObject.PrimaryBiomarker = 'CentralFrqIQR';
+            
+          biomarkerObject.PrimaryBiomarker = 'CentralFrqIQR';
             biomarkerObject.Biomarkers ={'PhaseIQR', 'PhaseStd', 'PhaseA', 'PhasePIQR','PhaseP','PhasePStd','TFiqr','TFstd',...
                 'TFindx','CentralFrqIQR','CentralFrqStd','CentralFrq'};
-            biomarkerObject.biomarkerType ={'nbt_SignalBiomarker', 'nbt_SignalBiomarker', 'nbt_SignalBiomarker', 'nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker',...
-                'nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker'};
         end
     end
 end

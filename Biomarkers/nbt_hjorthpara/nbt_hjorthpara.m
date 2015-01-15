@@ -6,6 +6,10 @@ classdef nbt_hjorthpara < nbt_SignalBiomarker
        mobility
        complexity
    end
+   properties (Constant)
+        biomarkerType = {'nbt_SignalBiomarker', 'nbt_SignalBiomarker', 'nbt_SignalBiomarker'};
+   end
+
    methods 
        function BiomarkerObject=nbt_hjorthpara(NumChannels)
            BiomarkerObject.activity = nan(NumChannels,1);
@@ -13,7 +17,6 @@ classdef nbt_hjorthpara < nbt_SignalBiomarker
            BiomarkerObject.complexity = nan(NumChannels,1);
            BiomarkerObject.primaryBiomarker = 'activtiy';
            BiomarkerObject.biomarkers = {'activity', 'mobility', 'complexity'};
-           BiomarkerObject.biomarkerType = {'nbt_SignalBiomarker', 'nbt_SignalBiomarker', 'nbt_SignalBiomarker'};
        end
    end
 end 

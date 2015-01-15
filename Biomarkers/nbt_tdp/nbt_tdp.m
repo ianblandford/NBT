@@ -6,7 +6,9 @@ classdef nbt_tdp < nbt_SignalBiomarker
        f
        g
    end
-
+    properties (Constant)
+        biomarkerType = {'nbt_SignalBiomarker','nbt_SignalBiomarker'};
+    end
    methods
        function biomarkerObject = nbt_tdp(NumChannels)
            biomarkerObject.f = nan(NumChannels,1);

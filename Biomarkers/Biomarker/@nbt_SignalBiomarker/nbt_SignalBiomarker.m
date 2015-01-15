@@ -49,7 +49,6 @@ classdef (Abstract) nbt_SignalBiomarker < nbt_CoreBiomarker
         filterSettings
         signalName % Name of the signal used to compute the biomaker
         signalID %signalDID of the signal used to compute the biomakrer
-        biomarkerType = {'nbt_SignalBiomarker'};
     end
     methods
         function BiomarkerObject = nbt_SignalBiomarker()
