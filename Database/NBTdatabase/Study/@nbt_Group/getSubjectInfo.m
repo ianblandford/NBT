@@ -86,12 +86,8 @@ switch GrpObj.databaseType
                         %Get names of identifiers
                         nameIdent = [];
                         for a = 1:noIdents
-                             if a==1
-                                 nameIdent{a} = flds{identStore(a)};
-                             else
                                  tmp = flds{identStore(a)};
                                 nameIdent{a} = tmp(length(flds{inds(i)}) + 1:end);
-                             end
                         end
                         
                         %construct overall biomarkers
