@@ -10,6 +10,7 @@ grpIdx = length(NBTstudy.groups);
 for i=1:nrGrp
     grpIdx = grpIdx + 1;
     NBTstudy.groups{grpIdx} = nbt_Group.defineGroup(nbt_Group);
+    NBTstudy.groups{grpIdx}.grpNumber = grpIdx;
 end
 
 end

@@ -94,7 +94,8 @@ function defGroups(d1,d2)
 
         for i=start:start+n_group-1
             disp(['Define group ' num2str(i)])
-            NBTstudy.groups{i,1} = nbt_Group.defineGroup([]);
+            NBTstudy.groups{i} = nbt_Group.defineGroup([]);
+            NBTstudy.groups{i}.grpNumber = i;
         end
         
         close(hh2)

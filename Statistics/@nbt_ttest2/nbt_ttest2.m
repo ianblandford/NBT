@@ -12,7 +12,7 @@ classdef nbt_ttest2 < nbt_UnPairedStat
         
         function obj = calculate(obj, StudyObj)
             %Get data
-            Data1 = StudyObj.groups{obj.groups(1)}.getData(obj,1); %with parameters);
+            Data1 = StudyObj.groups{obj.groups(1)}.getData(obj); %with parameters);
             Data2 = StudyObj.groups{obj.groups(2)}.getData(obj,2); %with parameters);
             %Perform test
             for bID=1:size(Data1.dataStore,1)   

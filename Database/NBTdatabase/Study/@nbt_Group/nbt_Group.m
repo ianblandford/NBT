@@ -1,5 +1,6 @@
 classdef nbt_Group %NBT GroupObject - contains group definitions + Database pointers.
     properties
+        grpNumber
         databaseType %e.g. NBTelement, File
         databaseLocation %path to files 
         groupName
@@ -15,7 +16,7 @@ classdef nbt_Group %NBT GroupObject - contains group definitions + Database poin
             GrpObj.biomarkerList = [];
         end
                 
-        nbt_DataObject = getData(nbt_GroupObject, Parameters) %Returns a nbt_Data Object based on the GroupObject and additional parameters
+        nbt_DataObject = getData(nbt_GroupObject, StatObj) %Returns a nbt_Data Object based on the GroupObject and additional parameters
         
        [InfoCell, BioCell, IdentCell,nbt_GroupObject, FileInfo]  = getSubjectInfo(nbt_GroupObject) %Returns a cell with information about the database.
        nbt_GroupObject = generateFileList(nbt_GroupObject, FileInfo);
