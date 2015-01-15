@@ -68,8 +68,7 @@ uiwait(hh2)
         try
         [FileName,PathName,FilterIndex] = uigetfile;
         Loaded = (load([PathName filesep FileName ]));
-        G = Loaded.G;
-        assignin('base','G',G);
+        NBTstudy = Loaded.NBTstudy;
         close(hh2)
         catch
         end
@@ -97,6 +96,5 @@ function defGroups(d1,d2)
             NBTstudy.groups{i} = nbt_Group.defineGroup([]);
             NBTstudy.groups{i}.grpNumber = i;
         end
-        
         close(hh2)
     end
