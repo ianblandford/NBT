@@ -40,6 +40,11 @@ classdef nbt_Data
                    B = tmp;
                end
            elseif(strcmp(S(1).type,'()')) %this will return a large matrix [biomarkerIDs,ChannelIDs]
+               %calling with () gives the full matrix with subjects x
+               %channels
+               %calling with (1,2) gives biomarker 1 , channel 2 - in
+               %subject x channel format
+               
                if(isempty(S.subs))
                   S.subs{1,1} = 1:size(A.dataStore,1);
                   S.subs{1,2} = 1:size(A.dataStore{1,1}{1,1},1);
