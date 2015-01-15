@@ -61,12 +61,8 @@ classdef nbt_Data
                        B = [B tmp];
                        clear tmp
                    end
-               
            end
-           
        end 
-       
-       
     end
     
     methods (Static = true)

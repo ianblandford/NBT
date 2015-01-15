@@ -2,7 +2,7 @@ classdef nbt_ClassificationStat < nbt_Stat
    
     properties
         ClassificationType
-        
+        NCrossVals
     end
     
     methods

@@ -1,6 +1,17 @@
 function [s,ModelVars,Bioms]=nbt_Classify(BCell,Outcome,s,Type, ChannelsOrRegionsToUse)
 % New format :
 % ClassificationStatObj = nbt_Classify(ClassifcationStatObj, StudyObj)
+
+%New format
+%Get data
+n_groups = length(obj.groups);
+for j=1:n_groups
+    Data_groups{j} = StudyObj.groups{obj.groups(j)}.getData(ClassificationStatObj);
+end
+
+
+
+
 NCrossVals=100;
 
 %% create DataMatrix from BCell:
@@ -33,7 +44,7 @@ DataMatrix = extract_BCell(BCell);
 Outcome = Outcome-1;
 Outcome = Outcome.';
 
-%save DataMatrix DataMatrix %sorry Sonja :(  
+%save DataMatrix DataMatrix %sorry Sonja :(
 %save Outcome Outcome  %also not saving s further down
 
 
@@ -44,18 +55,18 @@ switch lower(Type)
     case 'crossvalidate'
         % Type CrossValidate
         disp('Cross validation needs work')
-     %   DataMatrix = abs(DataMatrix);
-     %   DataMatrix = zscore(DataMatrix);
-     if ~isstruct(ChannelsOrRegionsToUse) && length(ChannelsOrRegionsToUse)>1 % using channels, not regions
-         [DataMatrix, BiomsToUse] = nbt_RemoveFeatures( DataMatrix,Outcome,'ttest2',ChannelsOrRegionsToUse, size(BCell{1},3));
-     end
-         
+        %   DataMatrix = abs(DataMatrix);
+        %   DataMatrix = zscore(DataMatrix);
+        if ~isstruct(ChannelsOrRegionsToUse) && length(ChannelsOrRegionsToUse)>1 % using channels, not regions
+            [DataMatrix, BiomsToUse] = nbt_RemoveFeatures( DataMatrix,Outcome,'ttest2',ChannelsOrRegionsToUse, size(BCell{1},3));
+        end
+        
         % For this type we randomly
         TestLimit = floor(size(DataMatrix,1)*1/3); %a potential parameter!
-      tic
-      
-  %     BiomsToUse{1,1} = [1:1:length(ChannelsToUse)]'; % use all channels
-      
+        tic
+        
+        %     BiomsToUse{1,1} = [1:1:length(ChannelsToUse)]'; % use all channels
+        
         for i=1:NCrossVals % also potential parametere!
             disp(i)
             
@@ -67,11 +78,11 @@ switch lower(Type)
             [pp, s ] = nbt_UseClassifier(TestMatrix, s);
             [FPt, TPt, FNt, TNt, SEt, SPt, PPt, NNt, LPt, LNt, MMt, AUCt,H2] = ...
                 nbt_evalOutcome(pp, TestOutcome);
-
-% training and testing on the same data
-%             [pp, s ] = nbt_UseClassifier(TrainMatrix, s);
-%             [FPt, TPt, FNt, TNt, SEt, SPt, PPt, NNt, LPt, LNt, MMt, AUCt,H2] = ...
-%                 nbt_evalOutcome(pp, TrainOutcome);
+            
+            % training and testing on the same data
+            %             [pp, s ] = nbt_UseClassifier(TrainMatrix, s);
+            %             [FPt, TPt, FNt, TNt, SEt, SPt, PPt, NNt, LPt, LNt, MMt, AUCt,H2] = ...
+            %                 nbt_evalOutcome(pp, TrainOutcome);
             
             ModelVars{i}=s.ModelVar;
             if(iscell(FPt))
@@ -104,7 +115,7 @@ switch lower(Type)
                 H_measure(i)=H2;
                 accuracy(i) = (TP(i)+TN(i))./(TN(i)+TP(i)+FN(i)+FP(i))*100;
             end
-           
+            
         end
         disp('CrossValidate:done')
         toc
@@ -116,7 +127,7 @@ switch lower(Type)
             nbt_RandomSubsampler( DataMatrix,Outcome,TestLimit,'stratified');
         %We use a stratified sample to preserve the class balance.
         %% Feature selction - we first prune the biomarkers given to the classsification algorithm
-       % [TrainMatrix, BiomsToUse] = nbt_RemoveFeatures( TrainMatrix,TrainOutcome,'ttest2',ChannelsToUse, size(BCell{1},3));
+        % [TrainMatrix, BiomsToUse] = nbt_RemoveFeatures( TrainMatrix,TrainOutcome,'ttest2',ChannelsToUse, size(BCell{1},3));
         
         
         % call nbt_TrainClassifier
@@ -131,7 +142,7 @@ switch lower(Type)
             end
             TestMatrix = NewTestMatrix;
             clear NewTestMatrix;
-        end   
+        end
         % call nbt_TestClassifier
         [pp, s] = nbt_UseClassifier(TestMatrix, s);
         %eval outcome
@@ -175,7 +186,7 @@ r
 %                 s.HAE=HAE;
 %                 s.HE=HE;
 
-%% plotting 
+%% plotting
 %first calculate pp for the full matrix
 [pp] = nbt_UseClassifier(DataMatrix, s);
 % make pp values for each group
@@ -232,15 +243,15 @@ title('Precision (PP)')
             ChannelsOrRegionsToUse = 1:size(BCell{1},1);
         end
         
-            for ii=1:size(BCell{1},3)
-                disp(ii)
-                if isstruct(ChannelsOrRegionsToUse)
-                    ChansOrRegsToUse = [1: size(ChannelsOrRegionsToUse,2)]; % all regions
-                else 
-                    ChansOrRegsToUse = ChannelsOrRegionsToUse; % single region
-                end
-                
-                for i=ChansOrRegsToUse;
+        for ii=1:size(BCell{1},3)
+            disp(ii)
+            if isstruct(ChannelsOrRegionsToUse)
+                ChansOrRegsToUse = [1: size(ChannelsOrRegionsToUse,2)]; % all regions
+            else
+                ChansOrRegsToUse = ChannelsOrRegionsToUse; % single region
+            end
+            
+            for i=ChansOrRegsToUse;
                 if ~exist('becell');
                     becell{1,1}=BCell{1}(i,:,ii);
                     becell{2,1}=BCell{2}(i,:,ii);
