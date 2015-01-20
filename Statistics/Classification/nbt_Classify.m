@@ -1,4 +1,4 @@
-function [s,ModelVars,Bioms]=nbt_Classify(BCell,Outcome,s,Type, ChannelsOrRegionsToUse)
+function [s,ModelVars,Bioms]=nbt_Classify(ClassificationStatObj, StudyObj)
 % New format :
 % ClassificationStatObj = nbt_Classify(ClassifcationStatObj, StudyObj)
 
