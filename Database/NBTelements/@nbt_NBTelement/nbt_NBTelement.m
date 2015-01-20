@@ -117,6 +117,10 @@ classdef nbt_NBTelement %< handle
                     eval(['NewPool =' DataString ';']) ;
                 else
                     NewPool = nbt_searchvector(NBTelement.Data, DataString);
+                    if(isempty(NewPool)) %then probably DataString is a string and .Data is numeric
+                       DataString = cellfun(@str2num,DataString);
+                       NewPool = nbt_searchvector(NBTelement.Data, DataString);
+                    end
                 end
             else
                 NewPool =[];

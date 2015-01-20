@@ -132,7 +132,8 @@ switch index
     case 21 % Spider plot
         %s.statfuncname = 'Spider plot';
         S = nbt_spiderplot;
-        
+    case 22
+        S = nbt_elasticLogit;
     otherwise
         s = [];
 end

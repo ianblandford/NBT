@@ -1,4 +1,4 @@
-classdef nbt_elasticLogit < nbt_PairedStat
+classdef nbt_elasticLogit < nbt_ClassificationStat
     properties
     end
     
@@ -7,12 +7,7 @@ classdef nbt_elasticLogit < nbt_PairedStat
         end
         
         function obj = calculate(obj, StudyObj)
-            %Get data
-            n_groups = length(obj.groups);
-            for j=1:n_groups
-                Data_groups{j} = StudyObj.groups{obj.groups(j)}.getData(obj,j);
-            end
-            
+            obj = nbt_Classify(obj, StudyObj); 
         end
     end
 end

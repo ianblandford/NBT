@@ -1,12 +1,12 @@
-function [s,ModelVars,Bioms]=nbt_Classify(ClassificationStatObj, StudyObj)
+function [ClassificationStatObj]=nbt_Classify(ClassificationStatObj, StudyObj)
 % New format :
 % ClassificationStatObj = nbt_Classify(ClassifcationStatObj, StudyObj)
 
 %New format
 %Get data
-n_groups = length(obj.groups);
+n_groups = length(ClassificationStatObj.groups);
 for j=1:n_groups
-    Data_groups{j} = StudyObj.groups{obj.groups(j)}.getData(ClassificationStatObj);
+    Data_groups{j} = StudyObj.groups{ClassificationStatObj.groups(j)}.getData(ClassificationStatObj);
 end
 
 
