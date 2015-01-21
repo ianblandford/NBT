@@ -58,10 +58,10 @@ switch GrpObj.databaseType
            NBTelementCall = NBTelementCall(1:end-1); % to remove ';'
             NBTelementCall = [NBTelementCall '},' ''''  subBiomarker '''' ');'];
             [DataObj.dataStore{bID,1}, DataObj.pool{bID,1},  DataObj.poolKey{bID,1}] = evalin('base', NBTelementCall);
-            [~, subNBTelementCall]= strtok(NBTelementCall,',');
-            subNBTelementCall = strtok(subNBTelementCall,'}');
+            snb = strfind(NBTelementCall,',');
+            subNBTelementCall = NBTelementCall(snb(1):snb(end)-1);
             try
-                [DataObj.subjectList{bID,1}] = evalin('base', ['nbt_GetData(Subject' subNBTelementCall '});']);
+                [DataObj.subjectList{bID,1}] = evalin('base', ['nbt_GetData(Subject' subNBTelementCall ');']);
             catch me
                 %Only one Subject?
              %   disp('Assuming only One subject?');

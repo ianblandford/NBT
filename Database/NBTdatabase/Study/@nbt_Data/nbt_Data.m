@@ -28,7 +28,11 @@ classdef nbt_Data
        
        function B = subsref(A,S)
            if(strcmp(S(1).type,'.'))
-               B = eval(['A' S.type S.subs]);    
+               try
+                    B = eval(['A' S.type S.subs]);    
+               catch
+                    B = eval(['A' S(1).type S(1).subs '{' num2str(S(2).subs{1}) ',' num2str(S(2).subs{2}) '};' ]);
+               end
            elseif(strcmp(S(1).type,'{}'))
                B = A.dataStore{S.subs{1,1},S.subs{1,2}};
                if(iscell(B))
