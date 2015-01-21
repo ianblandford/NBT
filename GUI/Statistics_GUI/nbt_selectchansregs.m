@@ -78,18 +78,26 @@ try
     name = G(group_ind(1)).fileslist(1).name;
     Loaded = load([path '/' name(1:end-13) '_info.mat']);
     Infofields = fieldnames(Loaded);
-    Lastfield = Infofields{length(Infofields)};
+    idx = 1;
+    while(isempty(strfind(Infofields(idx),'Signal')))
+        idx = idx +1;
+    end
+    InfoToLoad = Infofields{idx};
     clear Loaded Infofields;
-    SignalInfo = load([path '/' name(1:end-13) '_info.mat'],Lastfield);
-    SignalInfo = eval(strcat('SignalInfo.',Lastfield));
+    SignalInfo = load([path filesep name(1:end-13) '_info.mat'],InfoToLoad);
+    SignalInfo = eval(strcat('SignalInfo.',InfoToLoad));
 catch
     [name,path] = uigetfile('','Select an Info file with channel information');
     Loaded = load([path  name]);
     Infofields = fieldnames(Loaded);
-    Lastfield = Infofields{length(Infofields)};
+      idx = 1;
+    while(isempty(strfind(Infofields(idx),'Signal')))
+        idx = idx +1;
+    end
+    InfoToLoad = Infofields{idx};
     clear Loaded Infofields;
-    SignalInfo = load([path name],Lastfield);
-    SignalInfo = eval(strcat('SignalInfo.',Lastfield));
+    SignalInfo = load([path name],InfoToLoad);
+    SignalInfo = eval(strcat('SignalInfo.',InfoToLoad));
 end
 
 %--- load the infofile to extract the channel locations
@@ -105,7 +113,7 @@ Col = get(g,'Color');
 
 text_ui1= uicontrol(Chans_RegsSelection,'Style','text','Position',[10 360 120 20],'string','Select Channels','fontsize',10,'fontweight','bold','BackgroundColor',Col);
 badchans = find(SignalInfo.badChannels);
-chans = SignalInfo.interface.number_of_channels;
+chans = SignalInfo.interface.EEG.nbchan;
 if isfield(SignalInfo.interface,'EEG') %% eeg signal;
     for chl = 1:chans
         chanlocs{chl,1} = ['<HTML><FONT color="black">', SignalInfo.interface.EEG.chanlocs(chl).labels, '</FONT></HTML>'];
@@ -170,7 +178,7 @@ u(6) = uicontrol(Chans_RegsSelection,'Units', 'pixels','style','text','Position'
         data = get(SubmitRegion, 'UserData');
         reg = data.listregdata;
         [filename, pathname] = uiputfile({'*.mat'},'Save Regions as');
-        save([pathname '/' filename], 'reg');
+        save([pathname filesep filename], 'reg');
     end
 
     function removeregion(d1,d2)
@@ -207,12 +215,12 @@ u(6) = uicontrol(Chans_RegsSelection,'Units', 'pixels','style','text','Position'
     end
     function loadregions(d1,d2)
         stat_path = ffpath('nbt_selectchansregs.m');
-        [filename, pathname] = uigetfile({'*.mat'},'Load Regions .mat file', [stat_path '/']);
+        [filename, pathname] = uigetfile({'*.mat'},'Load Regions .mat file', [stat_path filesep]);
         if (filename == 0)
             return;
         end
         try
-            old = load([pathname '/' filename]);
+            old = load([pathname filesep filename]);
         catch
             disp('No region file loaded');
         end
