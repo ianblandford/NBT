@@ -1,22 +1,17 @@
 function [ClassificationStatObj]=nbt_Classify(ClassificationStatObj, StudyObj)
-% New format :
-% ClassificationStatObj = nbt_Classify(ClassifcationStatObj, StudyObj)
-
-%New format
 %Get data
 n_groups = length(ClassificationStatObj.groups);
+DataMatrix = [];
+Outcome = [];
 for j=1:n_groups
     Data_groups{j} = StudyObj.groups{ClassificationStatObj.groups(j)}.getData(ClassificationStatObj);
+    DataMatrix = [DataMatrix; Data_groups{j}()];
+    Outcome = [Outcome; (j-1).*ones(length(Data_groups{j}.subjectList{1,1}),1)];
 end
 
+ClassificationStatObj.NCrossVals = 100;
+NCrossVals = ClassificationStatObj.NCrossVals;
 
-
-
-NCrossVals=100;
-
-%% create DataMatrix from BCell:
-
-DataMatrix = extract_BCell(BCell);
 
 % n_group1=size(BCell{1},2); % no of subjects in the first group
 % n_group2=size(BCell{2},2); % no of subjects in the second group
@@ -41,7 +36,6 @@ DataMatrix = extract_BCell(BCell);
 % DataMatrix = Sample(:,1:nr);
 % ChannelsToUse =[];
 
-Outcome = Outcome-1;
 Outcome = Outcome.';
 
 %save DataMatrix DataMatrix %sorry Sonja :(
@@ -57,9 +51,7 @@ switch lower(Type)
         disp('Cross validation needs work')
         %   DataMatrix = abs(DataMatrix);
         %   DataMatrix = zscore(DataMatrix);
-        if ~isstruct(ChannelsOrRegionsToUse) && length(ChannelsOrRegionsToUse)>1 % using channels, not regions
-            [DataMatrix, BiomsToUse] = nbt_RemoveFeatures( DataMatrix,Outcome,'ttest2',ChannelsOrRegionsToUse, size(BCell{1},3));
-        end
+
         
         % For this type we randomly
         TestLimit = floor(size(DataMatrix,1)*1/3); %a potential parameter!
@@ -73,6 +65,10 @@ switch lower(Type)
             [ TrainMatrix,  TestMatrix, TrainOutcome, TestOutcome] = ...
                 nbt_RandomSubsampler( DataMatrix,Outcome,TestLimit,'stratified');
             %We use a stratified sample to preserve the class balance.
+            
+            if ~isstruct(ChannelsOrRegionsToUse) && length(ChannelsOrRegionsToUse)>1 % using channels, not regions
+                [DataMatrix, BiomsToUse] = nbt_RemoveFeatures( DataMatrix,Outcome,'ttest2',ChannelsOrRegionsToUse, size(BCell{1},3));
+            end
             
             [s] = nbt_TrainClassifier(TrainMatrix,TrainOutcome, s);
             [pp, s ] = nbt_UseClassifier(TestMatrix, s);
@@ -234,46 +230,5 @@ title('Specificity (SP)')
 subplot(2,4,8)
 boxplot(PP)
 set(gca,'YLim',[0.5 1])
-title('Precision (PP)')
-
-
-%% nested function part
-    function DataMatrix = extract_BCell(BCell)
-        if(isempty(ChannelsOrRegionsToUse))
-            ChannelsOrRegionsToUse = 1:size(BCell{1},1);
-        end
-        
-        for ii=1:size(BCell{1},3)
-            disp(ii)
-            if isstruct(ChannelsOrRegionsToUse)
-                ChansOrRegsToUse = [1: size(ChannelsOrRegionsToUse,2)]; % all regions
-            else
-                ChansOrRegsToUse = ChannelsOrRegionsToUse; % single region
-            end
-            
-            for i=ChansOrRegsToUse;
-                if ~exist('becell');
-                    becell{1,1}=BCell{1}(i,:,ii);
-                    becell{2,1}=BCell{2}(i,:,ii);
-                else
-                    becell{1,1}(end+1,:,:)=BCell{1}(i,:,ii);
-                    becell{2,1}(end+1,:,:)=BCell{2}(i,:,ii);
-                end
-            end
-        end
-        for GrpID = 1:size(becell,1)
-            GroupSize(GrpID) = size(becell{GrpID,1},2);
-        end
-        DataIndex = 1;
-        for GrpID = 1:size(becell,1)
-            if isrow(squeeze(reshape(becell{GrpID,1}(:,:,:),1,size(becell{GrpID,1},2),size(becell{GrpID,1},1)*size(becell{GrpID,1},3))));
-                DataMatrix(DataIndex:DataIndex+GroupSize(GrpID)-1,:) = ...
-                    becell{GrpID,1}(:,:,:).';
-            else
-                DataMatrix(DataIndex:DataIndex+GroupSize(GrpID)-1,:) = becell{GrpID,1}(:,:,:).';
-            end
-            Outcome(DataIndex:DataIndex+GroupSize(GrpID)-1) = GrpID;
-            DataIndex = DataIndex+GroupSize(GrpID);
-        end
-    end
+title('Precision (PP)')   
 end
