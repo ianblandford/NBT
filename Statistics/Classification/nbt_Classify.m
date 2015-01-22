@@ -9,9 +9,14 @@ for j=1:n_groups
     Outcome = [Outcome; (j-1).*ones(length(Data_groups{j}.subjectList{1,1}),1)];
 end
 
-ClassificationStatObj.NCrossVals = 100;
-NCrossVals = ClassificationStatObj.NCrossVals;
-
+%following should be removed in later versions and be set before the call
+%of nbt_Classify
+ClassificationStatObj.nCrossVals = 100;
+NCrossVals = ClassificationStatObj.nCrossVals;
+ClassificationStatObj.channels = size(Data_groups{1}{1,1},1);
+ChannelsOrRegionsToUse = ClassificationStatObj.channels;
+ClassificationStatObj.classificationType = 'crossValidate';
+Type = 'crossValidate';
 
 % n_group1=size(BCell{1},2); % no of subjects in the first group
 % n_group2=size(BCell{2},2); % no of subjects in the second group
@@ -37,13 +42,13 @@ NCrossVals = ClassificationStatObj.NCrossVals;
 % ChannelsToUse =[];
 
 Outcome = Outcome.';
-
+ClassificationStatObj.realOutcome = Outcome;
 %save DataMatrix DataMatrix %sorry Sonja :(
 %save Outcome Outcome  %also not saving s further down
 
 
 Bioms=NaN(size(DataMatrix,2),NCrossVals);
-ModelVars=cell(NCrossVals,1);
+ClassificationStatObj.modelVars=cell(NCrossVals,1);
 %% Divide into Train and test set
 switch lower(Type)
     case 'crossvalidate'
@@ -53,8 +58,7 @@ switch lower(Type)
         %   DataMatrix = zscore(DataMatrix);
 
         
-        % For this type we randomly
-        TestLimit = floor(size(DataMatrix,1)*1/3); %a potential parameter!
+      
         tic
         
         %     BiomsToUse{1,1} = [1:1:length(ChannelsToUse)]'; % use all channels
@@ -62,25 +66,23 @@ switch lower(Type)
         for i=1:NCrossVals % also potential parametere!
             disp(i)
             
-            [ TrainMatrix,  TestMatrix, TrainOutcome, TestOutcome] = ...
-                nbt_RandomSubsampler( DataMatrix,Outcome,TestLimit,'stratified');
+            [ TrainMatrix,  TestMatrix, TrainOutcome, TestOutcome] = nbt_RandomSubsampler(DataMatrix, Outcome,'holdout',0.3,'stratified');
             %We use a stratified sample to preserve the class balance.
             
             if ~isstruct(ChannelsOrRegionsToUse) && length(ChannelsOrRegionsToUse)>1 % using channels, not regions
-                [DataMatrix, BiomsToUse] = nbt_RemoveFeatures( DataMatrix,Outcome,'ttest2',ChannelsOrRegionsToUse, size(BCell{1},3));
+                [DataMatrix, BiomsToUse] = nbt_RemoveFeatures( DataMatrix,Outcome,'ttest2',ChannelsOrRegionsToUse, size(Data_groups{1}.biomarkers,2));
             end
             
             [s] = nbt_TrainClassifier(TrainMatrix,TrainOutcome, s);
             [pp, s ] = nbt_UseClassifier(TestMatrix, s);
-            [FPt, TPt, FNt, TNt, SEt, SPt, PPt, NNt, LPt, LNt, MMt, AUCt,H2] = ...
-                nbt_evalOutcome(pp, TestOutcome);
+            [FPt, TPt, FNt, TNt, SEt, SPt, PPt, NNt, LPt, LNt, MMt, AUCt,H2] = nbt_evalOutcome(pp, TestOutcome);
             
             % training and testing on the same data
             %             [pp, s ] = nbt_UseClassifier(TrainMatrix, s);
             %             [FPt, TPt, FNt, TNt, SEt, SPt, PPt, NNt, LPt, LNt, MMt, AUCt,H2] = ...
             %                 nbt_evalOutcome(pp, TrainOutcome);
             
-            ModelVars{i}=s.ModelVar;
+            modelVars{i}=s.modelVar;
             if(iscell(FPt))
                 for GrpID = 1:size(FPt,1)
                     FP{GrpID,1}(i) = FPt{GrpID,1};

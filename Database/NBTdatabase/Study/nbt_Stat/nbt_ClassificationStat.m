@@ -1,8 +1,16 @@
 classdef nbt_ClassificationStat < nbt_Stat
    
     properties
-        ClassificationType
-        NCrossVals
+        classificationType 
+        subsampleType
+        subsampleLimit
+        subsampleStratification 
+        removeFeaturesType
+        nCrossVals
+        realOutcome
+        predictedOutcome
+        outcomeEval
+        modelVars
     end
     
     methods

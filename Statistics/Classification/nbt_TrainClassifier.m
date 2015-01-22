@@ -5,7 +5,7 @@ function [s] = nbt_TrainClassifier(DataMatrix,outcome, s)
 %% STATISTICAL SWINDLE (remove unimportant predictors)
 
 %% select metod from s.statfunc structure.
-switch lower(s.statfunc)
+switch class(s)
     case 'logit'
         s.ModelVar = glmfit(DataMatrix,outcome,'binomial','link','logit','constant','on');
     case 'elasticlogit' %work in progress
