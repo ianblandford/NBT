@@ -41,7 +41,6 @@ Type = 'crossValidate';
 % DataMatrix = Sample(:,1:nr);
 % ChannelsToUse =[];
 
-Outcome = Outcome.';
 ClassificationStatObj.realOutcome = Outcome;
 %save DataMatrix DataMatrix %sorry Sonja :(
 %save Outcome Outcome  %also not saving s further down
@@ -73,8 +72,8 @@ switch lower(Type)
                 [DataMatrix, BiomsToUse] = nbt_RemoveFeatures( DataMatrix,Outcome,'ttest2',ChannelsOrRegionsToUse, size(Data_groups{1}.biomarkers,2));
             end
             
-            [s] = nbt_TrainClassifier(TrainMatrix,TrainOutcome, s);
-            [pp, s ] = nbt_UseClassifier(TestMatrix, s);
+            [ClassificationStatObj] = nbt_TrainClassifier(TrainMatrix,TrainOutcome, ClassificationStatObj);
+            [pp, ClassificationStatObj ] = nbt_UseClassifier(TestMatrix, ClassificationStatObj);
             [FPt, TPt, FNt, TNt, SEt, SPt, PPt, NNt, LPt, LNt, MMt, AUCt,H2] = nbt_evalOutcome(pp, TestOutcome);
             
             % training and testing on the same data
