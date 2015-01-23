@@ -28,9 +28,9 @@ classdef nbt_amplitude < nbt_SignalBiomarker
 %         SubRegions
         Normalized       
     end
-%      properties (Constant)
-%         biomarkerType = {'nbt_SignalBiomarker'};
-%     end
+      properties (Constant)
+         biomarkerType = {'nbt_SignalBiomarker'};
+     end
     methods
         function BiomarkerObject = nbt_amplitude(NumChannels,Channels,SubRegions,Normalized, Unit)
             if nargin == 0
