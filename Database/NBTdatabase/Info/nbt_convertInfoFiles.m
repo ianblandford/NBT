@@ -44,6 +44,7 @@ for j=3:length(d)
                 SubjectInfo.conditionID = oldInfo.(oldInfoFields{1}).condition;
                 SubjectInfo.fileName = oldInfo.(oldInfoFields{1}).file_name;
                 SubjectInfo.fileNameFormat = oldInfo.(oldInfoFields{1}).file_name_format;
+                SubjectInfo.info = oldInfo.(oldInfoFields{1}).Info;
                 SubjectInfo.info.dateOfRecording = oldInfo.(oldInfoFields{1}).time_of_recording;
                 SubjectInfo.info.notes = oldInfo.(oldInfoFields{1}).notes;
                 SubjectInfo.info.subjectGender = oldInfo.(oldInfoFields{1}).subject_gender;
