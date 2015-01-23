@@ -7,8 +7,8 @@ function [s] = nbt_TrainClassifier(DataMatrix,outcome, s)
 %% select metod from s.statfunc structure.
 switch class(s)
     case 'logit'
-        s.ModelVar = glmfit(DataMatrix,outcome,'binomial','link','logit','constant','on');
-    case 'elasticlogit' %work in progress
+        s.modelVars = glmfit(DataMatrix,outcome,'binomial','link','logit','constant','on');
+    case 'nbt_elasticLogit' %work in progress
         % Alpha controls how the alg. handles
         % correlated biomarkers. Currently using 0.5. For lower values the
         % algorithm retains more correlated biomarkers, at higher values,
@@ -24,14 +24,14 @@ switch class(s)
         %   the path. RelTol is the relative tolerance of CCD algorithm and
         %   affects how long the algorithm tries to converge.
         
-        [B,FitInfo] = lassoglm(DataMatrix, outcome,'binomial','Alpha',0.5,'RelTol',1e-6,...
-            'CV',3,'NumLambda',100,'Standardize',1);
+        [B,FitInfo] = lassoglm(DataMatrix, outcome,'binomial','Alpha',s.alpha,'RelTol',s.relTol,...
+            'CV',s.cV,'NumLambda',s.numLambda,'Standardize',s.standardize);
         try
             lam=FitInfo.IndexMinDeviance;
         catch
             [~,lam]=min(FitInfo.Deviance);
         end
-        s.ModelVar=[FitInfo.Intercept(lam); B(:,lam)];
+        s.modelVars=[FitInfo.Intercept(lam); B(:,lam)];
     case 'aenet'
       
 %         b=ones(length(BiomsToUse),1);

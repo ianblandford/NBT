@@ -65,11 +65,11 @@ switch lower(Type)
         for i=1:NCrossVals % also potential parametere!
             disp(i)
             
-            [ TrainMatrix,  TestMatrix, TrainOutcome, TestOutcome] = nbt_RandomSubsampler(DataMatrix, Outcome,'holdout',0.3,'stratified');
+            [ TrainMatrix,  TestMatrix, TrainOutcome, TestOutcome] = nbt_RandomSubsampler(DataMatrix, Outcome,ClassificationStatObj.subSampleType,ClassificationStatObj.subSampleLimit,ClassificationStatObj.subSampleStratification);
             %We use a stratified sample to preserve the class balance.
             
             if ~isstruct(ChannelsOrRegionsToUse) && length(ChannelsOrRegionsToUse)>1 % using channels, not regions
-                [DataMatrix, BiomsToUse] = nbt_RemoveFeatures( DataMatrix,Outcome,'ttest2',ChannelsOrRegionsToUse, size(Data_groups{1}.biomarkers,2));
+                [DataMatrix, BiomsToUse] = nbt_RemoveFeatures( DataMatrix,Outcome,ClassificationStatObj.removeFeaturesType,ChannelsOrRegionsToUse, size(Data_groups{1}.biomarkers,2));
             end
             
             [ClassificationStatObj] = nbt_TrainClassifier(TrainMatrix,TrainOutcome, ClassificationStatObj);

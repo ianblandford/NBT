@@ -2,10 +2,10 @@ classdef nbt_ClassificationStat < nbt_Stat
    
     properties
         classificationType 
-        subsampleType
-        subsampleLimit
-        subsampleStratification 
-        removeFeaturesType
+        subSampleType = 'holdout'
+        subSampleLimit = 0.3
+        subSampleStratification = 'stratified'
+        removeFeaturesType = 'ttest2'
         nCrossVals
         realOutcome
         predictedOutcome

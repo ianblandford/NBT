@@ -31,8 +31,8 @@ function [pp, s ]=nbt_UseClassifier(DataMatrix, s)
 %without outcome)
 
 % Select method
-switch s.statfunc
-   case {'elasticlogit','logit'}
+switch class(s)
+   case {'nbt_elasticLogit','logit'}
                pp = glmval(s.ModelVar,DataMatrix,'logit','constant','on');
     case 'aenet'
         % Logistic regression
