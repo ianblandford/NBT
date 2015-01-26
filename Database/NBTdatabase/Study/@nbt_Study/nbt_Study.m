@@ -6,8 +6,7 @@ classdef nbt_Study
    end
     
    methods
-       function StudyObject = nbt_Study
-           
+       function StudyObject = nbt_Study 
        end
        
        

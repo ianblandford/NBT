@@ -25,7 +25,7 @@ switch class(s)
         %   affects how long the algorithm tries to converge.
         
         [B,FitInfo] = lassoglm(DataMatrix, outcome,'binomial','Alpha',s.alpha,'RelTol',s.relTol,...
-            'CV',s.cV,'NumLambda',s.numLambda,'Standardize',s.standardize);
+            'CV',s.cV,'NumLambda',s.numLambda,'Standardize',s.standardize, 'Options', s.statOptions);
         try
             lam=FitInfo.IndexMinDeviance;
         catch
