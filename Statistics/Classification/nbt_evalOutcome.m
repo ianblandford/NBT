@@ -57,7 +57,7 @@
 % See Readme.txt for additional copyright information.
 % ---------------------------------------------------------------------------------------
 
-function [FP, TP, FN, TN, SE, SP, PP, NN, LP, LN, MM, AUC,H]=nbt_evalOutcome(pp, outcome, Threshold)
+function [FP, TP, FN, TN, SE, SP, PP, NN, LP, LN, MM, AUC, H, ACC]=nbt_evalOutcome(pp, outcome, Threshold)
 error(nargchk(2, 3, nargin))
 if(~exist('Threshold','var'))
     Threshold = 0.5;
@@ -78,6 +78,7 @@ if(length(GrpID) <= 2)
         [FPR,TPR,T,AUC,TOP] = perfcurve(outcome,pp,1);
        % [results,~,~,~,~] = hmeasure(outcome,pp);
         H=NaN;%results.H;
+        ACC  = (TP+TN)./(TN+TP+FN+FP);
 else
         % means pp gives group belonging not probability
         % here we define a cell with GrpID x 1
