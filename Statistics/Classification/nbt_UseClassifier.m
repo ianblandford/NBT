@@ -33,15 +33,15 @@ function [pp, s ]=nbt_UseClassifier(DataMatrix, s)
 % Select method
 switch class(s)
    case {'nbt_elasticLogit','logit'}
-               pp = glmval(s.ModelVar,DataMatrix,'logit','constant','on');
+               pp = glmval(s.modelVars,DataMatrix,'logit','constant','on');
     case 'aenet'
         % Logistic regression
-        pp = glmval(s.ModelVar,DataMatrix,'logit','constant','on');
+        pp = glmval(s.modelVars,DataMatrix,'logit','constant','on');
    case {'lssvm','lssvmbay'}
         % LSSVM - Least-square support vector machine
-         pp = simlssvm(s.ModelVar,DataMatrix);
+         pp = simlssvm(s.modelVars,DataMatrix);
     case 'neuralnet'
-        net = s.ModelVar;
+        net = s.modelVars;
         pp = net(DataMatrix')';
 end
 

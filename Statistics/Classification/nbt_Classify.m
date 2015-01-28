@@ -58,11 +58,9 @@ switch lower(Type)
 
         
       
-        tic
+        
         parfor i=1:NCrossVals
-       
-            ClassificaftionStatObj=runClassification(DataMatrix,Outcome,ClassificationStatObj)
-            
+            [FP(i), TP(i), FN(i), TN(i), SE(i), SP(i), PP(i), NN(i), LP(i), LN(i), MM(i), AUC(i),H(i)] = runClassification(DataMatrix,Outcome,ClassificationStatObj);
         end
         
         %     BiomsToUse{1,1} = [1:1:length(ChannelsToUse)]'; % use all channels
@@ -255,36 +253,35 @@ boxplot(PP)
 set(gca,'YLim',[0.5 1])
 title('Precision (PP)')
 
-   
+
 
 
 end
 
- function  ClassificationStatObj=runClassification(DataMatrix,Outcome,ClassificationStatObj)
- disp('test')
-         [ TrainMatrix,  TestMatrix, TrainOutcome, TestOutcome] = nbt_RandomSubsampler(DataMatrix, Outcome,ClassificationStatObj.subSampleType,ClassificationStatObj.subSampleLimit,ClassificationStatObj.subSampleStratification);
-          if ~isstruct(ClassificationStatObj.channels) && length(ClassificationStatObj.channels)>1 % using channels, not regions
-                [TrainMatrix, BiomsToUse] = nbt_RemoveFeatures(TrainMatrix, TrainOutcome,ClassificationStatObj.removeFeaturesType,ChannelsOrRegionsToUse, size(Data_groups{1}.biomarkers,2));
-                if(size(BiomsToUse,2) ==1 && size(Data_groups{1}.biomarkers,2))
-                    TestMatrix = TestMatrix(:,BiomsToUse{1,1});
-                else
-                    NewTestMatrix = nan(size(TestMatrix,1),size(Data_groups{1}.biomarkers,2));
-                    for ii=1:size(Data_groups{1}.biomarkers,2)
-                        NewTestMatrix(:,ii) = nanmedian(TestMatrix(:,BiomsToUse{1,ii}),2);
-                    end
-                    TestMatrix = NewTestMatrix;
-                    TestMatrix=TestMatrix(:,~isnan(TestMatrix(1,:)));
-                    clear NewTestMatrix;
-                end
-                TestMatrix = NewTestMatrix;
-                TestMatrix = TestMatrix(:,~isnan(TestMatrix(1,:)));
-                clear NewTestMatrix;
-            end
-            
-            [TrainMatrix, TrainOutcome] = nbt_balanceClasses(TrainMatrix, TrainOutcome,0);
-            
-            
-            [ClassificationStatObj] = nbt_TrainClassifier(TrainMatrix,TrainOutcome, ClassificationStatObj);
-            [pp, ClassificationStatObj ] = nbt_UseClassifier(TestMatrix, ClassificationStatObj);
-            [FPt, TPt, FNt, TNt, SEt, SPt, PPt, NNt, LPt, LNt, MMt, AUCt,H2] = nbt_evalOutcome(pp, TestOutcome);
+function  [FP, TP, FN, TN, SE, SP, PP, NN, LP, LN, MM, AUC,H] = runClassification(DataMatrix,Outcome,ClassificationStatObj)
+[ TrainMatrix,  TestMatrix, TrainOutcome, TestOutcome] = nbt_RandomSubsampler(DataMatrix, Outcome,ClassificationStatObj.subSampleType,ClassificationStatObj.subSampleLimit,ClassificationStatObj.subSampleStratification);
+if ~isstruct(ClassificationStatObj.channels) && length(ClassificationStatObj.channels)>1 % using channels, not regions
+    [TrainMatrix, BiomsToUse] = nbt_RemoveFeatures(TrainMatrix, TrainOutcome,ClassificationStatObj.removeFeaturesType,ChannelsOrRegionsToUse, size(Data_groups{1}.biomarkers,2));
+    if(size(BiomsToUse,2) ==1 && size(Data_groups{1}.biomarkers,2))
+        TestMatrix = TestMatrix(:,BiomsToUse{1,1});
+    else
+        NewTestMatrix = nan(size(TestMatrix,1),size(Data_groups{1}.biomarkers,2));
+        for ii=1:size(Data_groups{1}.biomarkers,2)
+            NewTestMatrix(:,ii) = nanmedian(TestMatrix(:,BiomsToUse{1,ii}),2);
+        end
+        TestMatrix = NewTestMatrix;
+        TestMatrix=TestMatrix(:,~isnan(TestMatrix(1,:)));
+        clear NewTestMatrix;
     end
+    TestMatrix = NewTestMatrix;
+    TestMatrix = TestMatrix(:,~isnan(TestMatrix(1,:)));
+    clear NewTestMatrix;
+end
+
+[TrainMatrix, TrainOutcome] = nbt_balanceClasses(TrainMatrix, TrainOutcome,0);
+
+
+[ClassificationStatObj] = nbt_TrainClassifier(TrainMatrix,TrainOutcome, ClassificationStatObj);
+[pp, ClassificationStatObj ] = nbt_UseClassifier(TestMatrix, ClassificationStatObj);
+[FP, TP, FN, TN, SE, SP, PP, NN, LP, LN, MM, AUC,H] = nbt_evalOutcome(pp, TestOutcome);
+end
