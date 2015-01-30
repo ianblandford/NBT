@@ -66,7 +66,9 @@ switch lower(Type)
      else 
         for i=1:NCrossVals % also potential parametere!
             disp(i)
+            tic
             [FP(i), TP(i), FN(i), TN(i), SE(i), SP(i), PP(i), NN(i), LP(i), LN(i), MM(i), AUC(i), H(i), ACC(i)] = runClassification(DataMatrix,Outcome,ClassificationStatObj);
+            toc
         end
      end
         disp('CrossValidate:done')
@@ -113,22 +115,22 @@ switch lower(Type)
 end
 
 %update s
-s.FalsePositive =  FP;
-s.TruePositive =  TP;
-s.FalseNegative =  FN;
-s.TrueNegative =  TN;
-s.Sensitivity =  SE;
-s.Specificity =  SP;
-s.PositivePredictiveValue  =  PP;
-s.NegativePredictiveValue =  NN;
-s.LikelihoodRatioPos =  LP;
-s.LikelihoodRatioNeg  =  LN;
-s.MatthewCorr =  MM;
-s.AUC=AUC;
-s.H_measure=H_measure;
+s.outcomeEval.FalsePositive =  FP;
+s.outcomeEval.TruePositive =  TP;
+s.outcomeEval.FalseNegative =  FN;
+s.outcomeEval.TrueNegative =  TN;
+s.outcomeEval.Sensitivity =  SE;
+s.outcomeEval.Specificity =  SP;
+s.outcomeEval.PositivePredictiveValue  =  PP;
+s.outcomeEval.NegativePredictiveValue =  NN;
+s.outcomeEval.LikelihoodRatioPos =  LP;
+s.outcomeEval.LikelihoodRatioNeg  =  LN;
+s.outcomeEval.MatthewCorr =  MM;
+s.outcomeEval.AUC=AUC;
+
 
 %save s s
-r
+
 %                 s.BaselineSE=BaselineSE;
 %                 s.BaselineSP=BaselineSP;
 %                 s.BaselineAUC=BaselineAUC;

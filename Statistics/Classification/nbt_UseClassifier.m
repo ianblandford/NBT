@@ -37,7 +37,7 @@ switch class(s)
     case 'aenet'
         % Logistic regression
         pp = glmval(s.modelVars,DataMatrix,'logit','constant','on');
-   case {'lssvm','lssvmbay'}
+   case {'nbt_lssvm','lssvmbay'}
         % LSSVM - Least-square support vector machine
          pp = simlssvm(s.modelVars,DataMatrix);
     case 'neuralnet'

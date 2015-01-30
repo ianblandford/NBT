@@ -93,9 +93,9 @@ switch class(s)
         s.ModelVar=[FitInfo{min_idy}.Intercept(lam); (B{min_idy}(:,lam))];
 
         
-    case 'lssvm'
+    case 'nbt_lssvm'
         % LSSVM - Least-square support vector machine
-        [pp,alpha,b,gam,sig2,s.ModelVar] = lssvm(DataMatrix,outcome,'c');
+        [pp,alpha,b,gam,sig2,s.modelVars] = lssvm(DataMatrix,outcome,'c');
     case 'lssvmbay'
         [pp,alpha,b,gam,sig2,model] = lssvm(DataMatrix,outcome,'c');
         [gam, sig2] = bay_initlssvm({DataMatrix,outcome,'c',gam,sig2,'RBF_kernel'});

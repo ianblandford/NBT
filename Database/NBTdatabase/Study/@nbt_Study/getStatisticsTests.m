@@ -53,7 +53,8 @@ if(index ==0)
         'Kruskal-Wallis test', ...
         'Friedman test', ...
         'Spider plot', ...
-        'Elastic logit' ...
+        'Elastic logit', ...
+        'LS-SVM' ...
         };
     return
 end
@@ -134,7 +135,9 @@ switch index
         S = nbt_spiderplot;
     case 22
         S = nbt_elasticLogit;
+    case 23
+        S = nbt_lssvm;
     otherwise
-        s = [];
+        S = [];
 end
 end
