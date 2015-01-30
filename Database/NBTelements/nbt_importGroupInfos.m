@@ -192,6 +192,9 @@ for i=1:length(FileList)
                 for dd = 1:NumBiomarkers
                     eval( ['DataString = nbt_cellc(' BiomarkerList{m} '.biomarkers,dd);']);
                     eval(['Data{dd,1} = ' BiomarkerList{m} '.' DataString ';']);
+                    if(size(Data{dd,1},2) > size(Data{dd,1},1)) %to fix bug with biomarkers with wrong dimension
+                       Data{dd,1} = Data{dd,1}';  
+                    end
                     eval([NBTelementName '.Biomarkers{ dd ,1} = DataString; '])
                     eval([NBTelementName '.BiomarkerType{dd} = BiomarkerType{dd}; '])
                 end
