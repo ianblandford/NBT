@@ -13,10 +13,12 @@ end
 %of nbt_Classify
 ClassificationStatObj.nCrossVals = 100;
 NCrossVals = ClassificationStatObj.nCrossVals;
-ClassificationStatObj.channels = size(Data_groups{1}{1,1},1);
-ChannelsOrRegionsToUse = ClassificationStatObj.channels;
+ClassificationStatObj.channels = 1:size(Data_groups{1}{1,1},1);
+warning('Now just using all channels - .channels should be set properly')
 ClassificationStatObj.classificationType = 'crossValidate';
 Type = 'crossValidate';
+ClassificationStatObj.uniqueBiomarkers = size(Data_groups{1}.biomarkers,2);
+
 
 % n_group1=size(BCell{1},2); % no of subjects in the first group
 % n_group2=size(BCell{2},2); % no of subjects in the second group
@@ -197,23 +199,17 @@ end
 
 function  [FP, TP, FN, TN, SE, SP, PP, NN, LP, LN, MM, AUC, H, ACC] = runClassification(DataMatrix,Outcome,ClassificationStatObj)
 [ TrainMatrix,  TestMatrix, TrainOutcome, TestOutcome] = nbt_RandomSubsampler(DataMatrix, Outcome,ClassificationStatObj.subSampleType,ClassificationStatObj.subSampleLimit,ClassificationStatObj.subSampleStratification);
-if ~isstruct(ClassificationStatObj.channels) && length(ClassificationStatObj.channels)>1 % using channels, not regions
-    [TrainMatrix, BiomsToUse] = nbt_RemoveFeatures(TrainMatrix, TrainOutcome,ClassificationStatObj.removeFeaturesType,ChannelsOrRegionsToUse, size(Data_groups{1}.biomarkers,2));
-    if(size(BiomsToUse,2) ==1 && size(Data_groups{1}.biomarkers,2))
-        TestMatrix = TestMatrix(:,BiomsToUse{1,1});
-    else
-        NewTestMatrix = nan(size(TestMatrix,1),size(Data_groups{1}.biomarkers,2));
-        for ii=1:size(Data_groups{1}.biomarkers,2)
+%if ~isstruct(ClassificationStatObj.channels) && length(ClassificationStatObj.channels)>1 % using channels, not regions
+    [TrainMatrix, BiomsToUse] = nbt_RemoveFeatures(TrainMatrix, TrainOutcome,ClassificationStatObj.removeFeaturesType, ClassificationStatObj.channels, ClassificationStatObj.uniqueBiomarkers);
+
+        NewTestMatrix = nan(size(TestMatrix,1),size(TrainMatrix,2));
+        for ii=1:size(TrainMatrix,2)
             NewTestMatrix(:,ii) = nanmedian(TestMatrix(:,BiomsToUse{1,ii}),2);
         end
         TestMatrix = NewTestMatrix;
-        TestMatrix=TestMatrix(:,~isnan(TestMatrix(1,:)));
         clear NewTestMatrix;
-    end
-    TestMatrix = NewTestMatrix;
-    TestMatrix = TestMatrix(:,~isnan(TestMatrix(1,:)));
-    clear NewTestMatrix;
-end
+  
+%end
 
 [TrainMatrix, TrainOutcome] = nbt_balanceClasses(TrainMatrix, TrainOutcome,0);
 

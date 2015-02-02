@@ -15,6 +15,7 @@ classdef nbt_Stat
         %subBiomarkers
         channels
         channelsRegionsSwitch
+        uniqueBiomarkers
         pValues
         sigPValues
         ccPValues
@@ -22,7 +23,7 @@ classdef nbt_Stat
         
         statValues
         statStruct 
-        statOptions = statset('UseParallel',true);    
+        statOptions = statset('UseParallel',false);    
     end
     
     methods

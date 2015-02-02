@@ -5,7 +5,7 @@ classdef nbt_ClassificationStat < nbt_Stat
         subSampleType = 'holdout'
         subSampleLimit = 0.3
         subSampleStratification = 'stratified'
-        removeFeaturesType = 'ttest2'
+        removeFeaturesType = 'ttest2-MCP'
         nCrossVals
         realOutcome
         predictedOutcome
