@@ -23,7 +23,7 @@ classdef nbt_Stat
         
         statValues
         statStruct 
-        statOptions = statset('UseParallel',false);    
+        statOptions = statset('UseParallel',true);    
     end
     
     methods

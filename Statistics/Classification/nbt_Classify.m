@@ -59,17 +59,17 @@ switch lower(Type)
         %   DataMatrix = zscore(DataMatrix);
 
         
-      
+      modelVars = cell(1, NCrossVals);
      if(ClassificationStatObj.statOptions.UseParallel)
         parfor i=1:NCrossVals
             disp(i)
-            [FP(i), TP(i), FN(i), TN(i), SE(i), SP(i), PP(i), NN(i), LP(i), LN(i), MM(i), AUC(i), H(i), ACC(i)] = runClassification(DataMatrix,Outcome,ClassificationStatObj);
+            [FP(i), TP(i), FN(i), TN(i), SE(i), SP(i), PP(i), NN(i), LP(i), LN(i), MM(i), AUC(i), H(i), ACC(i), modelVars{1,i}] = runClassification(DataMatrix,Outcome,ClassificationStatObj);
         end
      else 
         for i=1:NCrossVals % also potential parametere!
             disp(i)
             tic
-            [FP(i), TP(i), FN(i), TN(i), SE(i), SP(i), PP(i), NN(i), LP(i), LN(i), MM(i), AUC(i), H(i), ACC(i)] = runClassification(DataMatrix,Outcome,ClassificationStatObj);
+            [FP(i), TP(i), FN(i), TN(i), SE(i), SP(i), PP(i), NN(i), LP(i), LN(i), MM(i), AUC(i), H(i), ACC(i), modelVars{1,i}] = runClassification(DataMatrix,Outcome,ClassificationStatObj);
             toc
         end
      end
@@ -87,7 +87,7 @@ switch lower(Type)
         
         
         % call nbt_TrainClassifier
-        [s] = nbt_TrainClassifier(TrainMatrix,TrainOutcome, s);
+        [ClassificationStatObj] = nbt_TrainClassifier(TrainMatrix,TrainOutcome, ClassificationStatObj);
         
         if(size(BiomsToUse,2) ==1 && size(BCell{1},3) ~= 1)
             TestMatrix = TestMatrix(:,BiomsToUse{1,1});
@@ -100,16 +100,16 @@ switch lower(Type)
             clear NewTestMatrix;
         end
         % call nbt_TestClassifier
-        [pp, s] = nbt_UseClassifier(TestMatrix, s);
+        [pp, ClassificationStatObj] = nbt_UseClassifier(TestMatrix, ClassificationStatObj);
         %eval outcome
         [FP, TP, FN, TN, SE, SP, PP, NN, LP, LN, MM, AUC, H_measure] = nbt_evalOutcome(pp, TestOutcome);
         toc
     case 'train'
         % Type Train
-        s = nbt_TrainClassifier(DataMatrix, Outcome, s);
+        ClassificationStatObj = nbt_TrainClassifier(DataMatrix, Outcome, ClassificationStatObj);
     case 'use'
         % Type Use
-        [pp, s] = nbt_UseClassifier(DataMatrix, s);
+        [pp, ClassificationStatObj] = nbt_UseClassifier(DataMatrix, ClassificationStatObj);
         %eval outcome
         [FP, TP, FN, TN, SE, SP, PP, NN, LP, LN, MM] = nbt_evalOutcome(pp, TestOutcome);
     otherwise
@@ -117,19 +117,19 @@ switch lower(Type)
 end
 
 %update s
-s.outcomeEval.FalsePositive =  FP;
-s.outcomeEval.TruePositive =  TP;
-s.outcomeEval.FalseNegative =  FN;
-s.outcomeEval.TrueNegative =  TN;
-s.outcomeEval.Sensitivity =  SE;
-s.outcomeEval.Specificity =  SP;
-s.outcomeEval.PositivePredictiveValue  =  PP;
-s.outcomeEval.NegativePredictiveValue =  NN;
-s.outcomeEval.LikelihoodRatioPos =  LP;
-s.outcomeEval.LikelihoodRatioNeg  =  LN;
-s.outcomeEval.MatthewCorr =  MM;
-s.outcomeEval.AUC=AUC;
-
+ClassificationStatObj.outcomeEval.FalsePositive =  FP;
+ClassificationStatObj.outcomeEval.TruePositive =  TP;
+ClassificationStatObj.outcomeEval.FalseNegative =  FN;
+ClassificationStatObj.outcomeEval.TrueNegative =  TN;
+ClassificationStatObj.outcomeEval.Sensitivity =  SE;
+ClassificationStatObj.outcomeEval.Specificity =  SP;
+ClassificationStatObj.outcomeEval.PositivePredictiveValue  =  PP;
+ClassificationStatObj.outcomeEval.NegativePredictiveValue =  NN;
+ClassificationStatObj.outcomeEval.LikelihoodRatioPos =  LP;
+ClassificationStatObj.outcomeEval.LikelihoodRatioNeg  =  LN;
+ClassificationStatObj.outcomeEval.MatthewCorr =  MM;
+ClassificationStatObj.outcomeEval.AUC=AUC;
+ClassificationStatObj.modelVars = modelVars;
 
 %save s s
 
@@ -144,7 +144,7 @@ s.outcomeEval.AUC=AUC;
 
 %% plotting
 %first calculate pp for the full matrix
-[pp] = nbt_UseClassifier(DataMatrix, s);
+[pp] = nbt_UseClassifier(DataMatrix, ClassificationStatObj);
 % make pp values for each group
 pp1 = pp(Outcome == 0);
 pp2 = pp(Outcome == 1);
@@ -197,7 +197,7 @@ title('Precision (PP)')
 
 end
 
-function  [FP, TP, FN, TN, SE, SP, PP, NN, LP, LN, MM, AUC, H, ACC] = runClassification(DataMatrix,Outcome,ClassificationStatObj)
+function  [FP, TP, FN, TN, SE, SP, PP, NN, LP, LN, MM, AUC, H, ACC, modelVars] = runClassification(DataMatrix,Outcome,ClassificationStatObj)
 [ TrainMatrix,  TestMatrix, TrainOutcome, TestOutcome] = nbt_RandomSubsampler(DataMatrix, Outcome,ClassificationStatObj.subSampleType,ClassificationStatObj.subSampleLimit,ClassificationStatObj.subSampleStratification);
 %if ~isstruct(ClassificationStatObj.channels) && length(ClassificationStatObj.channels)>1 % using channels, not regions
     [TrainMatrix, BiomsToUse] = nbt_RemoveFeatures(TrainMatrix, TrainOutcome,ClassificationStatObj.removeFeaturesType, ClassificationStatObj.channels, ClassificationStatObj.uniqueBiomarkers);
@@ -208,6 +208,18 @@ function  [FP, TP, FN, TN, SE, SP, PP, NN, LP, LN, MM, AUC, H, ACC] = runClassif
         end
         TestMatrix = NewTestMatrix;
         clear NewTestMatrix;
+        
+        %clear NaNs
+        if(sum(sum(isnan(TrainMatrix))))
+            idxNotNaN = find(0==sum(isnan(TrainMatrix)));
+            TrainMatrix = TrainMatrix(:,idxNotNaN);
+            TestMatrix = TestMatrix(:,idxNotNaN);
+        end
+        if(sum(sum(isnan(TestMatrix))))
+            idxNotNaN = find(0==sum(isnan(TestMatrix)));
+            TrainMatrix = TrainMatrix(:,idxNotNaN);
+            TestMatrix = TestMatrix(:,idxNotNaN);
+        end
   
 %end
 
@@ -217,4 +229,5 @@ function  [FP, TP, FN, TN, SE, SP, PP, NN, LP, LN, MM, AUC, H, ACC] = runClassif
 [ClassificationStatObj] = nbt_TrainClassifier(TrainMatrix,TrainOutcome, ClassificationStatObj);
 [pp, ClassificationStatObj ] = nbt_UseClassifier(TestMatrix, ClassificationStatObj);
 [FP, TP, FN, TN, SE, SP, PP, NN, LP, LN, MM, AUC, H, ACC] = nbt_evalOutcome(pp, TestOutcome);
+modelVars = ClassificationStatObj.modelVars;
 end
