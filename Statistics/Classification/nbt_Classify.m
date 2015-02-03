@@ -57,22 +57,22 @@ switch lower(Type)
         disp('Cross validation needs work')
         %   DataMatrix = abs(DataMatrix);
         %   DataMatrix = zscore(DataMatrix);
-
         
-      modelVars = cell(1, NCrossVals);
-     if(ClassificationStatObj.statOptions.UseParallel)
-        parfor i=1:NCrossVals
-            disp(i)
-            [FP(i), TP(i), FN(i), TN(i), SE(i), SP(i), PP(i), NN(i), LP(i), LN(i), MM(i), AUC(i), H(i), ACC(i), modelVars{1,i}] = runClassification(DataMatrix,Outcome,ClassificationStatObj);
+        
+        modelVars = cell(1, NCrossVals);
+        if(~ClassificationStatObj.statOptions.UseParallel)
+            parfor i=1:NCrossVals
+                disp(i)
+                [FP(i), TP(i), FN(i), TN(i), SE(i), SP(i), PP(i), NN(i), LP(i), LN(i), MM(i), AUC(i), H(i), ACC(i), modelVars{1,i}] = runClassification(DataMatrix,Outcome,ClassificationStatObj);
+            end
+        else
+            for i=1:NCrossVals % also potential parametere!
+                disp(i)
+                tic
+                [FP(i), TP(i), FN(i), TN(i), SE(i), SP(i), PP(i), NN(i), LP(i), LN(i), MM(i), AUC(i), H(i), ACC(i), modelVars{1,i}] = runClassification(DataMatrix,Outcome,ClassificationStatObj);
+                toc
+            end
         end
-     else 
-        for i=1:NCrossVals % also potential parametere!
-            disp(i)
-            tic
-            [FP(i), TP(i), FN(i), TN(i), SE(i), SP(i), PP(i), NN(i), LP(i), LN(i), MM(i), AUC(i), H(i), ACC(i), modelVars{1,i}] = runClassification(DataMatrix,Outcome,ClassificationStatObj);
-            toc
-        end
-     end
         disp('CrossValidate:done')
         toc
     case 'validate'
@@ -142,58 +142,6 @@ ClassificationStatObj.modelVarsStore = modelVars;
 %                 s.HAE=HAE;
 %                 s.HE=HE;
 
-%% plotting
-%first calculate pp for the full matrix
-ClassificationStatObj.modelVars = ClassificationStatObj.modelVarsStore{1,1};
-[pp] = nbt_UseClassifier(DataMatrix, ClassificationStatObj);
-% make pp values for each group
-pp1 = pp(Outcome == 0);
-pp2 = pp(Outcome == 1);
-% DataMatrix = zscore(DataMatrix)';
-DataMatrix = DataMatrix';
-DataReal1 = DataMatrix(:, Outcome == 0);
-DataReal2 = DataMatrix(:, Outcome == 1);
-DataPred1 = DataMatrix(:, pp < 0.5);
-DataPred2 = DataMatrix(:, pp >= 0.5);
-
-figure('Name','Classification performance')
-
-% plot dot plot of pp values for the full Data matrix
-nbt_DotPlot(subplot(2,4,1),0.1,0.025,0,@median,{'Group 1';'Group 2'; 'Probability'},'',pp1',1:length(pp1),1,pp2',1:length(pp2),1);
-set(gca,'YLim',[0 1])
-% plot dot plot of Data values - real and classified
-%first real
-nbt_DotPlot(subplot(2,4,2),0.1,0.025,0,@median,{'Group 1';'Group 2'; 'Biomarker values'},'',DataReal1,1:size(DataReal1,2),1:size(DataReal1,1),DataReal2,1:size(DataReal2,2),1:size(DataReal2,1));
-% then predicted
-nbt_DotPlot(subplot(2,4,3),0.1,0.025,0,@median,{'Group 1';'Group 2'; 'Predicted groups: Biomarker values'},'',DataPred1,1:size(DataPred1,2),1:size(DataPred1,1),DataPred2,1:size(DataPred2,2),1:size(DataPred2,1));
-% Plot ROC
-subplot(2,4,4)
-[FPR,TPR] = perfcurve(Outcome,pp,1);
-plot(FPR,TPR)
-xlabel('False positive rate'); ylabel('True positive rate')
-title('ROC')
-
-subplot(2,4,5)
-boxplot(accuracy/100)
-set(gca,'YLim',[0.5 1])
-title('Accuracy')
-
-subplot(2,4,6)
-boxplot(SE)
-set(gca,'YLim',[0.5 1])
-title('Sensitivity (SE)')
-
-subplot(2,4,7)
-boxplot(SP)
-set(gca,'YLim',[0.5 1])
-title('Specificity (SP)')
-
-subplot(2,4,8)
-boxplot(PP)
-set(gca,'YLim',[0.5 1])
-title('Precision (PP)')
-
-
 
 
 end
@@ -201,31 +149,42 @@ end
 function  [FP, TP, FN, TN, SE, SP, PP, NN, LP, LN, MM, AUC, H, ACC, modelVars] = runClassification(DataMatrix,Outcome,ClassificationStatObj)
 [ TrainMatrix,  TestMatrix, TrainOutcome, TestOutcome] = nbt_RandomSubsampler(DataMatrix, Outcome,ClassificationStatObj.subSampleType,ClassificationStatObj.subSampleLimit,ClassificationStatObj.subSampleStratification);
 %if ~isstruct(ClassificationStatObj.channels) && length(ClassificationStatObj.channels)>1 % using channels, not regions
-    [TrainMatrix, BiomsToUse] = nbt_RemoveFeatures(TrainMatrix, TrainOutcome,ClassificationStatObj.removeFeaturesType, ClassificationStatObj.channels, ClassificationStatObj.uniqueBiomarkers);
+[TrainMatrix, BiomsToUse] = nbt_RemoveFeatures(TrainMatrix, TrainOutcome,ClassificationStatObj.removeFeaturesType{1,1}, ClassificationStatObj.channels, ClassificationStatObj.uniqueBiomarkers);
 
-        NewTestMatrix = nan(size(TestMatrix,1),size(TrainMatrix,2));
-        for ii=1:size(TrainMatrix,2)
-            NewTestMatrix(:,ii) = nanmedian(TestMatrix(:,BiomsToUse{1,ii}),2);
-        end
-        TestMatrix = NewTestMatrix;
-        clear NewTestMatrix;
-        
-        %clear NaNs
-        if(sum(sum(isnan(TrainMatrix))))
-            idxNotNaN = find(0==sum(isnan(TrainMatrix)));
-            TrainMatrix = TrainMatrix(:,idxNotNaN);
-            TestMatrix = TestMatrix(:,idxNotNaN);
-        end
-        if(sum(sum(isnan(TestMatrix))))
-            idxNotNaN = find(0==sum(isnan(TestMatrix)));
-            TrainMatrix = TrainMatrix(:,idxNotNaN);
-            TestMatrix = TestMatrix(:,idxNotNaN);
-        end
-  
+NewTestMatrix = nan(size(TestMatrix,1),size(TrainMatrix,2));
+for ii=1:size(TrainMatrix,2)
+    NewTestMatrix(:,ii) = nanmedian(TestMatrix(:,BiomsToUse{1,ii}),2);
+end
+TestMatrix = NewTestMatrix;
+clear NewTestMatrix;
+
+if(~isempty(ClassificationStatObj.removeFeaturesType{1,2}))
+    [TrainMatrix, BiomsToUse] = nbt_RemoveFeatures(TrainMatrix, TrainOutcome,ClassificationStatObj.removeFeaturesType{1,2}, ClassificationStatObj.channels, ClassificationStatObj.uniqueBiomarkers);
+    
+    NewTestMatrix = nan(size(TestMatrix,1),size(TrainMatrix,2));
+    for ii=1:size(TrainMatrix,2)
+        NewTestMatrix(:,ii) = nanmedian(TestMatrix(:,BiomsToUse{1,ii}),2);
+    end
+    TestMatrix = NewTestMatrix;
+    clear NewTestMatrix;
+end
+
+%clear NaNs
+if(sum(sum(isnan(TrainMatrix))))
+    idxNotNaN = find(0==sum(isnan(TrainMatrix)));
+    TrainMatrix = TrainMatrix(:,idxNotNaN);
+    TestMatrix = TestMatrix(:,idxNotNaN);
+end
+if(sum(sum(isnan(TestMatrix))))
+    idxNotNaN = find(0==sum(isnan(TestMatrix)));
+    TrainMatrix = TrainMatrix(:,idxNotNaN);
+    TestMatrix = TestMatrix(:,idxNotNaN);
+end
+
 %end
-
-[TrainMatrix, TrainOutcome] = nbt_balanceClasses(TrainMatrix, TrainOutcome,0);
-
+if(ClassificationStatObj.balanceClasses)
+    [TrainMatrix, TrainOutcome] = nbt_balanceClasses(TrainMatrix, TrainOutcome,0);
+end
 
 [ClassificationStatObj] = nbt_TrainClassifier(TrainMatrix,TrainOutcome, ClassificationStatObj);
 [pp, ClassificationStatObj ] = nbt_UseClassifier(TestMatrix, ClassificationStatObj);

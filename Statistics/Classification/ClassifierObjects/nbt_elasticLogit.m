@@ -1,3 +1,4 @@
+%Elastic net regression
 classdef nbt_elasticLogit < nbt_ClassificationStat
     properties
         alpha = 0.5

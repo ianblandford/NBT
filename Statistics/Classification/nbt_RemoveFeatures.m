@@ -27,13 +27,9 @@
 
 
 function [ NewDataMatrix, BiomarkersToUse ] = nbt_RemoveFeatures( DataMatrix,outcome,Method,ChannelsToUse,UniqueBiomarkers)
-
 NRofChannels = size(DataMatrix,2)/UniqueBiomarkers;
-
-
-    
-
 ChannelsToUse = ChannelsToUse(:);
+
 switch Method
     case 'all'
         BiomarkersToUse = cell(1,1);
@@ -192,6 +188,12 @@ switch Method
             BiomarkersToUse{1,1}=sort(BiomarkersToUse{1,1});
             NewDataMatrix = DataMatrix(:,BiomarkersToUse{1,1});
         end
+    case 'glmnet' %using elastic net as feature selector.
+         gg = glmnetSet;
+         gg.alpha = 0.8;
+         topfit = glmnet(DataMatrix, outcome, 'binomial',gg);
+         
+
 end
 end
 
