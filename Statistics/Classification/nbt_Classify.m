@@ -129,7 +129,7 @@ ClassificationStatObj.outcomeEval.LikelihoodRatioPos =  LP;
 ClassificationStatObj.outcomeEval.LikelihoodRatioNeg  =  LN;
 ClassificationStatObj.outcomeEval.MatthewCorr =  MM;
 ClassificationStatObj.outcomeEval.AUC=AUC;
-ClassificationStatObj.modelVars = modelVars;
+ClassificationStatObj.modelVarsStore = modelVars;
 
 %save s s
 
@@ -144,6 +144,7 @@ ClassificationStatObj.modelVars = modelVars;
 
 %% plotting
 %first calculate pp for the full matrix
+ClassificationStatObj.modelVars = ClassificationStatObj.modelVarsStore{1,1};
 [pp] = nbt_UseClassifier(DataMatrix, ClassificationStatObj);
 % make pp values for each group
 pp1 = pp(Outcome == 0);

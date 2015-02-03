@@ -38,6 +38,9 @@ NextID = 5;
 
 %determine tree
 FileList = nbt_ExtractTree(startpath,'mat','analysis');
+if(isempty(FileList))
+    error('NBT:noFiles', 'NBT: no NBT files in current folder');
+end
 disp('Importing files');
 for i=1:length(FileList)
     disp(FileList{1,i})

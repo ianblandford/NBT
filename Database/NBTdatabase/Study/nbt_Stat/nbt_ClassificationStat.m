@@ -11,6 +11,7 @@ classdef nbt_ClassificationStat < nbt_Stat
         predictedOutcome
         outcomeEval
         modelVars
+        modelVarsStore %to store multiple modelVars from multiple runs
     end
     
     methods
