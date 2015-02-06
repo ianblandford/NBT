@@ -191,9 +191,13 @@ switch Method
     case 'glmnet' %using elastic net as feature selector.
          gg = glmnetSet;
          gg.alpha = 0.8;
-         topfit = glmnet(DataMatrix, outcome, 'binomial',gg);
-         
-
+         topfit = glmnet(DataMatrix, outcome+1, 'binomial',gg);
+         CVerr=cvglmnet(DataMatrix,outcome+1,100,[],'response','binomial',gg,0);
+         betaIdx = find(topfit.beta(:,find(CVerr.lambda_min == topfit.lambda)));
+         NewDataMatrix = DataMatrix(:,betaIdx);
+         for i=1:length(betaIdx)
+            BiomarkersToUse{1,i} = betaIdx(i); 
+         end
 end
 end
 

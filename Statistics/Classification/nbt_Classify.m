@@ -60,7 +60,7 @@ switch lower(Type)
         
         
         modelVars = cell(1, NCrossVals);
-        if(~ClassificationStatObj.statOptions.UseParallel)
+        if(ClassificationStatObj.statOptions.UseParallel)
             parfor i=1:NCrossVals
                 disp(i)
                 [FP(i), TP(i), FN(i), TN(i), SE(i), SP(i), PP(i), NN(i), LP(i), LN(i), MM(i), AUC(i), H(i), ACC(i), modelVars{1,i}] = runClassification(DataMatrix,Outcome,ClassificationStatObj);
@@ -158,17 +158,6 @@ end
 TestMatrix = NewTestMatrix;
 clear NewTestMatrix;
 
-if(~isempty(ClassificationStatObj.removeFeaturesType{1,2}))
-    [TrainMatrix, BiomsToUse] = nbt_RemoveFeatures(TrainMatrix, TrainOutcome,ClassificationStatObj.removeFeaturesType{1,2}, ClassificationStatObj.channels, ClassificationStatObj.uniqueBiomarkers);
-    
-    NewTestMatrix = nan(size(TestMatrix,1),size(TrainMatrix,2));
-    for ii=1:size(TrainMatrix,2)
-        NewTestMatrix(:,ii) = nanmedian(TestMatrix(:,BiomsToUse{1,ii}),2);
-    end
-    TestMatrix = NewTestMatrix;
-    clear NewTestMatrix;
-end
-
 %clear NaNs
 if(sum(sum(isnan(TrainMatrix))))
     idxNotNaN = find(0==sum(isnan(TrainMatrix)));
@@ -180,6 +169,20 @@ if(sum(sum(isnan(TestMatrix))))
     TrainMatrix = TrainMatrix(:,idxNotNaN);
     TestMatrix = TestMatrix(:,idxNotNaN);
 end
+
+
+if(~isempty(ClassificationStatObj.removeFeaturesType{1,2}))
+    [TrainMatrix, BiomsToUse] = nbt_RemoveFeatures(TrainMatrix, TrainOutcome,ClassificationStatObj.removeFeaturesType{1,2}, ClassificationStatObj.channels, ClassificationStatObj.uniqueBiomarkers);
+    
+    NewTestMatrix = nan(size(TestMatrix,1),size(TrainMatrix,2));
+    for ii=1:size(TrainMatrix,2)
+        NewTestMatrix(:,ii) = nanmedian(TestMatrix(:,BiomsToUse{1,ii}),2);
+    end
+    TestMatrix = NewTestMatrix;
+    clear NewTestMatrix;
+end
+
+
 
 %end
 if(ClassificationStatObj.balanceClasses)
