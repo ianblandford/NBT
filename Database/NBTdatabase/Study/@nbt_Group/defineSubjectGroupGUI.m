@@ -103,6 +103,19 @@ uiwait(GroupSelection) %now we wait for the user to select parameters - GroupSel
         GrpObj.groupName = get(text_ui8,'String');
         GrpObj.biomarkerList = BioCell;
         GrpObj.identList = IdentCell;
+
+        % Load channel locations from first info file in pwd
+        files = dir('*.mat');
+        for i = 1 : size(files,1)
+            file = files(i,:);
+            if (~isempty(findstr(file.name,'info')))
+                load(file.name);
+                disp(file.name);
+                break;
+            end
+        end
+        GrpObj.chanLocs = ICASignalInfo.interface.EEG.chanlocs;
+
         if(isempty(GrpObj.groupName))
             set(plotButton,'String', 'OK');
             disp('Please write a group name to continue');
