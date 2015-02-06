@@ -24,13 +24,14 @@
 %  nbt_plot_EEG_channels, nbt_plot_stat
 
 %------------------------------------------------------------------------------------
-% Originally created by Simon-Shlomo Poil, see NBT website (http://www.nbtwiki.net) for current email address
+% Originally created by Simon-Shlomo Poil (2011), see NBT website for current email address
 %------------------------------------------------------------------------------------
 %
 % ChangeLog - see version control log at NBT website for details.
-% modified from nbt_plot_2conditions_topo.m (2013)
 %
-% Copyright (C) 2013 Simon-Shlomo Poil (based on functions developed by Rick Jansen)
+% Copyright (C) 2011  Simon-Shlomo Poil  (Neuronal Oscillations and Cognition group,
+% Department of Integrative Neurophysiology, Center for Neurogenomics and Cognitive Research,
+% Neuroscience Campus Amsterdam, VU University Amsterdam)
 %
 % Part of the Neurophysiological Biomarker Toolbox (NBT)
 %
@@ -49,188 +50,270 @@
 % Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 %
 % See Readme.txt for additional copyright information.
-% -------------------------------------------------------------------------
-% --------------
+% ---------------------------------------------------------------------------------------
 
-function nbt_plot_2conditions_topoAll(Group1,Group2,chanloc,s,unit,biomarker,subplotIndex, MaxSubplotIndex)
-condition1 = Group1.selection.group_name;
-condition2 = Group2.selection.group_name;
+% Todo:
+% * I stored the means wrong, meanGroupX should include the means of all
+% channels, not the mean-value of all channels
 
-biomarker = strrep(biomarker,'_','.');
+% * dataStore, biomarker index has to be fixed
+% * combine topoplot functions maybe to increase speed
+% * Reduce code length, remove comments maybe
+% * fix visualization, practically everything, ask Felipa
+% fix title for biomarker, and then above each single subplot the
+% frequency band
 
-meanc1=s.meanc1; %mean / median per channel condition 1
-meanc2=s.meanc2; %mean / median per channel condition 2
+function nbt_plot_2conditions_topoAll(NBTstudy,biomarker)
+    %%% Get groups NBTstudy
+    Group1 = NBTstudy.groups{1};
+    Group2 = NBTstudy.groups{2};
+    
+    biomarker = strrep(biomarker,'_','.');
+    
+    %%% Get StatObj from NBTstudy
+    StatObj = NBTstudy.statAnalysis{end};
+    
+    %%% Group names
+    nameGroup1 = Group1.groupName;
+    nameGroup2 = Group2.groupName;
 
-p = s.p;
-c1 = s.c1;
-c2 = s.c2;
-Cdiff = s.C;
-if size(c1,2) == size(c2,2)
-    diffC2C1 = c2-c1;
-else
-    diffC2C1 = [];
-end
+    %%% Group sample sizes
+    nSubjectsGroup1 = size(Group1.fileList);
+    nSubjectsGroup2 = size(Group2.fileList);
 
-%%%%special for POWER %%%%
-% meanc1 = meanc1/5.12;
-% meanc2 = meanc2/5.12;
-% diffC2C1 = diffC2C1/5.12;
-%%%%%%%%%
+    %%% Get data for both groups
+    DataGroup1 = getData(Group1,StatObj);
+    DataGroup2 = getData(Group2,StatObj);
+ 
+    %%% Get the channel locations from one of the two groups
+    chanLocs = Group1.chanLocs;
+    
+    % For all biomarkers, plot the topoplots
+    nBioms = size(DataGroup1.dataStore{1,:},1);
+    
+    for biomID = 1 : nBioms
+        dataStoreGroup1 = DataGroup1{biomID,1};
+        dataStoreGroup2 = DataGroup2{biomID,1};
 
-diffC2C1_2 = meanc2-meanc1;
-statistic=s.statistic;
-statfunc = s.statfunc;
-statfuncname={s.statfuncname};
-fontsize = 10;
+        %%% Values for all channels for selected biomarker
+        chanValuesGroup1 = dataStoreGroup1(:,1);
+        chanValuesGroup2 = dataStoreGroup2(:,2);
 
-% ---for color scale in following plots
-vmax=max([meanc1,meanc2]);
-vmin=min([meanc1,meanc2]);
-cmax = max(vmax);
-cmin = min(vmin);
-%cmin = 0; %change here for lower limit
-NumberOfContours = 6;
-levs = linspace(cmin, cmax, NumberOfContours + 2);
-MinLevelIndex1 = find(levs > min(meanc1),1,'first');
-MinLevelIndex2 = find(levs > min(meanc2),1,'first');
-NumberOfContours1 = 6-(MinLevelIndex1-1);
-NumberOfContours2 = 6-(MinLevelIndex2-1);
-%NumberOfContours1 = 5;
-%NumberOfContours2 = 5;
-meanc1(meanc1 < levs(MinLevelIndex1)) = levs(MinLevelIndex1);
-meanc2(meanc2 < levs(MinLevelIndex2)) = levs(MinLevelIndex2);
-
-xa=-2.5;
-ya = 0.25;
-maxline = 20;
-
-% %---plot grand average condition 1 per channel(Interpolated Plot)
-  subplot(4,MaxSubplotIndex,subplotIndex)
-  plot_interpolatedTopo(1);
-  text(0.1,0.7,biomarker,'horizontalalignment','center')
-  axis off
-  cbfreeze
-  freezeColors
-  drawnow
-% 
-% % % %---plot grand average condition 2 per channel(Interpolated Plot)
-    subplot(4,MaxSubplotIndex,MaxSubplotIndex+subplotIndex)
-    plot_interpolatedTopo(2);
-    cbfreeze
-    freezeColors
-    drawnow
-
-% %---plot grand average difference between conditions or difference between group means (Interpolated Plot)
-  subplot(4,MaxSubplotIndex,2*MaxSubplotIndex+subplotIndex)
-  plot_interpolatedTopo(3)
-  freezeColors
-  cbfreeze
-  drawnow
-
-% 
-% %---plot P-values for the test (log scaled colorbar)
-% minPValue = -2;% Plot log10(P-Values) to trick colour bar -
-% maxPValue = -0.5;
-% % %red white blue color scale
-minPValue = log10(0.0005);
-maxPValue = -log10(0.0005);
-pLog = log10(p); % to make it log scaled
-
- if strcmp(char(statfunc),'ttest') || strcmp(char(statfunc),'signrank')
-     pLog = sign(statistic(diffC2C1,2))'.*pLog;
- else
-     pLog = sign(statistic(diffC2C1_2,2))'.*pLog;
- end
-pLog = -1*pLog;
-pLog(pLog<minPValue) = minPValue;
-pLog(pLog> maxPValue) = maxPValue;
-
-
-   subplot(4,MaxSubplotIndex,3*MaxSubplotIndex+subplotIndex)
-   plot_pTopo()
-  freezeColors
-  cbfreeze
-  drawnow
-
-
-%% Nested functions part
-    function plot_interpolatedTopo(ConditionNr)
-        if(ConditionNr ==3)
-            CoolWarm = load('nbt_colormapContourBlueRed', 'nbt_colormapContourBlueRed');
-            coolWarm = CoolWarm.nbt_colormapContourBlueRed;
-            colormap(coolWarm);
-            if strcmp(char(statfunc),'ttest') || strcmp(char(statfunc),'signrank')
-                topoplot(statistic(diffC2C1,2),chanloc,'headrad','rim','numcontour',6,'electrodes','on');
-                if(subplotIndex ==1)
-                    textThis = sprintf('Grand average for condition %s minus incondition %s ',condition2,condition1);
-                end
-                cmax =  max(abs([min(diffC2C1) max(diffC2C1)]));
-                cmin = -1.*cmax;
-                caxis([cmin cmax])
-            else
-                topoplot(statistic(diffC2C1_2,2),chanloc,'headrad','rim','numcontour',6,'electrodes','on');
-                if(subplotIndex == 1)
-                    textThis = sprintf('Grand average for group %s minus group %s',condition2,condition1);
-                end
-                cmax =  max(abs([min(diffC2C1_2) max(diffC2C1_2)]));
-                cmin = -1.*cmax;
-                caxis([cmin cmax])
-            end
-            
-        else
-            nbt_redwhite = load('nbt_colormapContourWhiteRed', 'nbt_colormapContourWhiteRed');
-            nbt_redwhite = nbt_redwhite.nbt_colormapContourWhiteRed;
-            colormap(nbt_redwhite);
-            if(ConditionNr == 1)
-                topoplot(meanc1',chanloc,'headrad','rim','numcontour',NumberOfContours1,'electrodes','on');
-            else
-                topoplot(meanc2',chanloc,'headrad','rim','numcontour',NumberOfContours2,'electrodes','on');
-            end
-            caxis([cmin,cmax])
-            if(subplotIndex == 1)
-                if strcmp(char(statfunc),'ttest') || strcmp(char(statfunc),'signrank')
-                    if(ConditionNr == 1)
-                        textThis = sprintf('Grand average for  %s (n = %i)',condition1,size(c1,2));
-                    else
-                        textThis = sprintf('Grand average for condition: %s (n = %i)',condition2, size(c2,2));
-                    end
-                else
-                    if(ConditionNr == 1)
-                        textThis = sprintf('Grand average for group: %s (n = %i) ',condition1,size(c1,2));
-                    else
-                        textThis = sprintf('Grand average for group: %s (n = %i) ',condition2, size(c2,2));
-                    end
-                end
-            end
-        end
-        cb = colorbar('westoutside');
-        set(get(cb,'title'),'String',unit);
-        cin = (cmax-cmin)/6;
-        set(cb,'YTick',[cmin:cin:cmax]);
-       
+        %%% Group means
+        meanGroup1 = mean(chanValuesGroup1);
+        meanGroup2 = mean(chanValuesGroup2);
         
-        if(subplotIndex == 1)
-         nbt_split_text(xa,ya,textThis,maxline,fontsize);
-         axis off
-         set(gca,'fontsize',fontsize)
+        %%% Subtract
+
+        %%% Check whether the statistics test is paired or unpaired
+        if (isa(StatObj, 'nbt_PairedStat'))
+            statType = 'paired';
+            if (size(chanValuesGroup1) ~= size(chanValuesGroup2))
+                warning('Different amount of channels for Group 1 and Group 2');
+            else
+                diffGrp2Grp1 = chanValuesGroup2 - chanValuesGroup1;
+            end
+        else
+            statType = 'unpaired';
+            diffGrp2Grp1 = meanGroup2 - meanGroup1;
+        end
+
+        %%% pValues
+        pValues = StatObj.pValues;
+        statistic = StatObj.statValues;
+
+        
+        %%% Properties for plotting
+        % Set the range [cmin cmax] for the colorbars later on
+        vmax=max([meanGroup1,meanGroup2]);
+        vmin=min([meanGroup1,meanGroup2]);
+        cmax = max(vmax);
+        cmin = min(vmin);
+
+        % x-spacing, y-spacing, max number of lines, font size
+        xa = -2.5;
+        ya = 0.25;
+        maxline = 20;
+        fontsize = 10;
+
+        % Number of contours on the colorbars
+        NumberOfContours = 6;
+        levs = linspace(cmin, cmax, NumberOfContours + 2);
+        MinLevelIndex1 = find(levs > min(meanGroup1),1,'first');
+        MinLevelIndex2 = find(levs > min(meanGroup2),1,'first');
+        NumberOfContours1 = 6-(MinLevelIndex1-1);
+        NumberOfContours2 = 6-(MinLevelIndex2-1);   
+        
+        
+        
+        
+        %%% Plot the subplots
+        %%% Subplot for grand average of group 1
+        subplot(4, 4, 1);
+        text(0,0.7,biomarker,'horizontalalignment','center','fontWeight','bold');
+        plotGrandAvgTopo(1);
+        cbfreeze
+        freezeColors
+
+        %%% Subplot for grand average of group 2
+        subplot(4, 4, 5);
+        plotGrandAvgTopo(2);
+        cbfreeze
+        freezeColors
+
+        %%% Subplot for grand average difference group 2 minus group 1
+        subplot(4, 4, 9);
+        plotGrandAvgDiffTopo();
+        cbfreeze
+        freezeColors
+
+        %%% Subplot for p-values plot
+        % %---plot P-values for the test (log scaled colorbar)
+        % minPValue = -2;% Plot log10(P-Values) to trick colour bar -
+        % maxPValue = -0.5;
+        % % %red white blue color scale
+        minPValue = log10(0.0005);
+        maxPValue = -log10(0.0005);
+        pLog = log10(pValues); % to make it log scaled
+
+        if statType == 'paired'
+            pLog = sign(statistic(diffC2C1,2))'.*pLog;
+        else
+            pLog = sign(statistic(diffC2C1_2,2))'.*pLog;
+        end
+        pLog = -1*pLog;
+        pLog(pLog<minPValue) = minPValue;
+        pLog(pLog> maxPValue) = maxPValue;
+
+        subplot(4, 4, 13);
+        plot_pTopo();
+        freezeColors;
+        cbfreeze;
+        drawnow;
+    end
+
+
+%% nested functions part
+    function plotGrandAvgTopo(conditionNr)
+        %%% This function plots the topoplots for the grand averages of all channels for group 1 and group 2
+        %%% Load the predefined nbt red-white colormap
+        nbt_redwhite = load('nbt_colormapContourWhiteRed', 'nbt_colormapContourWhiteRed');
+        nbt_redwhite = nbt_redwhite.nbt_colormapContourWhiteRed;
+
+        %%% Set the colormap
+        colormap(nbt_redwhite);
+
+        %%% Plot the topoplot for the corresponding condition, stored in groupMeans vector
+        if (conditionNr == 1)
+            topoplot(meanGroup1,chanLocs,'headrad','rim','numcontour',0,'electrodes','on');
+        else
+            topoplot(meanGroup2,chanLocs,'headrad','rim','numcontour',0,'electrodes','on');
+        end
+     
+        %%% Adjust the colorbar limits
+        caxis([cmin cmax]);
+
+        %%% Plot the colorbar
+        plot_colorbar();
+
+        %%% Labels for the rows
+        if (subplotIndex == 1)
+            %%% If the stat test is paired, use 'condition' instead of 'group'
+            if (statType == 'paired')
+                if (conditionNr == 1)
+                    rowLabel = sprintf('Grand average for \n condition %s (n = %i)',nameGroup1,nSubjectsGroup1);
+                else
+                    rowLabel = sprintf('Grand average for \n condition %s (n = %i)',nameGroup2,nSubjectsGroup2);
+                end
+            else
+                % statType == unpaired
+                if (conditionNr == 1)
+                    rowLabel = sprintf('Grand average for \n group: %s (n = %i) ',nameGroup1,nSubjectsGroup1);
+                else
+                    rowLabel = sprintf('Grand average for \n group: %s (n = %i) ',nameGroup2,nSubjectsGroup2);
+                end
+            end
+
+            %% Fit the label onto the y-axis
+            nbt_split_text(xa,ya,rowLabel,maxline,fontsize);
+            axis off;
+            set(gca,'fontsize',fontsize);
         end
     end
+
+
+    function plotGrandAvgDiffTopo()
+        %%% This function plots the topoplot for the grand average difference between group 1 and group 2
+        CoolWarm = load('nbt_colormapContourBlueRed', 'nbt_colormapContourBlueRed');
+        coolWarm = CoolWarm.nbt_colormapContourBlueRed;
+
+        %%% Set the colormap
+        colormap(coolWarm);
+
+        %%% Plot the topoplot: check whether test statistic is a ttest or signrank
+        topoplot(statistic(diffGrp2Grp1,2),chanLocs,'headrad','rim','numcontour',0,'electrodes','on');
+
+        %%% Adjust the colorbar limits
+        cmax = max(statistic(diffGrp2Grp1,2));
+        cmin = min(statistic(diffGrp2Grp1,2));
+        caxis([cmin cmax]);
+
+        %%% Plot the colorbar
+        plot_colorbar();        
+
+        %%% Labels for the rows
+        if(subplotIndex ==1)
+            if statType == 'paired'
+                rowLabel = sprintf('Grand average for \n condition %s minus incondition %s ',nameGroup2,nameGroup1);
+            else
+                % statType == unpaired
+                rowLabel = sprintf('Grand average for group %s minus group %s',nameGroup2,nameGroup1);
+            end
+
+            %% Fit the label onto the y-axis
+            nbt_split_text(xa,ya,rowLabel,maxline,fontsize);
+            axis off;
+            set(gca,'fontsize',fontsize);
+        end
+    end
+
 
     function plot_pTopo(varargin)
         if(~isempty(varargin))
             figure;
         end
+
+        %%% This function plots the topoplot for the p-values of the difference
+        %%% Load colormap
         CoolWarm = load('nbt_DarkBlueWhiteDarkRedSharp', 'nbt_DarkBlueWhiteDarkRedSharp');
         CoolWarm = CoolWarm.nbt_DarkBlueWhiteDarkRedSharp;
-%        CoolWarm = load('nbt_colortmap', 'nbt_colortmap');
- %       CoolWarm = CoolWarm.nbt_colortmap;
+
+        %%% Set the colormap
         colormap(CoolWarm);
-        topoplot(pLog,chanloc,'headrad','rim','numcontour',3,'electrodes','on')
+
+        %%% Plot the topoplot
+        topoplot(pLog,chanLocs,'headrad','rim','numcontour',0,'electrodes','on');
+
+        %%% Adjust the colorbar limits
+        caxis([minPValue maxPValue]);
+
+        %%% Plot the colorbar
         cb = colorbar('westoutside');
-        caxis([minPValue maxPValue])
-        
+
+        %%% Plot labels        
         axis square
-        set(cb,'YTick',[-2.3010 -1.3010 0 1.3010 2.3010])
-        set(cb,'YTicklabel',[0.005 0.05 0 0.05 0.005])
+        set(cb,'YTick',[-2.3010 -1.3010 0 1.3010 2.3010]);
+        set(cb,'YTicklabel',[0.005 0.05 0 0.05 0.005]);
+    end
+
+
+    function plot_colorbar()
+        %%% Plot the colorbar on the lefthand side of the topoplot
+        cb = colorbar('westoutside');
+        set(get(cb,'title'),'String',unit);
+        cin = (cmax-cmin)/6;
+
+        %%% Round the YTick to 2 decimals
+        set(cb,'YTick',round([cmin:cin:cmax]/0.01)*0.01);
     end
 end
