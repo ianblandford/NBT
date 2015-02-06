@@ -134,8 +134,13 @@ for i=1:length(FileList)
             eval(['NBTelementName = [''NBTe_'' class(' BiomarkerList{m} ')];']);
             NumIdentifiers  = eval([BiomarkerList{m} '.uniqueIdentifiers;']);
             
-            connector = 'Signals';
-            connectorKeys = 'Signals,signalFields{mm};Condition, SubjectInfo.conditionID; Subject, SubjectInfo.subjectID; Project, SubjectInfo.projectInfo(1:end-4)';
+            connectorEval = eval(['strcmp(' BiomarkerList{m} '.signalName , signalFields{mm});']);
+            if(connectorEval)
+                connector = 'Signals';
+                connectorKeys = 'Signals,signalFields{mm};Condition, SubjectInfo.conditionID; Subject, SubjectInfo.subjectID; Project, SubjectInfo.projectInfo(1:end-4)';
+            else
+               continue
+            end
             for ni = 1:length(NumIdentifiers)    
                 addflag = ~exist([NBTelementName '_' NumIdentifiers{ni}],'var');
                 if(addflag)

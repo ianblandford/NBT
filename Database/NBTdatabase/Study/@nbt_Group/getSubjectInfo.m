@@ -89,7 +89,11 @@ switch GrpObj.databaseType
                         nameIdent = [];
                         for a = 1:noIdents
                                  tmp = flds{identStore(a)};
-                                nameIdent{a} = tmp(length(flds{inds(i)}) + 1:end);
+                                 if(~strcmp('Signals',tmp))
+                                    nameIdent{a} = tmp(length(flds{inds(i)}) + 1:end);
+                                 else
+                                     nameIdent{a} = '_Signals';
+                                 end
                         end
                         
                         %construct overall biomarkers

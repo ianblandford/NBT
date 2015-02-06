@@ -19,7 +19,7 @@ classdef nbt_ClassificationStat < nbt_Stat
     methods
         function obj = nbt_ClassificationStat()
             obj.removeFeaturesType{1,1} = 'ttest2-MCP';
-            obj.removeFeaturesType{1,2} = 'glmnet';
+            obj.removeFeaturesType{1,2} = '';
         end
         
         obj = nbt_plot(obj)

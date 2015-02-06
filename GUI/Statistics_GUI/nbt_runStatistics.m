@@ -56,4 +56,5 @@ end
 S = S.calculate(NBTstudy);
 
 NBTstudy.statAnalysis{length(NBTstudy.statAnalysis)+1} = S;
+disp('Statistics done.')
 end
