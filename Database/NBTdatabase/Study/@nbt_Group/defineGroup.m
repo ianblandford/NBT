@@ -58,9 +58,9 @@ InfoFileList = nbt_ExtractTree(pwd, '.mat', 'info');
 Loaded = load(InfoFileList{1,1});
 Infofields = fieldnames(Loaded);
 idx = 1;
-while(isempty(strfind(Infofields(idx),'Signal')))
+while(isempty(strfind(Infofields{idx},'Signal')))
     idx = idx +1;
 end
 InfoToLoad = Infofields{idx};
-GrpObj.chanLocs =Loaded.(InfoToLoad).interface.EEG.chanlocs;
+GrpObj.chanLocs = Loaded.(InfoToLoad).interface.EEG.chanlocs;
 end
