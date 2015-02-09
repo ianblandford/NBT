@@ -77,6 +77,7 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
         biomarkerNames{m} = [StatObj.group{1}.biomarkers{m}(prefixIdx+1:end) '.' StatObj.group{1}.subBiomarkers{m}];
     end
     
+
     %%% Group sample sizes
     nSubjectsGroup1 = size(Group1.fileList);
     nSubjectsGroup2 = size(Group2.fileList);
@@ -125,8 +126,7 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
 
         % x-spacing, y-spacing, max number of lines, font size
         xa = -2.5;
-        ya = 0.25;
-        maxline = 20;
+        ya = 0;
         fontsize = 10;
 
         % Number of contours on the colorbars
@@ -153,7 +153,7 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
 
         %%% Subplot for grand average difference group 2 minus group 1
         subplot(4, nBioms, biomID+2*nBioms);
-        plotGrandAvgDiffTopo(biomID,statType);
+        plotGrandAvgDiffTopo(biomID);
         cbfreeze
         freezeColors
 
@@ -172,7 +172,7 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
         pLog(pLog> maxPValue) = maxPValue;
 
         subplot(4, nBioms, biomID+3*nBioms);
-        plot_pTopo();
+        plot_pTopo(biomID);
         freezeColors;
         cbfreeze;
         drawnow;
@@ -183,11 +183,14 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
     function plotGrandAvgTopo(conditionNr,meanGroup,subplotIndex,statType)
         %%% This function plots the topoplots for the grand averages of all channels for group 1 and group 2
         %%% Load the predefined nbt red-white colormap
-        nbt_redwhite = load('nbt_colormapContourWhiteRed', 'nbt_colormapContourWhiteRed');
-        nbt_redwhite = nbt_redwhite.nbt_colormapContourWhiteRed;
+        %nbt_redwhite = load('nbt_colormapContourWhiteRed', 'nbt_colormapContourWhiteRed');
+        %nbt_redwhite = nbt_redwhite.nbt_colormapContourWhiteRed;
 
         %%% Set the colormap
-        colormap(nbt_redwhite);
+        %colormap(nbt_redwhite);
+        Reds5 = load('Reds5','Reds5');
+        Reds5 = Reds5.Reds5;
+        colormap(Reds5);
 
         %%% Plot the topoplot for the corresponding condition, stored in groupMeans vector
         topoplot(meanGroup,chanLocs,'headrad','rim','numcontour',0,'electrodes','on');
@@ -203,37 +206,33 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
             %%% If the stat test is paired, use 'condition' instead of 'group'
             if (strcmp(statType,'paired'))
                 if (conditionNr == 1)
-                    rowLabel = sprintf('Grand average for \n condition %s (n = %i)',nameGroup1,nSubjectsGroup1);
+                    rowLabel = sprintf('Grand average for condition %s (n = %s)',nameGroup1,num2str(nSubjectsGroup1));
                 else
-                    rowLabel = sprintf('Grand average for \n condition %s (n = %i)',nameGroup2,nSubjectsGroup2);
+                    rowLabel = sprintf('Grand average for condition %s (n = %s)',nameGroup2,num2str(nSubjectsGroup2));
                 end
             else
                 % statType == unpaired
                 if (conditionNr == 1)
-                    rowLabel = sprintf('Grand average for \n group: %s (n = %i) ',nameGroup1,nSubjectsGroup1);
+                    rowLabel = sprintf('Grand average for group %s (n = %s)',nameGroup1,num2str(nSubjectsGroup1));
                 else
-                    rowLabel = sprintf('Grand average for \n group: %s (n = %i) ',nameGroup2,nSubjectsGroup2);
+                    rowLabel = sprintf('Grand average for group %s (n = %s)',nameGroup2,num2str(nSubjectsGroup2));
                 end
             end
 
             %% Fit the label onto the y-axis
-            nbt_split_text(xa,ya,rowLabel,maxline,fontsize);
-            axis off;
-            set(gca,'fontsize',fontsize);
+            nbt_wrapText(xa,ya,rowLabel,15,fontsize);
         end
     end
 
 
-    function plotGrandAvgDiffTopo(subplotIndex,statType)
+    function plotGrandAvgDiffTopo(subplotIndex)
         %%% This function plots the topoplot for the grand average difference between group 1 and group 2
-        CoolWarm = load('nbt_colormapContourBlueRed', 'nbt_colormapContourBlueRed');
-        coolWarm = CoolWarm.nbt_colormapContourBlueRed;
-
-        %%% Set the colormap
-        colormap(coolWarm);
+        RedBlue_cbrewer10colors = load('RedBlue_cbrewer10colors','RedBlue_cbrewer10colors');
+        RedBlue_cbrewer10colors = RedBlue_cbrewer10colors.RedBlue_cbrewer10colors;
+        colormap(RedBlue_cbrewer10colors);
 
         %%% Plot the topoplot: check whether test statistic is a ttest or signrank
-        topoplot(diffGrp2Grp1,chanLocs,'headrad','rim','numcontour',0,'electrodes','on');
+        topoplot(diffGrp2Grp1,chanLocs,'headrad','rim','numcontour',10,'electrodes','on');
 
         %%% Adjust the colorbar limits
         cmax = max(diffGrp2Grp1);
@@ -244,27 +243,21 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
         plot_colorbar();        
 
         %%% Labels for the rows
-        if(subplotIndex ==1)
+        if(subplotIndex == 1)
             if (strcmp(statType,'paired'))
-                rowLabel = sprintf('Grand average for \n condition %s minus incondition %s ',nameGroup2,nameGroup1);
+                rowLabel = sprintf('Grand average for condition %s minus incondition %s ',nameGroup2,nameGroup1);
             else
                 % statType == unpaired
                 rowLabel = sprintf('Grand average for group %s minus group %s',nameGroup2,nameGroup1);
             end
 
             %% Fit the label onto the y-axis
-            nbt_split_text(xa,ya,rowLabel,maxline,fontsize);
-            axis off;
-            set(gca,'fontsize',fontsize);
+            nbt_wrapText(xa,ya,rowLabel,15,fontsize);
         end
     end
 
 
-    function plot_pTopo(varargin)
-        if(~isempty(varargin))
-            figure;
-        end
-
+    function plot_pTopo(subplotIndex)
         %%% This function plots the topoplot for the p-values of the difference
         %%% Load colormap
         CoolWarm = load('nbt_DarkBlueWhiteDarkRedSharp', 'nbt_DarkBlueWhiteDarkRedSharp');
@@ -282,7 +275,13 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
         %%% Plot the colorbar
         cb = colorbar('westoutside');
 
-        %%% Plot labels        
+        rowLabel = 'test';
+        %% Fit the label onto the y-axis
+        if (subplotIndex == 1)
+            rowLabel = sprintf('P-values');
+            nbt_wrapText(xa,ya,rowLabel,15,fontsize);
+        end       
+        
         axis square
         set(cb,'YTick',[-2.3010 -1.3010 0 1.3010 2.3010]);
         set(cb,'YTicklabel',[0.005 0.05 0 0.05 0.005]);
