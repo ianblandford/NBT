@@ -25,6 +25,18 @@ end
 % in case of the GUI
 if(GUIswitch)
     GrpObj = defineSubjectGroupGUI(GrpObj, InfoCell, BioCell, IdentCell);
+
+        % Load channel locations from first info file in pwd
+        files = dir('*.mat');
+        for i = 1 : size(files,1)
+            file = files(i,:);
+            if (~isempty(findstr(file.name,'info')))
+                load(file.name);
+                disp(file.name);
+                break;
+            end
+        end
+        GrpObj.chanLocs = ICASignalInfo.interface.EEG.chanlocs;
 else
     % command line
     idxNr = 0;
