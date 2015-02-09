@@ -25,18 +25,6 @@ end
 % in case of the GUI
 if(GUIswitch)
     GrpObj = defineSubjectGroupGUI(GrpObj, InfoCell, BioCell, IdentCell);
-
-        % Load channel locations from first info file in pwd
-        files = dir('*.mat');
-        for i = 1 : size(files,1)
-            file = files(i,:);
-            if (~isempty(findstr(file.name,'info')))
-                load(file.name);
-                disp(file.name);
-                break;
-            end
-        end
-        GrpObj.chanLocs = ICASignalInfo.interface.EEG.chanlocs;
 else
     % command line
     idxNr = 0;
@@ -63,4 +51,16 @@ else
     GrpObj.identList = IdentCell;
     GrpObj.groupName = input('Group name? ','s');
 end
+
+% Load channel locations from first info file in pwd
+disp(['Loading channel locations from first info file in ' pwd ])
+InfoFileList = nbt_ExtractTree(pwd, '.mat', 'info');
+Loaded = load(InfoFileList{1,1});
+Infofields = fieldnames(Loaded);
+idx = 1;
+while(isempty(strfind(Infofields(idx),'Signal')))
+    idx = idx +1;
+end
+InfoToLoad = Infofields{idx};
+GrpObj.chanLocs =Loaded.(InfoToLoad).interface.EEG.chanlocs;
 end
