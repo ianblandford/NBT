@@ -53,29 +53,26 @@
 % ---------------------------------------------------------------------------------------
 
 % Todo:
-% * I stored the means wrong, meanGroupX should include the means of all
-% channels, not the mean-value of all channels
+% 1. Fix cmin and cmax
+% 2. Combine topoplot functions?
+% 3. Fix visualization
+% 4. Fix title for each biomarker
 
-% * dataStore, biomarker index has to be fixed
-% * combine topoplot functions maybe to increase speed
-% * Reduce code length, remove comments maybe
-% * fix visualization, practically everything, ask Felipa
-% fix title for biomarker, and then above each single subplot the
-% frequency band
-
-function nbt_plot_2conditions_topoAll(NBTstudy,biomarker)
+function nbt_plot_2conditions_topoAll(NBTstudy)
     %%% Get groups NBTstudy
     Group1 = NBTstudy.groups{1};
     Group2 = NBTstudy.groups{2};
-    
-    biomarker = strrep(biomarker,'_','.');
+ 
+    %%% Group names
+    nameGroup1 = Group1.groupName;
+    nameGroup2 = Group2.groupName;
     
     %%% Get StatObj from NBTstudy
     StatObj = NBTstudy.statAnalysis{end};
     
-    %%% Group names
-    nameGroup1 = Group1.groupName;
-    nameGroup2 = Group2.groupName;
+    %%% Biomarkers
+    %biomarkers = strrep(StatObj.group{1}.biomarkers,'_','.');
+    subBiomarkers = StatObj.group{1}.subBiomarkers;
 
     %%% Group sample sizes
     nSubjectsGroup1 = size(Group1.fileList);
@@ -89,22 +86,17 @@ function nbt_plot_2conditions_topoAll(NBTstudy,biomarker)
     chanLocs = Group1.chanLocs;
     
     % For all biomarkers, plot the topoplots
-    nBioms = size(DataGroup1.dataStore{1,:},1);
+    nBioms = size(DataGroup1.dataStore,1);
     
     for biomID = 1 : nBioms
-        dataStoreGroup1 = DataGroup1{biomID,1};
-        dataStoreGroup2 = DataGroup2{biomID,1};
-
         %%% Values for all channels for selected biomarker
-        chanValuesGroup1 = dataStoreGroup1(:,1);
-        chanValuesGroup2 = dataStoreGroup2(:,2);
+        chanValuesGroup1 = DataGroup1{biomID,1};
+        chanValuesGroup2 = DataGroup2{biomID,1};
 
         %%% Group means
-        meanGroup1 = mean(chanValuesGroup1);
-        meanGroup2 = mean(chanValuesGroup2);
+        meanGroup1 = nanmean(chanValuesGroup1');
+        meanGroup2 = nanmean(chanValuesGroup2');
         
-        %%% Subtract
-
         %%% Check whether the statistics test is paired or unpaired
         if (isa(StatObj, 'nbt_PairedStat'))
             statType = 'paired';
@@ -119,14 +111,12 @@ function nbt_plot_2conditions_topoAll(NBTstudy,biomarker)
         end
 
         %%% pValues
-        pValues = StatObj.pValues;
-        statistic = StatObj.statValues;
-
+        pValues = StatObj.pValues(:,biomID);
         
         %%% Properties for plotting
         % Set the range [cmin cmax] for the colorbars later on
-        vmax=max([meanGroup1,meanGroup2]);
-        vmin=min([meanGroup1,meanGroup2]);
+        vmax=max([meanGroup1 meanGroup2]);
+        vmin=min([meanGroup1 meanGroup2]);
         cmax = max(vmax);
         cmin = min(vmin);
 
@@ -142,28 +132,25 @@ function nbt_plot_2conditions_topoAll(NBTstudy,biomarker)
         MinLevelIndex1 = find(levs > min(meanGroup1),1,'first');
         MinLevelIndex2 = find(levs > min(meanGroup2),1,'first');
         NumberOfContours1 = 6-(MinLevelIndex1-1);
-        NumberOfContours2 = 6-(MinLevelIndex2-1);   
-        
-        
-        
+        NumberOfContours2 = 6-(MinLevelIndex2-1);
         
         %%% Plot the subplots
         %%% Subplot for grand average of group 1
-        subplot(4, 4, 1);
-        text(0,0.7,biomarker,'horizontalalignment','center','fontWeight','bold');
-        plotGrandAvgTopo(1);
+        subplot(4, nBioms, biomID);
+        text(0,0.7,subBiomarkers(biomID),'horizontalalignment','center','fontWeight','bold');
+        plotGrandAvgTopo(1,meanGroup1,biomID,statType);
         cbfreeze
         freezeColors
 
         %%% Subplot for grand average of group 2
-        subplot(4, 4, 5);
-        plotGrandAvgTopo(2);
+        subplot(4, nBioms, biomID+nBioms);
+        plotGrandAvgTopo(2,meanGroup2,biomID,statType);
         cbfreeze
         freezeColors
 
         %%% Subplot for grand average difference group 2 minus group 1
-        subplot(4, 4, 9);
-        plotGrandAvgDiffTopo();
+        subplot(4, nBioms, biomID+2*nBioms);
+        plotGrandAvgDiffTopo(biomID,statType);
         cbfreeze
         freezeColors
 
@@ -176,16 +163,12 @@ function nbt_plot_2conditions_topoAll(NBTstudy,biomarker)
         maxPValue = -log10(0.0005);
         pLog = log10(pValues); % to make it log scaled
 
-        if statType == 'paired'
-            pLog = sign(statistic(diffC2C1,2))'.*pLog;
-        else
-            pLog = sign(statistic(diffC2C1_2,2))'.*pLog;
-        end
+        pLog = sign(diffGrp2Grp1)'.*pLog;
         pLog = -1*pLog;
         pLog(pLog<minPValue) = minPValue;
         pLog(pLog> maxPValue) = maxPValue;
 
-        subplot(4, 4, 13);
+        subplot(4, nBioms, biomID+3*nBioms);
         plot_pTopo();
         freezeColors;
         cbfreeze;
@@ -194,7 +177,7 @@ function nbt_plot_2conditions_topoAll(NBTstudy,biomarker)
 
 
 %% nested functions part
-    function plotGrandAvgTopo(conditionNr)
+    function plotGrandAvgTopo(conditionNr,meanGroup,subplotIndex,statType)
         %%% This function plots the topoplots for the grand averages of all channels for group 1 and group 2
         %%% Load the predefined nbt red-white colormap
         nbt_redwhite = load('nbt_colormapContourWhiteRed', 'nbt_colormapContourWhiteRed');
@@ -204,12 +187,8 @@ function nbt_plot_2conditions_topoAll(NBTstudy,biomarker)
         colormap(nbt_redwhite);
 
         %%% Plot the topoplot for the corresponding condition, stored in groupMeans vector
-        if (conditionNr == 1)
-            topoplot(meanGroup1,chanLocs,'headrad','rim','numcontour',0,'electrodes','on');
-        else
-            topoplot(meanGroup2,chanLocs,'headrad','rim','numcontour',0,'electrodes','on');
-        end
-     
+        topoplot(meanGroup,chanLocs,'headrad','rim','numcontour',0,'electrodes','on');
+
         %%% Adjust the colorbar limits
         caxis([cmin cmax]);
 
@@ -219,7 +198,7 @@ function nbt_plot_2conditions_topoAll(NBTstudy,biomarker)
         %%% Labels for the rows
         if (subplotIndex == 1)
             %%% If the stat test is paired, use 'condition' instead of 'group'
-            if (statType == 'paired')
+            if (strcmp(statType,'paired'))
                 if (conditionNr == 1)
                     rowLabel = sprintf('Grand average for \n condition %s (n = %i)',nameGroup1,nSubjectsGroup1);
                 else
@@ -242,7 +221,7 @@ function nbt_plot_2conditions_topoAll(NBTstudy,biomarker)
     end
 
 
-    function plotGrandAvgDiffTopo()
+    function plotGrandAvgDiffTopo(subplotIndex,statType)
         %%% This function plots the topoplot for the grand average difference between group 1 and group 2
         CoolWarm = load('nbt_colormapContourBlueRed', 'nbt_colormapContourBlueRed');
         coolWarm = CoolWarm.nbt_colormapContourBlueRed;
@@ -251,11 +230,11 @@ function nbt_plot_2conditions_topoAll(NBTstudy,biomarker)
         colormap(coolWarm);
 
         %%% Plot the topoplot: check whether test statistic is a ttest or signrank
-        topoplot(statistic(diffGrp2Grp1,2),chanLocs,'headrad','rim','numcontour',0,'electrodes','on');
+        topoplot(diffGrp2Grp1,chanLocs,'headrad','rim','numcontour',0,'electrodes','on');
 
         %%% Adjust the colorbar limits
-        cmax = max(statistic(diffGrp2Grp1,2));
-        cmin = min(statistic(diffGrp2Grp1,2));
+        cmax = max(diffGrp2Grp1);
+        cmin = min(diffGrp2Grp1);
         caxis([cmin cmax]);
 
         %%% Plot the colorbar
@@ -263,7 +242,7 @@ function nbt_plot_2conditions_topoAll(NBTstudy,biomarker)
 
         %%% Labels for the rows
         if(subplotIndex ==1)
-            if statType == 'paired'
+            if (strcmp(statType,'paired'))
                 rowLabel = sprintf('Grand average for \n condition %s minus incondition %s ',nameGroup2,nameGroup1);
             else
                 % statType == unpaired
@@ -310,7 +289,7 @@ function nbt_plot_2conditions_topoAll(NBTstudy,biomarker)
     function plot_colorbar()
         %%% Plot the colorbar on the lefthand side of the topoplot
         cb = colorbar('westoutside');
-        set(get(cb,'title'),'String',unit);
+        set(get(cb,'title'),'String','');
         cin = (cmax-cmin)/6;
 
         %%% Round the YTick to 2 decimals
