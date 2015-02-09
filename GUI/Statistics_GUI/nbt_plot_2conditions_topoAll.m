@@ -97,8 +97,8 @@ NumberOfContours1 = 6-(MinLevelIndex1-1);
 NumberOfContours2 = 6-(MinLevelIndex2-1);
 %NumberOfContours1 = 5;
 %NumberOfContours2 = 5;
-meanc1(meanc1 < levs(MinLevelIndex1)) = levs(MinLevelIndex1);
-meanc2(meanc2 < levs(MinLevelIndex2)) = levs(MinLevelIndex2);
+%meanc1(meanc1 < levs(MinLevelIndex1)) = levs(MinLevelIndex1);
+%meanc2(meanc2 < levs(MinLevelIndex2)) = levs(MinLevelIndex2);
 
 xa=-2.5;
 ya = 0.25;
@@ -111,21 +111,21 @@ maxline = 20;
   axis off
   cbfreeze
   freezeColors
-  drawnow
+ % drawnow
 % 
 % % % %---plot grand average condition 2 per channel(Interpolated Plot)
     subplot(4,MaxSubplotIndex,MaxSubplotIndex+subplotIndex)
     plot_interpolatedTopo(2);
     cbfreeze
     freezeColors
-    drawnow
+%    drawnow
 
 % %---plot grand average difference between conditions or difference between group means (Interpolated Plot)
   subplot(4,MaxSubplotIndex,2*MaxSubplotIndex+subplotIndex)
   plot_interpolatedTopo(3)
   freezeColors
   cbfreeze
-  drawnow
+ % drawnow
 
 % 
 % %---plot P-values for the test (log scaled colorbar)
@@ -148,7 +148,6 @@ pLog(pLog> maxPValue) = maxPValue;
 
    subplot(4,MaxSubplotIndex,3*MaxSubplotIndex+subplotIndex)
    plot_pTopo()
-  freezeColors
   cbfreeze
   drawnow
 
@@ -156,35 +155,60 @@ pLog(pLog> maxPValue) = maxPValue;
 %% Nested functions part
     function plot_interpolatedTopo(ConditionNr)
         if(ConditionNr ==3)
-            CoolWarm = load('nbt_colormapContourBlueRed', 'nbt_colormapContourBlueRed');
-            coolWarm = CoolWarm.nbt_colormapContourBlueRed;
-            colormap(coolWarm);
+%             CoolWarm = load('nbt_colormapContourBlueRed', 'nbt_colormapContourBlueRed');
+%             coolWarm = CoolWarm.nbt_colormapContourBlueRed;
+%             colormap(coolWarm);
+%             CoolWarm = load('nbt_CoolWarm', 'coolWarm');
+%             coolWarm = CoolWarm.coolWarm;
+%             colormap(coolWarm);
+            RedBlue_cbrewer10colors= load('RedBlue_cbrewer10colors','RedBlue_cbrewer10colors');
+            exp_redbluecmap = RedBlue_cbrewer10colors.RedBlue_cbrewer10colors;
+            colormap(RedBlue_cbrewer10colors);
             if strcmp(char(statfunc),'ttest') || strcmp(char(statfunc),'signrank')
-                topoplot(statistic(diffC2C1,2),chanloc,'headrad','rim','numcontour',6,'electrodes','on');
+                topoplot(statistic(diffC2C1,2),chanloc,'headrad','rim','numcontour',0,'electrodes','on');
                 if(subplotIndex ==1)
                     textThis = sprintf('Grand average for condition %s minus incondition %s ',condition2,condition1);
                 end
-                cmax =  max(abs([min(diffC2C1) max(diffC2C1)]));
+              
+                 
+                cmax = max(statistic(diffC2C1,2));
+                cmin = min(statistic(diffC2C1,2));
+              
+                cmax =  max(abs([cmin cmax]));
                 cmin = -1.*cmax;
+                 
                 caxis([cmin cmax])
+                
             else
-                topoplot(statistic(diffC2C1_2,2),chanloc,'headrad','rim','numcontour',6,'electrodes','on');
+                topoplot(statistic(diffC2C1_2,2),chanloc,'headrad','rim','numcontour',0,'electrodes','on');
                 if(subplotIndex == 1)
                     textThis = sprintf('Grand average for group %s minus group %s',condition2,condition1);
                 end
                 cmax =  max(abs([min(diffC2C1_2) max(diffC2C1_2)]));
                 cmin = -1.*cmax;
+                
+%                 cmax = max(statistic(diffC2C1,2));
+%                 cmin = min(statistic(diffC2C1,2));
+%                 
                 caxis([cmin cmax])
             end
             
         else
-            nbt_redwhite = load('nbt_colormapContourWhiteRed', 'nbt_colormapContourWhiteRed');
-            nbt_redwhite = nbt_redwhite.nbt_colormapContourWhiteRed;
-            colormap(nbt_redwhite);
+%             nbt_redwhite = load('nbt_colormapContourWhiteRed', 'nbt_colormapContourWhiteRed');
+%             nbt_redwhite = nbt_redwhite.nbt_colormapContourWhiteRed;
+%             colormap(nbt_redwhite);
+            Reds5 = load('Reds5','Reds5');
+            Reds5 = Reds5.Reds5;
+            colormap(Reds5);
             if(ConditionNr == 1)
-                topoplot(meanc1',chanloc,'headrad','rim','numcontour',NumberOfContours1,'electrodes','on');
+%                 topoplot(meanc1',chanloc,'headrad','rim','numcontour',NumberOfContours1,'electrodes','on');
+                topoplot(meanc1',chanloc,'headrad','rim','numcontour',0,'electrodes','on');
+                cmin = min(min(meanc1),min(meanc2)); cmax = max(max(meanc1),max(meanc2));
             else
-                topoplot(meanc2',chanloc,'headrad','rim','numcontour',NumberOfContours2,'electrodes','on');
+%                 topoplot(meanc2',chanloc,'headrad','rim','numcontour',NumberOfContours2,'electrodes','on');
+                topoplot(meanc2',chanloc,'headrad','rim','numcontour',0,'electrodes','on');
+              
+                 cmin = min(min(meanc1),min(meanc2)); cmax = max(max(meanc1),max(meanc2));
             end
             caxis([cmin,cmax])
             if(subplotIndex == 1)
@@ -206,7 +230,7 @@ pLog(pLog> maxPValue) = maxPValue;
         cb = colorbar('westoutside');
         set(get(cb,'title'),'String',unit);
         cin = (cmax-cmin)/6;
-        set(cb,'YTick',[cmin:cin:cmax]);
+        %set(cb,'YTick',round([cmin:cin:cmax]/0.01)*0.01);
        
         
         if(subplotIndex == 1)
@@ -225,7 +249,7 @@ pLog(pLog> maxPValue) = maxPValue;
 %        CoolWarm = load('nbt_colortmap', 'nbt_colortmap');
  %       CoolWarm = CoolWarm.nbt_colortmap;
         colormap(CoolWarm);
-        topoplot(pLog,chanloc,'headrad','rim','numcontour',3,'electrodes','on')
+        topoplot(pLog,chanloc,'headrad','rim','numcontour',0,'electrodes','on')
         cb = colorbar('westoutside');
         caxis([minPValue maxPValue])
         
