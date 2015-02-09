@@ -161,8 +161,8 @@ pLog(pLog> maxPValue) = maxPValue;
 %             CoolWarm = load('nbt_CoolWarm', 'coolWarm');
 %             coolWarm = CoolWarm.coolWarm;
 %             colormap(coolWarm);
-            RedBlue_cbrewer10colors= load('RedBlue_cbrewer10colors','RedBlue_cbrewer10colors');
-            exp_redbluecmap = RedBlue_cbrewer10colors.RedBlue_cbrewer10colors;
+            RedBlue_cbrewer10colors = load('RedBlue_cbrewer10colors','RedBlue_cbrewer10colors');
+            RedBlue_cbrewer10colors = RedBlue_cbrewer10colors.RedBlue_cbrewer10colors;
             colormap(RedBlue_cbrewer10colors);
             if strcmp(char(statfunc),'ttest') || strcmp(char(statfunc),'signrank')
                 topoplot(statistic(diffC2C1,2),chanloc,'headrad','rim','numcontour',0,'electrodes','on');
