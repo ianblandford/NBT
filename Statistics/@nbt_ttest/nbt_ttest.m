@@ -5,6 +5,7 @@ classdef nbt_ttest < nbt_PairedStat
     methods
         function obj = nbt_ttest(obj)
             obj.testOptions.tail = 'both';
+            obj.groupStatHandle = @nanmean;
         end
         
         

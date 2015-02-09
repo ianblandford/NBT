@@ -98,8 +98,8 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
         chanValuesGroup2 = DataGroup2{biomID,1};
 
         %%% Group means
-        meanGroup1 = nanmean(chanValuesGroup1');
-        meanGroup2 = nanmean(chanValuesGroup2');
+        meanGroup1 = StatObj.groupStatHandle(chanValuesGroup1');
+        meanGroup2 = StatObj.groupStatHandle(chanValuesGroup2');
         
         %%% Check whether the statistics test is paired or unpaired
         if (isa(StatObj, 'nbt_PairedStat'))
@@ -173,7 +173,7 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
 
         subplot(4, nBioms, biomID+3*nBioms);
         plot_pTopo(biomID);
-        freezeColors;
+        
         cbfreeze;
         drawnow;
     end

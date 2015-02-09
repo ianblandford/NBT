@@ -7,6 +7,7 @@ classdef nbt_ttest2 < nbt_UnPairedStat
             obj.testOptions.tail = 'both';
             obj.testOptions.vartype = 'equal';
             obj.testName = 'Parametric (Bi-variate): Student unpaired t-test';
+            obj.groupStatHandle = @nanmean;
         end
         
         

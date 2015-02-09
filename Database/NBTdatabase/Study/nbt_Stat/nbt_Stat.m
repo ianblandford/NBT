@@ -5,6 +5,7 @@ classdef nbt_Stat
         %Input
         testName
         testOptions
+        groupStatHandle % e.g. @nanmedian or @median to produce group statistics.
         groups
         group % This is wh
         %group{x}.biomarkers
