@@ -117,14 +117,13 @@ if isempty(regions)
     %---plot grand average condition 1 per channel(Actual Channels)
     subplot(4,3,5)
     calctext = text(1,1,'Calculating...');
-    %nbt_plot_EEG_channels(meanc1,cmin,cmax,chanloc,nbt_redwhite,unit);
-    nbt_plot_EEG_channels(meanc1,cmin,cmax,chanloc,Reds5,unit);
+    nbt_plot_EEG_channels(meanc1,cmin,cmax,chanloc,nbt_redwhite,unit);
     
     %---plot grand average condition 2 per channel(Actual Channels)
     subplot(4,3,8)
     calctext = text(1,1,'Calculating...');
-    %nbt_plot_EEG_channels(meanc2,cmin,cmax,chanloc,nbt_redwhite,unit);
-    nbt_plot_EEG_channels(meanc2,cmin,cmax,chanloc,Reds5,unit);
+    nbt_plot_EEG_channels(meanc2,cmin,cmax,chanloc,nbt_redwhite,unit);
+
     
     %---plot grand average difference between conditions or difference between group means (Interpolated Plot)
     subplot(4,3,10)
@@ -518,13 +517,9 @@ end
 %% Nested functions part
     function plot_interpolatedTopo(ConditionNr)
         if(ConditionNr ==3)
-            %CoolWarm = load('nbt_CoolWarm', 'coolWarm');
-            %coolWarm = CoolWarm.coolWarm;
-            %colormap(coolWarm);
-            RedBlue_cbrewer10colors = load('RedBlue_cbrewer10colors','RedBlue_cbrewer10colors');
-            RedBlue_cbrewer10colors = RedBlue_cbrewer10colors.RedBlue_cbrewer10colors;
-            colormap(RedBlue_cbrewer10colors);
-            
+            CoolWarm = load('nbt_CoolWarm', 'coolWarm');
+            coolWarm = CoolWarm.coolWarm;
+            colormap(coolWarm);
             if strcmp(char(statfunc),'ttest') || strcmp(char(statfunc),'signrank')
                 topoplot(statistic(diffC2C1,2),chanloc,'headrad','rim','numcontour',3,'electrodes','off');
                 textThis = sprintf('Grand average for condition %s minus incondition %s ',condition2,condition1);
@@ -533,13 +528,9 @@ end
                 textThis = sprintf('Grand average for group %s minus group %s',condition2,condition1);
             end
         else
-%             nbt_redwhite = load('nbt_redwhite', 'nbt_redwhite');
-%             nbt_redwhite = nbt_redwhite.nbt_redwhite;
-%             colormap(nbt_redwhite);
-            Reds5 = load('Reds5','Reds5');
-            Reds5 = Reds5.Reds5;
-            colormap(Reds5);
-            
+            nbt_redwhite = load('nbt_redwhite', 'nbt_redwhite');
+            nbt_redwhite = nbt_redwhite.nbt_redwhite;
+            colormap(nbt_redwhite);
             if(ConditionNr == 1)
                 topoplot(meanc1',chanloc,'headrad','rim','numcontour',6,'electrodes','off');
             else
