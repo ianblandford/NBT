@@ -70,10 +70,13 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
     %%% Get StatObj from NBTstudy
     StatObj = NBTstudy.statAnalysis{end};
     
-    %%% Biomarkers
-    %biomarkers = strrep(StatObj.group{1}.biomarkers,'_','.');
-    subBiomarkers = StatObj.group{1}.subBiomarkers;
-
+    %%% Biomarker names 
+    for m=1:length(StatObj.group{1}.biomarkers)
+        prefixIdx = strfind(StatObj.group{1}.biomarkers{m},'_');
+        prefixIdx = prefixIdx(end);
+        biomarkerNames{m} = [StatObj.group{1}.biomarkers{m}(prefixIdx+1:end) '.' StatObj.group{1}.subBiomarkers{m}];
+    end
+    
     %%% Group sample sizes
     nSubjectsGroup1 = size(Group1.fileList);
     nSubjectsGroup2 = size(Group2.fileList);
@@ -88,7 +91,7 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
     % For all biomarkers, plot the topoplots
     nBioms = size(DataGroup1.dataStore,1);
     
-    for biomID = 1 : nBioms
+    for biomID = 1:nBioms
         %%% Values for all channels for selected biomarker
         chanValuesGroup1 = DataGroup1{biomID,1};
         chanValuesGroup2 = DataGroup2{biomID,1};
@@ -137,7 +140,7 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
         %%% Plot the subplots
         %%% Subplot for grand average of group 1
         subplot(4, nBioms, biomID);
-        text(0,0.7,subBiomarkers(biomID),'horizontalalignment','center','fontWeight','bold');
+        text(0,0.7,biomarkerNames{biomID},'horizontalalignment','center','fontWeight','bold');
         plotGrandAvgTopo(1,meanGroup1,biomID,statType);
         cbfreeze
         freezeColors
