@@ -227,19 +227,31 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
 
     function plotGrandAvgDiffTopo(subplotIndex)
         %%% This function plots the topoplot for the grand average difference between group 1 and group 2
-        RedBlue_cbrewer10colors = load('RedBlue_cbrewer10colors','RedBlue_cbrewer10colors');
-        RedBlue_cbrewer10colors = RedBlue_cbrewer10colors.RedBlue_cbrewer10colors;
-        colormap(RedBlue_cbrewer10colors);
-
+        climit = max(abs(diffGrp2Grp1)); %colorbar limit
+        if(length(find(diffGrp2Grp1>=0)) == length(diffGrp2Grp1(~isnan(diffGrp2Grp1))))  % only positive values
+            Red_cbrewer5colors = load('Red_cbrewer5colors','Red_cbrewer5colors');
+            Red_cbrewer5colors = Red_cbrewer5colors.Red_cbrewer5colors;
+            colormap(Red_cbrewer5colors);
+            cmin = 0;
+            cmax = climit;
+        elseif(length(find(diffGrp2Grp1<=0)) == length(diffGrp2Grp1(~isnan(diffGrp2Grp1)))) % only negative values
+            Blue_cbrewer5colors = load('Blue_cbrewer5colors','Blue_cbrewer5colors');
+            Blue_cbrewer5colors = Blue_cbrewer5colors.Blue_cbrewer5colors;
+            colormap(Blue_cbrewer5colors);
+            cmin = -1*climit;
+            cmax = 0;
+        else
+            RedBlue_cbrewer10colors = load('RedBlue_cbrewer10colors','RedBlue_cbrewer10colors');
+            RedBlue_cbrewer10colors = RedBlue_cbrewer10colors.RedBlue_cbrewer10colors;
+            colormap(RedBlue_cbrewer10colors);
+            cmin = -1*climit;
+            cmax = climit;
+        end
         %%% Plot the topoplot: check whether test statistic is a ttest or signrank
         topoplot(diffGrp2Grp1,chanLocs,'headrad','rim','numcontour',10,'electrodes','on');
 
-        %%% Adjust the colorbar limits
-        cmax = max(diffGrp2Grp1);
-        cmin = min(diffGrp2Grp1);
-        caxis([cmin cmax]);
-
         %%% Plot the colorbar
+        caxis([cmin cmax]);
         plot_colorbar();        
 
         %%% Labels for the rows
@@ -292,9 +304,13 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
         %%% Plot the colorbar on the lefthand side of the topoplot
         cb = colorbar('westoutside');
         set(get(cb,'title'),'String','');
-        cin = (cmax-cmin)/6;
+        
 
         %%% Round the YTick to 2 decimals
-        set(cb,'YTick',round([cmin:cin:cmax]/0.01)*0.01);
+        cticks=round(linspace(cmin,cmax,5)/0.01)*0.01;
+        caxis([min(cticks) max(cticks)]);
+        set(cb,'YTick',cticks);
+        
+         %fixing odd matlab bug.. ticks not aligned
     end
 end
