@@ -248,7 +248,7 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
             cmax = climit;
         end
         %%% Plot the topoplot: check whether test statistic is a ttest or signrank
-        topoplot(diffGrp2Grp1,chanLocs,'headrad','rim','numcontour',10,'electrodes','on');
+        topoplot(diffGrp2Grp1,chanLocs,'headrad','rim','numcontour',0,'electrodes','on');
 
         %%% Plot the colorbar
         caxis([cmin cmax]);
@@ -305,11 +305,13 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
         cb = colorbar('westoutside');
         set(get(cb,'title'),'String','');
         
-
+        cmin = round(cmin/0.01)*0.01;
+        cmax = round(cmax/0.01)*0.01;
         %%% Round the YTick to 2 decimals
-        cticks=round(linspace(cmin,cmax,5)/0.01)*0.01;
+        cticks = linspace(cmin,cmax,6);
         caxis([min(cticks) max(cticks)]);
         set(cb,'YTick',cticks);
+        set(cb,'YTickLabel',round(cticks/0.01)*0.01);
         
          %fixing odd matlab bug.. ticks not aligned
     end
