@@ -3,15 +3,15 @@ classdef nbt_Study
    properties
        groups
        statAnalysis
+       settings
    end
     
    methods
-       function StudyObject = nbt_Study 
+       function StudyObject = nbt_Study() 
+           StudyObject.settings.visual.mcpCorrection = 'bino';
        end
-       
-       
-       
    end
+   
    methods (Static = true)
         listOfAvailbleTests = getStatisticsTests(index);       
    end

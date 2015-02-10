@@ -126,8 +126,9 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
             diffGrp2Grp1 = meanGroup2 - meanGroup1;
         end
 
-        %%% pValues
+        %%% pValues - corrected for multiple comparision
         pValues = StatObj.pValues(:,biomID);
+        pValues = pValues(nbt_MCcorrect(pValues, NBTstudy.settings.visual.mcpCorrection));
         
         %%% Properties for plotting
         % Set the range [cmin cmax] for the colorbars later on
@@ -176,6 +177,9 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
         % % %red white blue color scale
         minPValue = log10(0.0005);
         maxPValue = -log10(0.0005);
+        
+        
+        
         pLog = log10(pValues); % to make it log scaled
 
         pLog = sign(diffGrp2Grp1)'.*pLog;
@@ -334,7 +338,5 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
         else
             set(cb,'YTickLabel',round(cticks));
         end
-        
-         %fixing odd matlab bug.. ticks not aligned
     end
 end
