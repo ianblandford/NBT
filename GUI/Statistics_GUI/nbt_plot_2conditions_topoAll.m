@@ -74,7 +74,16 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
     for m=1:length(StatObj.group{1}.biomarkers)
         prefixIdx = strfind(StatObj.group{1}.biomarkers{m},'_');
         prefixIdx = prefixIdx(end);
-        biomarkerNames{m} = [StatObj.group{1}.biomarkers{m}(prefixIdx+1:end) '.' StatObj.group{1}.subBiomarkers{m}];
+        identFlag = true;
+        for identLoop = 1:size(StatObj.group{1}.biomarkerIdentifiers{m},1)
+            if(strcmp(StatObj.group{1}.biomarkerIdentifiers{m}{identLoop},'frequencyRange'))
+                 biomarkerNames{m} = [StatObj.group{1}.biomarkers{m}(prefixIdx+1:end) '.' StatObj.group{1}.subBiomarkers{m} ' : ' StatObj.group{1}.biomarkerIdentifiers{m}{identLoop,2}];
+                 identFlag = false;
+            end
+        end
+        if(identFlag)
+            biomarkerNames{m} = [StatObj.group{1}.biomarkers{m}(prefixIdx+1:end) '.' StatObj.group{1}.subBiomarkers{m}];
+        end
     end
     
 
@@ -305,13 +314,23 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
         cb = colorbar('westoutside');
         set(get(cb,'title'),'String','');
         
-        cmin = round(cmin/0.01)*0.01;
-        cmax = round(cmax/0.01)*0.01;
         %%% Round the YTick to 2 decimals
+        if((abs(cmax) + abs(cmin))<=2)
+            cmin = round(cmin/0.01)*0.01;
+            cmax = round(cmax/0.01)*0.01;
+        else
+            cmin = round(cmin);
+            cmax = round(cmax);
+        end
+        
         cticks = linspace(cmin,cmax,6);
         caxis([min(cticks) max(cticks)]);
         set(cb,'YTick',cticks);
-        set(cb,'YTickLabel',round(cticks/0.01)*0.01);
+        if((abs(cmax) + abs(cmin))<=2)
+            set(cb,'YTickLabel',round(cticks/0.01)*0.01);
+        else
+            set(cb,'YTickLabel',round(cticks));
+        end
         
          %fixing odd matlab bug.. ticks not aligned
     end
