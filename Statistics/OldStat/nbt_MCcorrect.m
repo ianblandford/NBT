@@ -28,7 +28,7 @@
 % -------------------------------------------------------------------------
 % --------------
 
-function Pindex=nbt_MCcorrect(p,Type)
+function [Pindex, pOut] = nbt_MCcorrect(p,Type)
 %would be interesting to add more functions..like permutation test
 pOld = p;
 
@@ -65,4 +65,7 @@ else
     Pindex = [];
 end
 
+
+pOut = ones(length(pOld),1);
+pOut(Pindex) = pOld(Pindex);
 end

@@ -128,7 +128,8 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
 
         %%% pValues - corrected for multiple comparision
         pValues = StatObj.pValues(:,biomID);
-        pValues = pValues(nbt_MCcorrect(pValues, NBTstudy.settings.visual.mcpCorrection));
+        [~, pValues] = nbt_MCcorrect(pValues, NBTstudy.settings.visual.mcpCorrection);
+   
         
         %%% Properties for plotting
         % Set the range [cmin cmax] for the colorbars later on
