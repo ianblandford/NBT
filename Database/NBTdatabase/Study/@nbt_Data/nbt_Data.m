@@ -5,6 +5,8 @@ classdef nbt_Data
     properties
         dataStore %cell or function handle
         subjectList
+        numSubjects
+        numBiomarkers
         pool
         poolKey  
         biomarkers

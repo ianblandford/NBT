@@ -87,19 +87,22 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
     end
     
 
-    %%% Group sample sizes
-    nSubjectsGroup1 = size(Group1.fileList);
-    nSubjectsGroup2 = size(Group2.fileList);
+
 
     %%% Get data for both groups
     DataGroup1 = getData(Group1,StatObj);
     DataGroup2 = getData(Group2,StatObj);
+    
+    %%% Group sample sizes
+    nSubjectsGroup1 = DataGroup1.numSubjects;
+    nSubjectsGroup2 = DataGroup2.numSubjects;
+    
  
     %%% Get the channel locations from one of the two groups
     chanLocs = Group1.chanLocs;
     
     % For all biomarkers, plot the topoplots
-    nBioms = size(DataGroup1.dataStore,1);
+    nBioms = DataGroup1.numBiomarkers;
     
     for biomID = 1:nBioms
         %%% Values for all channels for selected biomarker
