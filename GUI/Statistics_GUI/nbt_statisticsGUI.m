@@ -96,7 +96,7 @@ joinButton = uicontrol(StatSelection,'Style','pushbutton','String','Join Groups'
 % create difference group button
 groupdiffButton = uicontrol(StatSelection,'Style','pushbutton','String','Difference Group','Position',[280 70 100 30],'fontsize',8,'callback',@diff_group);
 % create difference group button
-definegroupButton = uicontrol(StatSelection,'Style','pushbutton','String','Define New Group(s)','Position',[400 140 150 30],'fontsize',12,'callback',@define_new_groups);
+definegroupButton = uicontrol(StatSelection,'Style','pushbutton','String','Define New Group(s)','Position',[400 140 150 30],'fontsize',12,'callback',@nbt_definegroups);
 % create difference group button
 addgroupButton = uicontrol(StatSelection,'Style','pushbutton','String','Update Groups List','Position',[130 40 110 30],'fontsize',8,'callback',@add_new_groups);
 % remove group(s)
