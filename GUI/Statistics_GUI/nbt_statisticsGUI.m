@@ -48,8 +48,14 @@ end
 %----------------------
 % First we build the Interface
 %----------------------
+try %close existing windows
+    hh = findobj('Tag','NBTStatMain');
+    close(hh)
+catch
+end
+
 StatSelection = figure('Units','pixels', 'name','NBT: Select Statistics' ,'numbertitle','off','Position',[200  200  610  750.000],...
-    'MenuBar','none','NextPlot','new','Resize','off');
+    'MenuBar','none','NextPlot','new','Resize','off','Tag', 'NBTStatMain');
 % fit figure to screen, adapt to screen resolution
 StatSelection=nbt_movegui(StatSelection);
 
