@@ -46,7 +46,7 @@ classdef (Abstract) nbt_CrossChannelBiomarker < nbt_CoreBiomarker
         numChannels
         samplingFrequency   % The sampling frequency
         frequencyRange %Frequency range of processed signal [] means broadband.
-        filterSettings
+        filterSettings %Filter settings of the signal
         signalName % Name of the signal used to compute the biomaker
         signalID %signalDID of the signal used to compute the biomakrer
     end
@@ -57,7 +57,7 @@ classdef (Abstract) nbt_CrossChannelBiomarker < nbt_CoreBiomarker
         
         function biomarkerObject=nbt_UpdateBiomarkerInfo(biomarkerObject, SignalInfo)
             biomarkerObject.lastUpdate = datestr(now);
-            [~, biomarkerObject.NBTversion] = nbt_getVersion;
+            biomarkerObject.nbtVersion = nbt_getVersion;
             biomarkerObject.signalID = SignalInfo.signalID;
             biomarkerObject.signalName =  SignalInfo.signalName;
             biomarkerObject.frequencyRange = SignalInfo.frequencyRange;
