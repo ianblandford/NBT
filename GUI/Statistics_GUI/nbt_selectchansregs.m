@@ -105,7 +105,7 @@ Col = get(g,'Color');
 
 text_ui1= uicontrol(Chans_RegsSelection,'Style','text','Position',[10 360 120 20],'string','Select Channels','fontsize',10,'fontweight','bold','BackgroundColor',Col);
 badchans = find(SignalInfo.BadChannels);
-if isfield('number_of_channels',SignalInfo.Interface)
+if isfield(SignalInfo.Interface,'number_of_channels')
     chans = SignalInfo.Interface.number_of_channels;
 else
     chans = SignalInfo.Interface.EEG.nbchan;
