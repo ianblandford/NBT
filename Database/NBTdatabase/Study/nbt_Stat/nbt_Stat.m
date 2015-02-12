@@ -1,27 +1,14 @@
-classdef nbt_Stat
+classdef nbt_Stat < nbt_Analysis
     % nbt_Stat contains analysis results.
     
     properties
         %Input
         testName
         testOptions
-        groupStatHandle % e.g. @nanmedian or @median to produce group statistics.
-        groups
-        group % This is wh
-        %group{x}.biomarkers
-        %group{x}.subBiomarkers
-        %group{x}.biomarkerIdentifiers
-        %group{x}.class
-        %biomarkerIdentifiers = cell(1,1);
-        %subBiomarkers
-        channels
-        channelsRegionsSwitch
-        uniqueBiomarkers
         pValues
         sigPValues
         ccPValues
         qPValues
-        
         statValues
         statStruct 
         statOptions = statset('UseParallel',true);    
