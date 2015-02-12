@@ -9,4 +9,3 @@ classdef nbt_Visualization < nbt_Analysis
     end
     
 end
-

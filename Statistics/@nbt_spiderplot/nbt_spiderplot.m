@@ -1,4 +1,4 @@
-classdef nbt_spiderplot < nbt_PairedStat
+classdef nbt_spiderplot < nbt_Visualization
     properties
     end
     
