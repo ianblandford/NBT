@@ -1,4 +1,4 @@
-classdef nbt_Stat < nbt_Analysis
+classdef (Abstract) nbt_Stat < nbt_Analysis
     % nbt_Stat contains analysis results.
     
     properties

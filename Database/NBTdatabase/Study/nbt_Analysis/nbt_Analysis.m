@@ -3,7 +3,7 @@ classdef nbt_Analysis
     properties
         groupStatHandle % e.g. @nanmedian or @median to produce group statistics.
         groups
-        group % This is wh
+        group % 
         %group{x}.biomarkers
         %group{x}.subBiomarkers
         %group{x}.biomarkerIdentifiers
