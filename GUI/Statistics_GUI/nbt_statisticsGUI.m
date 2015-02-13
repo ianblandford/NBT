@@ -106,8 +106,20 @@ saveGroupButton = uicontrol(StatSelection,'Style','pushbutton','String','Save Gr
 % export bioms
 ExportBio = uicontrol(StatSelection,'Style','pushbutton','String','Export Biomarker(s) to .txt','Position',[5 10 150 30],'fontsize',8,'callback',@export_bioms);
 
+% NBT Print button
+% create difference group button
+NBTprintButton = uicontrol(StatSelection,'Style','pushbutton','String','NBT Print','Position',[280 10 100 30],'fontsize',8,'callback',@printNBTprint);
+
 % move up
 upButton = uicontrol(StatSelection,'Style','pushbutton','String','/\','Position',[370 165 25 25],'fontsize',8,'callback',@up_group);
 % move down
 downButton = uicontrol(StatSelection,'Style','pushbutton','String','\/','Position',[370 140 25 25],'fontsize',8,'callback',@down_group);
+
+    function printNBTprint(d1,d2)
+        % Move to selectRunStatistics?
+        
+        % Get the groups from the GUI
+        groups = get(ListGroup,'Value');
+        nbt_Print(NBTstudy,groups);
+    end
 end
