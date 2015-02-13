@@ -77,6 +77,10 @@ for i=1:length(FileList)
             NextID = NextID + 1;
         end
         
+        if ~isnumeric(SubjectInfo.subjectID)
+            SubjectInfo.subjectID = str2num(SubjectInfo.subjectID);
+        end
+        
         Project = nbt_SetData(Project, {SubjectInfo.projectInfo(1:end-4)}, []);
         Subject = nbt_SetData(Subject, SubjectInfo.subjectID, {Project, SubjectInfo.projectInfo(1:end-4)});
         Condition = nbt_SetData(Condition, {SubjectInfo.conditionID}, {Subject, SubjectInfo.subjectID; Project, SubjectInfo.projectInfo(1:end-4)});
@@ -84,7 +88,7 @@ for i=1:length(FileList)
         if strcmp(NBTelementClass,'char')
             eval([NBTelementName '= nbt_SetData(' NBTelementName ', {NBTelementData}, {Condition, SubjectInfo.conditionID; Subject, SubjectInfo.subjectID; Project, SubjectInfo.projectInfo(1:end-4)});']);
         else
-            eval([NBTelementName '= nbt_SetData(' NBTelementName ', NBTelementData, {Condition, SubjectInfo.conditionID; Subject, SubjectInfo.subjectID; Project, SubjectInfo.projectInfo(1:end-4)});']);
+            eval([NBTelementName '= nbt_SetData(' NBTelementName ', {NBTelementData}, {Condition, SubjectInfo.conditionID; Subject, SubjectInfo.subjectID; Project, SubjectInfo.projectInfo(1:end-4)});']);
         end
         
     end

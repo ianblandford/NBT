@@ -45,8 +45,12 @@ eval([ObjectName '= evalin(''caller'', ObjectName );']);
 
 %Then we save it
 if(length(strfind(SignalInfo.subjectInfo,'.')) > 3)
+    %%% Hack for converted old data, remove
+    SignalInfo.subjectInfo = strrep(SignalInfo.subjectInfo,'SS','S');        
     an_file = [SaveDir filesep SignalInfo.subjectInfo(1:end-9) '_analysis.mat'];
 else
+    %%% Hack for converted old data, remove
+    SignalInfo.subjectInfo = strrep(SignalInfo.subjectInfo,'SS','S');
     an_file = [SaveDir filesep SignalInfo.subjectInfo '_analysis.mat'];
 end
 if(exist(an_file,'file') == 2)
