@@ -4,11 +4,13 @@ function  DataObj = getData(GrpObj,StatObj)
 %grpNumber refers to the ordering in the StatObj
 grpNumber = GrpObj.grpNumber;
 DataObj             = nbt_Data;
-DataObj.biomarkers  = StatObj.group{grpNumber}.biomarkers;
-DataObj.biomarkerIdentifiers = StatObj.group{grpNumber}.biomarkerIdentifiers;
-DataObj.subBiomarkers = StatObj.group{grpNumber}.subBiomarkers;
-DataObj.classes = StatObj.group{grpNumber}.classes;
 
+if ~isempty(StatObj.group)
+    DataObj.biomarkers  = StatObj.group{grpNumber}.biomarkers;
+    DataObj.biomarkerIdentifiers = StatObj.group{grpNumber}.biomarkerIdentifiers;
+    DataObj.subBiomarkers = StatObj.group{grpNumber}.subBiomarkers;
+    DataObj.classes = StatObj.group{grpNumber}.classes;
+end
 
 numBiomarkers       = length(DataObj.biomarkers);
 DataObj.dataStore   = cell(numBiomarkers,1);
