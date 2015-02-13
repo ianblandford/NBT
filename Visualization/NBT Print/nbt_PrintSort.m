@@ -32,10 +32,11 @@ function order = nbt_PrintSort(biomarkers)%, Delta, Theta, Alpha, Beta, Gamma, g
         'NBTe_nbt_DFA';
     };
 
-    nBioms = size(biomarkers,1);
+    nBioms = size(biomarkers,2);
     
+    % Not working yet
     for biomarker = 1 : nBioms
-        order(biomarker) = find(ismember(biomarkerOrder,biomarkers(biomarker)));
+        order(biomarker) = find(ismember(biomarkerOrder,biomarkers{biomarker}));
     end
 % 
 %     %% Plot unknown biomarkers at the end

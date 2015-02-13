@@ -137,6 +137,8 @@ switch index
         S = nbt_elasticLogit;
     case 23
         S = nbt_lssvm;
+    case 24
+        S = nbt_zscore;
     otherwise
         S = [];
 end

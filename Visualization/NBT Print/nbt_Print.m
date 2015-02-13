@@ -38,6 +38,7 @@ function nbt_Print(NBTstudy,groups)
         case {'zscore'}
             disp('Running zscore statistics');
             if nGroups == 1
+                Group1 = NBTstudy.groups{1};
                 S = NBTstudy.getStatisticsTests(24);
                 S.groups = groups;
                 
@@ -140,7 +141,7 @@ function nbt_Print(NBTstudy,groups)
     declareFreqBands();
 
     % 5. Sort the data
-    sortedBiomarkers = nbt_PrintSort(DataGroup1.biomarkers);
+    sortedBiomarkers = nbt_PrintSort(biomarkerList);
 
     % 6. Print the topoplots
     if size(sortedBiomarkers,2) > 25
