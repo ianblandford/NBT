@@ -58,17 +58,15 @@
 % 3. Fix visualization
 % 4. Fix title for each biomarker
 
-function nbt_plot_2conditions_topoAll(NBTstudy)
+function nbt_plot_2conditions_topoAll(StatObj)
+global NBTstudy
     %%% Get groups NBTstudy
-    Group1 = NBTstudy.groups{1};
-    Group2 = NBTstudy.groups{2};
+    Group1 = NBTstudy.groups{StatObj.groups(1)};
+    Group2 = NBTstudy.groups{StatObj.groups(2)};
  
     %%% Group names
     nameGroup1 = Group1.groupName;
     nameGroup2 = Group2.groupName;
-    
-    %%% Get StatObj from NBTstudy
-    StatObj = NBTstudy.statAnalysis{end};
     
     %%% Biomarker names 
     for m=1:length(StatObj.group{1}.biomarkers)
@@ -84,6 +82,7 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
         if(identFlag)
             biomarkerNames{m} = [StatObj.group{1}.biomarkers{m}(prefixIdx+1:end) '.' StatObj.group{1}.subBiomarkers{m}];
         end
+        biomarkerNames{m} = strrep(biomarkerNames{m},'_','.'); 
     end
     
 
@@ -323,7 +322,7 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
         set(get(cb,'title'),'String','');
         
         %%% Round the YTick to 2 decimals
-        if((abs(cmax) + abs(cmin))<=2)
+        if((abs(cmax) - abs(cmin))/6<=1)
             cmin = round(cmin/0.01)*0.01;
             cmax = round(cmax/0.01)*0.01;
         else
@@ -334,7 +333,7 @@ function nbt_plot_2conditions_topoAll(NBTstudy)
         cticks = linspace(cmin,cmax,6);
         caxis([min(cticks) max(cticks)]);
         set(cb,'YTick',cticks);
-        if((abs(cmax) + abs(cmin))<=2)
+        if((abs(cmax) - abs(cmin))/6<=1)
             set(cb,'YTickLabel',round(cticks/0.01)*0.01);
         else
             set(cb,'YTickLabel',round(cticks));

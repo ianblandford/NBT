@@ -35,7 +35,7 @@
 % -
 
 
-classdef nbt_CoreBiomarker
+classdef (Abstract) nbt_CoreBiomarker
     properties
         lastUpdate %last date this biomarker was updated
         primaryBiomarker % the primary biomarker to use in scripts
@@ -70,8 +70,9 @@ classdef nbt_CoreBiomarker
             BiomarkerObject.nbtVersion = nbt_getVersion;
             BiomarkerObject = setUniqueIdentifiers(BiomarkerObject);
         end
-
-
-
+        
+        Obj = setUniqueIdentifiers(Obj); %method to set a cell of unique identifiers.
+        Obj = convertBiomarker(Obj,subjectInfo); %convert biomarker from old 0.5.0 format.
+        Obj = nbt_UpdateBiomarkerInfo(Obj, SignalInfo); %update biomarker with SignalInfo.
     end
 end

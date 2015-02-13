@@ -41,7 +41,7 @@ classdef nbt_QBiomarker < nbt_CoreBiomarker
         
         function biomarkerObject=nbt_UpdateBiomarkerInfo(biomarkerObject, subjectInfo)
             biomarkerObject.lastUpdate = datestr(now);
-            [~, biomarkerObject.nbtVersion] = nbt_getVersion;
+            biomarkerObject.nbtVersion = nbt_getVersion;
             biomarkerObject.subjectInfo = subjectInfo;
         end
         

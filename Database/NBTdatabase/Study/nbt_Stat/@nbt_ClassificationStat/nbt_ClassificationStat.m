@@ -8,7 +8,7 @@ classdef nbt_ClassificationStat < nbt_Stat
         subSampleStratification = 'stratified'
         removeFeaturesType 
         usedFeatures
-        balanceClasses = true;
+        balanceClasses = false;
         realOutcome
         predictedOutcome
         outcomeEval
@@ -18,7 +18,7 @@ classdef nbt_ClassificationStat < nbt_Stat
     
     methods
         function obj = nbt_ClassificationStat()
-            obj.removeFeaturesType{1,1} = 'ttest2-MCP';
+            obj.removeFeaturesType{1,1} = 'ttest2';
             obj.removeFeaturesType{1,2} = '';
         end
         

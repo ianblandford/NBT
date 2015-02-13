@@ -57,5 +57,5 @@ S = S.calculate(NBTstudy);
 
 NBTstudy.statAnalysis{length(NBTstudy.statAnalysis)+1} = S;
 disp('Statistics done.')
-nbt_plot_2conditions_topoAll(NBTstudy)
+nbt_plot_2conditions_topoAll(S)
 end
