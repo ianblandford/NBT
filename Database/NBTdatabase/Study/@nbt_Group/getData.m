@@ -1,15 +1,20 @@
 function  DataObj = getData(GrpObj,StatObj)
 %Get data loads the data from a Database depending on the settings in the
 %Group Object and the Statistics Object.
+narginchk(1,2);
 %grpNumber refers to the ordering in the StatObj
 grpNumber = GrpObj.grpNumber;
 DataObj             = nbt_Data;
 
-if ~isempty(StatObj.group)
-    DataObj.biomarkers  = StatObj.group{grpNumber}.biomarkers;
-    DataObj.biomarkerIdentifiers = StatObj.group{grpNumber}.biomarkerIdentifiers;
+if ~exist('StatObj','var')
+    for i=1:length(GrpObj.biomarkerList)
+        [DataObj.biomarkers{i}, DataObj.biomarkerIdentifiers{i}, DataObj.subBiomarkers{i}, DataObj.classes{i}] = nbt_parseBiomarkerIdentifiers(GrpObj.biomarkerList{i});
+    end
+else
+    DataObj.biomarkers = StatObj.group{grpNumber}.biomarkers;
     DataObj.subBiomarkers = StatObj.group{grpNumber}.subBiomarkers;
-    DataObj.classes = StatObj.group{grpNumber}.classes;
+    DataObj.biomarkerIdentifiers = StatObj.group{grpNumber}.biomarkerIdentifiers;
+    DataObj.classes = StatObj.classes;
 end
 
 numBiomarkers       = length(DataObj.biomarkers);
@@ -23,8 +28,8 @@ switch GrpObj.databaseType
         %In this case we load the data directly from the NBTelements in base.
         %We loop over DataObj.biomarkers and generate a cell
         for bID=1:numBiomarkers
-            biomarker = StatObj.group{grpNumber}.biomarkers{bID};
-            subBiomarker = StatObj.group{grpNumber}.subBiomarkers{bID};
+            biomarker = DataObj.biomarkers{bID};
+            subBiomarker = DataObj.subBiomarkers{bID};
             %then we generate the NBTelement call.
             NBTelementCall = ['nbt_GetData(' biomarker ',{'] ;
             %loop over Group parameters
@@ -40,7 +45,7 @@ switch GrpObj.databaseType
             %then we loop over biomarker identifiers -
             % should be stored as a cell in a cell
             
-            bIdentifiers = StatObj.group{grpNumber}.biomarkerIdentifiers{bID};
+            bIdentifiers = DataObj.biomarkerIdentifiers{bID};
             
             if(~isempty(bIdentifiers))
                 % we need to add biomarker identifiers

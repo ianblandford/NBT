@@ -33,7 +33,11 @@ classdef nbt_Data
                try
                     B = eval(['A' S.type S.subs]);    
                catch
-                    B = eval(['A' S(1).type S(1).subs '{' num2str(S(2).subs{1}) ',' num2str(S(2).subs{2}) '};' ]);
+                   if(length(S(2).subs)==2)
+                        B = eval(['A' S(1).type S(1).subs '{' num2str(S(2).subs{1}) ',' num2str(S(2).subs{2}) '};' ]);
+                   else
+                        B = eval(['A' S(1).type S(1).subs '{' num2str(S(2).subs{1}) '};' ]); 
+                   end
                end
            elseif(strcmp(S(1).type,'{}'))
                B = A.dataStore{S.subs{1,1},S.subs{1,2}};
