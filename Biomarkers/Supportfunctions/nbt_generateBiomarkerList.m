@@ -1,4 +1,4 @@
-function obj = nbt_generateBiomarkerList()
+function obj = nbt_generateBiomarkerList(grpNumber)
     obj = nbt_Analysis;
     
     biomarkersFixedOrder = {'Peakfit', 'Peakfit', 'DFA', 'Peakfit', 'OscB', 'Peakfit', 'Peakfit', 'AmpCorr', 'Coherence', 'Phaselock'};
@@ -7,9 +7,9 @@ function obj = nbt_generateBiomarkerList()
     
     i = 1;
     for biomarker = 1 : 10
-        obj.group{i}.biomarkers = biomarkersFixedOrder{biomarker};
-        obj.group{i}.subBiomarkers = subBiomarkersFixedOrder{biomarker};
-        obj.group{i}.biomarkerIdentifiers = freqBandsFixedOrder;
+        obj.group{grpNumber}.biomarkers{i} = biomarkersFixedOrder{biomarker};
+        obj.group{grpNumber}.subBiomarkers{i} = subBiomarkersFixedOrder{biomarker};
+        obj.group{grpNumber}.biomarkerIdentifiers{i} = freqBandsFixedOrder;
         i = i + 1;
     end
 end
