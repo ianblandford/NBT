@@ -14,7 +14,7 @@ else
     DataObj.biomarkers = StatObj.group{grpNumber}.biomarkers;
     DataObj.subBiomarkers = StatObj.group{grpNumber}.subBiomarkers;
     DataObj.biomarkerIdentifiers = StatObj.group{grpNumber}.biomarkerIdentifiers;
-    DataObj.classes = StatObj.classes;
+    DataObj.classes = StatObj.group{grpNumber}.classes;
 end
 
 numBiomarkers       = length(DataObj.biomarkers);
