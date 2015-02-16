@@ -10,10 +10,10 @@ SubjectList = cell(size(raw,1)-1,1);
 for i=2:size(raw,1)
     SubjectList{i,1} = raw{i,SubjectColumn};
 end
-if(ischar(SignalInfo.subjectID))
-    SubjectIndex = find(strcmp(SubjectList, SignalInfo.subjectID));
+if(ischar(SignalInfo.file_name))
+    SubjectIndex = find(strcmp(SubjectList, SignalInfo.file_name));
 else
-    SubjectIndex = find(SubjectList == SignalInfo.subjectID);
+    SubjectIndex = find(SubjectList == SignalInfo.file_name);
 end
 QIndex = nbt_negSearchVector(1:size(raw,2),SubjectColumn);
 %% Insert 'questions' and Answers
