@@ -39,8 +39,9 @@ minPValue = -2.6;% Plot log10(P-Values) to trick colour bar
 maxPValue = -0;
 cbh = colorbar('westOutside');
 caxis([minPValue maxPValue])
-set(cbh,'XTick',[-2 -1.3010 -1 0])
-set(cbh,'XTicklabel',[0.01 0.05 0.1 1]) %(log scale)
+set(cbh,'YTick',[-2 -1.3010 -1 0])
+set(cbh,'YTicklabel',[0.01 0.05 0.1 1]) %(log scale)
+
 title('P-values')
 subplot(2,2,4)
 if strcmp(regs_or_chans_name,'Regions')
