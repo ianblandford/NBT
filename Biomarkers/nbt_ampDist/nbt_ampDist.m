@@ -62,7 +62,7 @@ classdef nbt_ampDist < nbt_SignalBiomarker
     end
     properties (Constant)
         biomarkerType = {'nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker', 'nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker'};
-        biomarkerUnits = {' ', ' ',  '\mu V^2', '\mu V^2', '\mu V^2', ' '};
+        units = {' ', ' ',  '\mu V^2', '\mu V^2', '\mu V^2', ' '};
     end
     methods
         function BiomarkerObject = nbt_ampDist(NumChannels)

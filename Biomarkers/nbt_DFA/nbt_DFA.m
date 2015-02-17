@@ -59,7 +59,7 @@ classdef nbt_DFA < nbt_SignalBiomarker
     end
     properties (Constant)
         biomarkerType = {'nbt_SignalBiomarker'};
-        biomarkerUnits = {' '};
+        units = {' '};
     end
     methods
         function DFAobject= nbt_DFA(NumChannels)

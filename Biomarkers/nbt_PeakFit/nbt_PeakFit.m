@@ -84,7 +84,6 @@ classdef nbt_PeakFit < nbt_SignalBiomarker
         SpectralEdge_Alpha
         SpectralEdge_Beta
         SpectralEdge_Gamma
-
         OneOverF_Alpha
         OneOverF_Beta
         AbsolutePower_Delta
@@ -100,7 +99,6 @@ classdef nbt_PeakFit < nbt_SignalBiomarker
         RelativePower_Alpha
         RelativePower_Beta
         RelativePower_Gamma
-
     end
     properties (Constant)
              biomarkerType = {'nbt_SignalBiomarker','nbt_SignalBiomarker', 'nbt_SignalBiomarker','nbt_SignalBiomarker', 'nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker',...
@@ -112,14 +110,14 @@ classdef nbt_PeakFit < nbt_SignalBiomarker
                  'nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker', ...
                  'nbt_SignalBiomarker', 'nbt_SignalBiomarker', 'nbt_SignalBiomarker', 'nbt_SignalBiomarker', 'nbt_SignalBiomarker','nbt_SignalBiomarker', 'nbt_SignalBiomarker','nbt_SignalBiomarker', 'nbt_SignalBiomarker', 'nbt_SignalBiomarker','nbt_SignalBiomarker', 'nbt_SignalBiomarker'};
 
-             biomarkerUnits = {'Hz','Hz', 'Hz','\mu V^2', 'Hz','\mu V^2','%',...
+             units = {'Hz','Hz', 'Hz','\mu V^2', 'Hz','\mu V^2','%',...
                  ' ', ' ', 'Hz', '\mu V^2', 'Hz', 'Hz','\mu V^2', 'Hz', 'Hz',...
                  '\mu V^2','Hz','Hz', '\mu V^2', 'Hz', 'Hz', '\mu V^2',...
                 'Hz','Hz', '\mu V^2','Hz', 'Hz', '\mu V^2', 'Hz', 'Hz'...
                  'Hz','Hz','Hz','Hz',...
                  'Hz','Hz','Hz','Hz','Hz','Hz','Hz','Hz', ...
                  'Hz','Hz','Hz','Hz','Hz', ...
-                 '\mu V^2', '\mu V^2', '\mu V^2', '\mu V^2', '\mu V^2', '\mu V^2', '\mu V^2','\mu V^2', '%', '%','%', '%'};;
+                 '\mu V^2', '\mu V^2', '\mu V^2', '\mu V^2', '\mu V^2', '\mu V^2', '\mu V^2','\mu V^2', '%', '%','%', '%'};
     end
     methods
         function BiomarkerObject = nbt_PeakFit(NumChannels)
@@ -130,7 +128,6 @@ classdef nbt_PeakFit < nbt_SignalBiomarker
             BiomarkerObject.IAF = nan(NumChannels,1);
             BiomarkerObject.corrected_power = nan(NumChannels, 1);
             BiomarkerObject.PeakWidth = nan(NumChannels, 1);
-            
             BiomarkerObject.AlphaFreq1 = nan(NumChannels, 1);
             BiomarkerObject.Alpha1corrected_power= nan(NumChannels, 1);
             BiomarkerObject.Alpha1PeakWidth= nan(NumChannels, 1);

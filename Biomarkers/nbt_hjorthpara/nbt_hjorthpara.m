@@ -8,7 +8,7 @@ classdef nbt_hjorthpara < nbt_SignalBiomarker
    end
    properties (Constant)
         biomarkerType = {'nbt_SignalBiomarker', 'nbt_SignalBiomarker', 'nbt_SignalBiomarker'};
-        biomarkerUnits = {' ', ' ', ' '};
+        units = {' ', ' ', ' '};
    end
 
    methods 

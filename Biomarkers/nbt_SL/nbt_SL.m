@@ -16,7 +16,7 @@ classdef nbt_SL < nbt_SignalBiomarker
     end
     properties (Constant)
         biomarkerType = {'nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker'};
-        biomarkerType = {' ', ' ',' '};
+        units = {' ', ' ',' '};
     end
     methods        
         function BiomarkerObject = nbt_SL(NumChannels)

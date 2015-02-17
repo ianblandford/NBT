@@ -55,7 +55,7 @@ classdef nbt_Coher < nbt_CrossChannelBiomarker
     end
     properties (Constant)
        biomarkerType = {'nbt_CrossChannelBiomarker', 'nbt_CrossChannelBiomarker'}; 
-       biomarkerUnits = {' ', ' '};
+       units = {' ', ' '};
     end
     methods
         function BiomarkerObject = nbt_Coher(NumChannels)

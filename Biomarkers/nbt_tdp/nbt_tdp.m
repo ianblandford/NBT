@@ -8,7 +8,7 @@ classdef nbt_tdp < nbt_SignalBiomarker
    end
     properties (Constant)
         biomarkerType = {'nbt_SignalBiomarker','nbt_SignalBiomarker'};
-        biomarkerUnits = {' ', ' '};
+        units = {' ', ' '};
     end
    methods
        function biomarkerObject = nbt_tdp(NumChannels)

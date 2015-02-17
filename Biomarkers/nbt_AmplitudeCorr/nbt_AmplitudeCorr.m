@@ -34,8 +34,8 @@ classdef nbt_AmplitudeCorr < nbt_CrossChannelBiomarker
         RangeCorr
     end
     properties (Constant)
-        biomarkerType ={'nbt_CrossChannelBiomarker','nbt_SignalBiomarker', 'nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker'};
-        biomarkerUnits = {' ',' ',' ',' ',' ',' ',' ',' '};
+        biomarkerType = {'nbt_CrossChannelBiomarker','nbt_SignalBiomarker', 'nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker'};
+        units = {' ',' ',' ',' ',' ',' ',' ',' '};
     end
     methods
         function BiomarkerObject = nbt_AmplitudeCorr(NumChannels)
