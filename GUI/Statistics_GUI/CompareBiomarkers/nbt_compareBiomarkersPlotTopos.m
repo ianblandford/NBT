@@ -29,7 +29,7 @@ set(gcf,'position',[10          80       700      500])
 coolWarm = load('nbt_CoolWarm.mat','coolWarm');
 coolWarm = coolWarm.coolWarm;
 colormap(coolWarm);
-subplot(2,2,3)
+subplot(2,1,2)
 if strcmp(regs_or_chans_name,'Regions')
     nbt_plot_subregions_hack(log10(Pvalues(question,:)),-2.6,0);
 else
@@ -43,7 +43,7 @@ set(cbh,'YTick',[-2 -1.3010 -1 0])
 set(cbh,'YTicklabel',[0.01 0.05 0.1 1]) %(log scale)
 
 title('P-values')
-subplot(2,2,4)
+subplot(2,1,1)
 if strcmp(regs_or_chans_name,'Regions')
     mxRho = max(abs(rho(question,:)));
     nbt_plot_subregions_hack((rho(question,:)),-mxRho,mxRho);
@@ -53,16 +53,16 @@ end
 
 colorbar('westoutside')
 title('Rho')
-subplot(2,2,1)
-axis off
-if strcmp(bioms1{1},'rsq.Answers')
-    
-    textThis = sprintf(['P-values and Rho values for Question ' num2str(question) '. ' rsq.Questions{question} ' and Biomarker ' regexprep(bioms2{1},'_',' ')]);
-    
-else
-    textThis = sprintf(['P-values and Rho values for Question ' num2str(question) '. ' rsq.Questions{question} ' and Biomarker ' regexprep(bioms1{1},'_',' ')]);
-end
-nbt_split_title([1 0.5],textThis,200,11);
+% subplot(3,1,3)
+% axis off
+% if strcmp(bioms1{1},'rsq.Answers')
+%     
+%     textThis = sprintf(['P-values and Rho values for Question ' num2str(question) '. ' rsq.Questions{question} ' and Biomarker ' regexprep(bioms2{1},'_',' ')]);
+%     
+% else
+%     textThis = sprintf(['P-values and Rho values for Question ' num2str(question) '. ' rsq.Questions{question} ' and Biomarker ' regexprep(bioms1{1},'_',' ')]);
+% end
+% nbt_split_title([1 0.5],textThis,200,11);
 
 
 
