@@ -43,7 +43,7 @@ classdef nbt_amplitude < nbt_SignalBiomarker
                 BiomarkerObject.Channels =Channels;
                 BiomarkerObject.NumChannels=NumChannels;
 %                 BiomarkerObject.SubRegions=SubRegions;
-                BiomarkerObject.Biomarkers ={'Channels'};
+                BiomarkerObject.biomarkers ={'Channels'};
                 BiomarkerObject.BiomarkerUnits = Unit;
                 BiomarkerObject = setUniqueIdentifiers(BiomarkerObject);
             end

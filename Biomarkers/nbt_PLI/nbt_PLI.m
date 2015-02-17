@@ -14,7 +14,7 @@ classdef nbt_PLI < nbt_CrossChannelBiomarker
     methods
         function BiomarkerObject = nbt_PLI(NumChannels)
             BiomarkerObject.pliVal = nan(NumChannels,NumChannels); 
-            BiomarkerObject.Biomarkers ={'pliVal'};
+            BiomarkerObject.biomarkers ={'pliVal'};
         end
     end
 

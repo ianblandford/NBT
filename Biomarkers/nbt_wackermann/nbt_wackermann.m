@@ -15,9 +15,8 @@ classdef nbt_wackermann < nbt_SignalBiomarker
             BiomarkerObject.sigma = nan(NumChannels,1);
             BiomarkerObject.phi = nan(NumChannels,1);
             BiomarkerObject.omega = nan(NumChannels,1);
-            
-            BiomarkerObject.PrimaryBiomarker = 'sigma';
-            BiomarkerObject.Biomarkers = {'sigma','phi','omega'};
+            BiomarkerObject.primaryBiomarker = 'sigma';
+            BiomarkerObject.biomarkers = {'sigma','phi','omega'};
         end
     end
 end

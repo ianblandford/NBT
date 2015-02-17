@@ -36,8 +36,8 @@ classdef nbt_freqstability < nbt_SignalBiomarker
             biomarkerObject.PhaseP = nan(NumChannels,1);
             biomarkerObject.PhasePStd=nan(NumChannels,1);
             
-          biomarkerObject.PrimaryBiomarker = 'CentralFrqIQR';
-            biomarkerObject.Biomarkers ={'PhaseIQR', 'PhaseStd', 'PhaseA', 'PhasePIQR','PhaseP','PhasePStd','TFiqr','TFstd',...
+          biomarkerObject.primaryBiomarker = 'CentralFrqIQR';
+            biomarkerObject.biomarkers ={'PhaseIQR', 'PhaseStd', 'PhaseA', 'PhasePIQR','PhaseP','PhasePStd','TFiqr','TFstd',...
                 'TFindx','CentralFrqIQR','CentralFrqStd','CentralFrq'};
         end
     end

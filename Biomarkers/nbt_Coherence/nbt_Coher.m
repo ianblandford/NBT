@@ -69,7 +69,7 @@ classdef nbt_Coher < nbt_CrossChannelBiomarker
             % Define fields for additional information           
             BiomarkerObject.DateLastUpdate = datestr(now);
             BiomarkerObject.PrimaryBiomarker = 'Coherence';
-            BiomarkerObject.Biomarkers = {'Coherence', 'ICoherence'};
+            BiomarkerObject.biomarkers = {'Coherence', 'ICoherence'};
         end
         function plotCoherence(obj)
             figure

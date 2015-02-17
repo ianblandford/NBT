@@ -50,7 +50,6 @@ classdef nbt_AmplitudeCorr < nbt_CrossChannelBiomarker
             BiomarkerObject.StdCorr = nan(NumChannels,1);
             BiomarkerObject.IQRCorr = nan(NumChannels,1);
             BiomarkerObject.RangeCorr = nan(NumChannels,1);
-            
             BiomarkerObject.lastUpdate = datestr(now);
             BiomarkerObject.primaryBiomarker = 'MarkerValues';
             BiomarkerObject.biomarkers ={'MarkerValues','MaxCorr', 'MinCorr','MedianCorr','MeanCorr','StdCorr','IQRCorr','RangeCorr'};

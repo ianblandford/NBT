@@ -14,7 +14,7 @@ classdef nbt_tdp < nbt_SignalBiomarker
        function biomarkerObject = nbt_tdp(NumChannels)
            biomarkerObject.f = nan(NumChannels,1);
            biomarkerObject.g = nan(NumChannels,1);
-           biomarkerObject.Biomarkers = {'f', 'g'};
+           biomarkerObject.biomarkers = {'f', 'g'};
        end
    end
 end 
