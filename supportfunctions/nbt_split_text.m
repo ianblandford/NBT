@@ -32,15 +32,20 @@ lin = OffsetY;
 toWrite = '';
 i = 1;
 while  size(Texts,2) > 0
-    while size(toWrite,2) < maxLine && size(Texts,2) >0
+       % while size(toWrite,2) < maxLine && size(Texts,2) >0
+       while size(Texts,2) >0
         [head, tail] = strtok(Texts,' ');
+        % while size([toWrite,' ',head],2) < maxLine && size(tail,2) >0
         if size(toWrite,2) + 1 + size(head,2) < maxLine
             toWrite = [toWrite,' ',head];
             Texts = tail;
         else
-           toWrite = [toWrite,' ',head];
-           Texts = [toWrite(maxLine+1:end) tail];
-           toWrite = toWrite(1:maxLine);
+%             toWrite = toWrite;
+%             Texts = Texts;
+%            toWrite = [toWrite,' ',head];
+%            Texts = [toWrite(maxLine+1:end) tail];
+%            toWrite = toWrite(1:maxLine);            
+        break;
         end
     end
     toArray{i} = deblank(toWrite);
