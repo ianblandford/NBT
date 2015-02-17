@@ -135,8 +135,8 @@ addgroupButton = uicontrol(StatSelection,'Style','pushbutton','String','Update G
 removeGroupButton = uicontrol(StatSelection,'Style','pushbutton','String','Remove Group(s)','Position',[80 70 100 30],'fontsize',8,'callback',@remove_groups);
 % save group(s)
 saveGroupButton = uicontrol(StatSelection,'Style','pushbutton','String','Save Group(s)','Position',[185 70 90 30],'fontsize',8,'callback',@save_groups);
-% export bioms
-ExportBio = uicontrol(StatSelection,'Style','pushbutton','String','Export Biomarker(s) to .txt','Position',[5 10 150 30],'fontsize',8,'callback',@export_bioms);
+% compare bioms
+CompareBio = uicontrol(StatSelection,'Style','pushbutton','String','Compare biomarkers','Position',[5 10 150 30],'fontsize',8,'callback','nbt_comparebiomarkers(G)');
 PrintVisualize = uicontrol(StatSelection,'Style','pushbutton','String','NBT Print Visualizaiton','Position',[230 10 150 30],'fontsize',8,'callback',@Print_Visualize);
 
 % move up
