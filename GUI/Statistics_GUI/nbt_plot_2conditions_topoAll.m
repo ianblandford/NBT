@@ -164,13 +164,13 @@ pLog(pLog> maxPValue) = maxPValue;
             RedBlue_cbrewer10colors = load('RedBlue_cbrewer10colors','RedBlue_cbrewer10colors');
             RedBlue_cbrewer10colors = RedBlue_cbrewer10colors.RedBlue_cbrewer10colors;
             colormap(RedBlue_cbrewer10colors);
+            
             if strcmp(char(statfunc),'ttest') || strcmp(char(statfunc),'signrank')
                 topoplot(statistic(diffC2C1,2),chanloc,'headrad','rim','numcontour',0,'electrodes','on');
                 if(subplotIndex ==1)
-                    textThis = sprintf('Grand average for condition %s minus incondition %s ',condition2,condition1);
+                    textThis = sprintf('Grand average for %s minus %s ',condition2,condition1);
                 end
               
-                 
                 cmax = max(statistic(diffC2C1,2));
                 cmin = min(statistic(diffC2C1,2));
               
@@ -178,6 +178,7 @@ pLog(pLog> maxPValue) = maxPValue;
                 cmin = -1.*cmax;
                  
                 caxis([cmin cmax])
+                
                 
             else
                 topoplot(statistic(diffC2C1_2,2),chanloc,'headrad','rim','numcontour',0,'electrodes','on');
@@ -189,8 +190,9 @@ pLog(pLog> maxPValue) = maxPValue;
                 
 %                 cmax = max(statistic(diffC2C1,2));
 %                 cmin = min(statistic(diffC2C1,2));
-%                 
+%                
                 caxis([cmin cmax])
+                               
             end
             
         else
@@ -214,9 +216,10 @@ pLog(pLog> maxPValue) = maxPValue;
             if(subplotIndex == 1)
                 if strcmp(char(statfunc),'ttest') || strcmp(char(statfunc),'signrank')
                     if(ConditionNr == 1)
-                        textThis = sprintf('Grand average for  %s (n = %i)',condition1,size(c1,2));
+                        textThis = sprintf('Grand average for %s (n = %i)',condition1,size(c1,2));
+                        %textThis = strsplit(textThis,'for');
                     else
-                        textThis = sprintf('Grand average for condition: %s (n = %i)',condition2, size(c2,2));
+                        textThis = sprintf('Grand average for %s (n = %i)',condition2, size(c2,2));
                     end
                 else
                     if(ConditionNr == 1)
@@ -229,9 +232,22 @@ pLog(pLog> maxPValue) = maxPValue;
         end
         cb = colorbar('westoutside');
         set(get(cb,'title'),'String',unit);
-        cin = (cmax-cmin)/6;
+        %cin = (cmax-cmin)/6;
         %set(cb,'YTick',round([cmin:cin:cmax]/0.01)*0.01);
-       
+      
+     if (ConditionNr ~= 3)
+        nTicks = size(colormap,1)+1;
+        cticks = linspace(cmin,cmax,nTicks);
+        % cticks(2:2:end) = []; % for more sparse tick marks
+        caxis([min(cticks) max(cticks)]);
+        set(cb,'YTick',cticks);
+        if((abs(cmax) - abs(cmin))/nTicks<=1)
+            set(cb,'YTickLabel',round(cticks/0.01)*0.01);
+        else
+            set(cb,'YTickLabel',round(cticks));
+        end 
+     end
+        
         
         if(subplotIndex == 1)
          nbt_split_text(xa,ya,textThis,maxline,fontsize);
@@ -257,4 +273,6 @@ pLog(pLog> maxPValue) = maxPValue;
         set(cb,'YTick',[-2.3010 -1.3010 0 1.3010 2.3010])
         set(cb,'YTicklabel',[0.005 0.05 0 0.05 0.005])
     end
+
+
 end
