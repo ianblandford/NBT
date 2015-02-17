@@ -9,6 +9,7 @@ classdef nbt_PLI < nbt_CrossChannelBiomarker
     end
     properties (Constant)
         biomarkerType = {'nbt_CrossChannelBiomarker'};
+        biomarkerUnits = {''};
     end
     methods
         function BiomarkerObject = nbt_PLI(NumChannels)

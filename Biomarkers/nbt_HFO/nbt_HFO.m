@@ -26,6 +26,7 @@ classdef nbt_HFO < nbt_SignalBiomarker
     end
     properties (Constant)
        biomarkerType = {'nbt_SignalBiomarker'}; 
+       biomarkerUnit = {' '};
     end
     methods
         function HFOobj = nbt_HFO

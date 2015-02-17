@@ -60,6 +60,7 @@ classdef nbt_CrossPhaseLocking < nbt_CrossChannelBiomarker
     end
     properties (Constant)
         biomarkerType = {'nbt_CrossChannelBiomarker','nbt_CrossChannelBiomarker'};
+        biomarkerUnits = {' ', ' '};
     end
     
     methods

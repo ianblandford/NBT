@@ -199,6 +199,7 @@ for i=1:length(FileList)
             %Create the Data cell
             eval(['NumBiomarkers = length(' BiomarkerList{m} '.biomarkers);']);
             eval(['BiomarkerType = ' BiomarkerList{m} '.biomarkerType;']);
+            eval(['BiomarkerUnit = ' BiomarkerList{m} '.biomarkerUnits;']);
             
             if(NumBiomarkers ~=0)
                 for dd = 1:NumBiomarkers
@@ -209,6 +210,7 @@ for i=1:length(FileList)
                     end
                     eval([NBTelementName '.Biomarkers{ dd ,1} = DataString; '])
                     eval([NBTelementName '.BiomarkerType{dd} = BiomarkerType{dd}; '])
+                    eval([NBTelementName '.BiomarkerUnit{dd} = BiomarkerUnit{dd};'])
                 end
                 
                 eval([NBTelementName ' = nbt_SetData(' NBTelementName ', Data, {' connectorKeys '});']);

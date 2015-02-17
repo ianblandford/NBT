@@ -8,13 +8,14 @@ DataObj             = nbt_Data;
 
 if ~exist('StatObj','var')
     for i=1:length(GrpObj.biomarkerList)
-        [DataObj.biomarkers{i}, DataObj.biomarkerIdentifiers{i}, DataObj.subBiomarkers{i}, DataObj.classes{i}] = nbt_parseBiomarkerIdentifiers(GrpObj.biomarkerList{i});
+        [DataObj.biomarkers{i}, DataObj.biomarkerIdentifiers{i}, DataObj.subBiomarkers{i}, DataObj.classes{i}, DataObj.units{i}] = nbt_parseBiomarkerIdentifiers(GrpObj.biomarkerList{i});
     end
 else
     DataObj.biomarkers = StatObj.group{grpNumber}.biomarkers;
     DataObj.subBiomarkers = StatObj.group{grpNumber}.subBiomarkers;
     DataObj.biomarkerIdentifiers = StatObj.group{grpNumber}.biomarkerIdentifiers;
     DataObj.classes = StatObj.group{grpNumber}.classes;
+    DataObj.units = StatObj.group{grpNumber}.units;
 end
 
 numBiomarkers       = length(DataObj.biomarkers);

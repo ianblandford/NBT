@@ -54,6 +54,7 @@ classdef nbt_barlow < nbt_SignalBiomarker
 
    properties (Constant)
         biomarkerType ={'nbt_SignalBiomarker', 'nbt_SignalBiomarker', 'nbt_SignalBiomarker'};
+        biomarkerUnits = {' ',' ', ' '};
    end
    methods
        function BiomarkerObject=nbt_barlow(NumChannels)

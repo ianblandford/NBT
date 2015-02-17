@@ -17,6 +17,8 @@ classdef nbt_freqstability < nbt_SignalBiomarker
     properties (Constant)
         biomarkerType ={'nbt_SignalBiomarker', 'nbt_SignalBiomarker', 'nbt_SignalBiomarker', 'nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker',...
                 'nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker'};
+        biomarkerUnits = {' ', ' ', ' ', ' ',' ',' ',' ',' ',...
+                ' ','Hz','Hz','Hz'}
     end
 
     methods

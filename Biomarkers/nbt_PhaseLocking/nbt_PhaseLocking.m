@@ -49,8 +49,7 @@
 
     
 classdef nbt_PhaseLocking < nbt_CrossChannelBiomarker  
-    properties 
-        
+    properties    
     Ratio 
     PLV 
     Instphase
@@ -61,7 +60,6 @@ classdef nbt_PhaseLocking < nbt_CrossChannelBiomarker
     IndexE %index based on the Shannon entropy
     IndexF %based on the intensity of the first Fourier mode of the distribution
     IndexCP %based on the conditional probability
-
     PLV_in_time
     time_int
     IndexE_in_time
@@ -70,6 +68,7 @@ classdef nbt_PhaseLocking < nbt_CrossChannelBiomarker
     end
     properties (Constant)
          biomarkerType = {'nbt_CrossChannelBiomarker','nbt_CrossChannelBiomarker'};
+         biomarkerUnits = {' ', ' '};
     end
     
     methods
@@ -78,8 +77,6 @@ classdef nbt_PhaseLocking < nbt_CrossChannelBiomarker
             if nargin == 0
                 LengthSign = 1;
                 NumChannels = 1;
-                
-            
             end
             % assign values for this biomarker object:
             %% Define Phase Locking values

@@ -29,6 +29,7 @@ classdef nbt_Power < nbt_SignalBiomarker
     end
     properties (Constant)
        biomarkerType = {'nbt_SignalBiomarker'}; 
+       biomarkerUnit = {'\mu V^2'};
     end
     methods
         function BiomarkerObject = nbt_Power(NumChannels,fbins,Unit)

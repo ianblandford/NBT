@@ -38,6 +38,7 @@ classdef nbt_MFDFA < nbt_SignalBiomarker
     end
     properties (Constant)
        biomarkerType = {'nbt_SignalBiomarker', 'nbt_SignalBiomarker'}; 
+       biomarkerUntis =  {' ',' '};
     end
 
     methods
