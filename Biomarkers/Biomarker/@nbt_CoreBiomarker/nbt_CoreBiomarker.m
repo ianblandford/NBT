@@ -40,7 +40,6 @@ classdef (Abstract) nbt_CoreBiomarker
         lastUpdate %last date this biomarker was updated
         primaryBiomarker % the primary biomarker to use in scripts
         biomarkers % list of all biomarkers in the object
-        biomarkerUnits %list of biomarker units
         researcherID % ID of the Reseacher or script that made the last update
         subjectInfo
         nbtVersion
