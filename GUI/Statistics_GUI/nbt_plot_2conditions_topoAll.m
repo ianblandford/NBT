@@ -118,7 +118,7 @@ global NBTstudy
             if (size(chanValuesGroup1) ~= size(chanValuesGroup2))
                 warning('Different amount of channels for Group 1 and Group 2');
             else
-                diffGrp2Grp1 = chanValuesGroup2 - chanValuesGroup1;
+                diffGrp2Grp1 = StatObj.groupStatHandle((chanValuesGroup2 - chanValuesGroup1)');
             end
         else
             statType = 'unpaired';
