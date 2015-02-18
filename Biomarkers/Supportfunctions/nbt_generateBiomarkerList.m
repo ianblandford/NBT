@@ -58,25 +58,31 @@ function obj = nbt_generateBiomarkerList(NBTstudy,grpNumber)
     biomarkerList = Group.biomarkerList;
     
     % Specify the fixed order for the NBT Print plots
-    biomarkersFixedOrder = {'NBTe_nbt_PeakFit', 'NBTe_nbt_PeakFit', 'NBTe_nbt_DFA', 'NBTe_nbt_PeakFit', 'NBTe_nbt_OscB', 'NBTe_nbt_PeakFit', 'NBTe_nbt_PeakFit', 'NBTe_nbt_AmpCorr', 'NBTe_nbt_Coherence', 'NBTe_nbt_Phaselock'};
-    subBiomarkersFixedOrder = {'relativePower', 'absolutePower', 'markerValues', 'centralFreq', 'cumulativeLifetime', 'bandwidth', 'spectralEdge', 'markerValues', 'coherence', 'PLV'};
+    %biomarkersFixedOrder = {'NBTe_nbt_PeakFit', 'NBTe_nbt_PeakFit', 'NBTe_nbt_DFA', 'NBTe_nbt_PeakFit', 'NBTe_nbt_OscBurst', 'NBTe_nbt_PeakFit', 'NBTe_nbt_PeakFit', 'NBTe_nbt_AmpCorr', 'NBTe_nbt_Coherence', 'NBTe_nbt_Phaselock'};
+    %subBiomarkersFixedOrder = {'RelativePower', 'AbsolutePower', 'MarkerValues', 'CentralFreq', 'CumulativeLifetime', 'Bandwidth', 'SpectralEdge', 'MarkerValues', 'coherence', 'PLV'};
     freqBandsFixedOrder = {'1  4', '4  7', '8  13', '13  30', '30  45'};
+    freqBandsFixedOrderNames = {'Delta', 'Theta', 'Alpha', 'Beta', 'Gamma'};
+    
+    biomarkersFixedOrder = {'', '', 'NBTe_nbt_DFA', 'PeakFit', 'NBTe_nbt_OscBursts'};
+    subBiomarkersFixedOrder = {'', '', 'markerValues', 'CentralFreq', 'CumulativeLifetime'};
     
     % Iteate along all fixed biomarkers and then check whether a present
     % biomarker corresponds to the fixed biomarker and store it in the
     % analysis object. This will make sure that the biomarkers are stored
     % in the fixed NBT Print order.
-    obj.group{grpNumber}.biomarkerIndex = zeros(1,length(biomarkerList));
-    i = 1;
-    for biomarker = 1 : length(biomarkersFixedOrder)
+    obj.group{grpNumber}.biomarkerIndex = zeros(1,50);
+    i = 1;  
+    for biomarker = 1 : 5
         for freqBand = 1 : 5
             for presentBiomarker = 1 : length(biomarkerList)
                 currentBiom = biomarkerList{presentBiomarker};
                 if strfind(currentBiom,biomarkersFixedOrder{biomarker}) & strfind(currentBiom,subBiomarkersFixedOrder{biomarker}) & strfind(currentBiom,freqBandsFixedOrder{freqBand})
                     obj.group{grpNumber}.biomarkers{i} = biomarkersFixedOrder{biomarker};
                     obj.group{grpNumber}.subBiomarkers{i} = subBiomarkersFixedOrder{biomarker};
+
                     obj.group{grpNumber}.biomarkerIdentifiers{i} = {'frequencyRange' freqBandsFixedOrder{freqBand}};
                     obj.group{grpNumber}.classes{i} = {'SignalBiomarker'};
+                    obj.group{grpNumber}.biomarkerIndex((biomarker-1)*5 + freqBand) = i;
                     i = i + 1;
                 end
             end

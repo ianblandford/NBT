@@ -14,6 +14,7 @@ else
     DataObj.biomarkers = StatObj.group{grpNumber}.biomarkers;
     DataObj.subBiomarkers = StatObj.group{grpNumber}.subBiomarkers;
     DataObj.biomarkerIdentifiers = StatObj.group{grpNumber}.biomarkerIdentifiers;
+    DataObj.biomarkerIndex = StatObj.group{grpNumber}.biomarkerIndex;
     DataObj.classes = StatObj.group{grpNumber}.classes;
 end
 
@@ -78,7 +79,7 @@ switch GrpObj.databaseType
     case 'File'
 end
 
-DataObj.numSubjects = length(DataObj.subjectList{1,1}); %we assume there not different number of subjects per biomarker!
+%DataObj.numSubjects = length(DataObj.subjectList{1,1}); %we assume there not different number of subjects per biomarker!
 DataObj.numBiomarkers = size(DataObj.dataStore,1);
 % Call outputformating here >
 

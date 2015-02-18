@@ -12,6 +12,7 @@ classdef nbt_Data
         biomarkers
         biomarkerIdentifiers
         subBiomarkers
+        biomarkerIndex
         classes
         %Further parameters..
         outputFormat %output format - remove nans, etc. cell vs matrix vs struct
