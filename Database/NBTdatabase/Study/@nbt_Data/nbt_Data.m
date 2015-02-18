@@ -12,6 +12,7 @@ classdef nbt_Data
         biomarkers
         biomarkerIdentifiers
         subBiomarkers
+        biomarkerIndex
         classes
         units
         %Further parameters..

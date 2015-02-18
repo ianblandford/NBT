@@ -24,8 +24,11 @@ else
     DataObj.biomarkers = StatObj.group{grpNumber}.biomarkers;
     DataObj.subBiomarkers = StatObj.group{grpNumber}.subBiomarkers;
     DataObj.biomarkerIdentifiers = StatObj.group{grpNumber}.biomarkerIdentifiers;
+    if(isfield(StatObj.group{grpNumber},'biomarkerIndex'))
+        DataObj.biomarkerIndex = StatObj.group{grpNumber}.biomarkerIndex;
+    end
     DataObj.classes = StatObj.group{grpNumber}.classes;
-    DataObj.units = StatObj.group{grpNumber}.units;
+    %DataObj.units = StatObj.group{grpNumber}.units;
 end
 
 numBiomarkers       = length(DataObj.biomarkers);
@@ -59,6 +62,7 @@ DataObj.numSubjects = length(DataObj.subjectList{1,1}); %we assume there not dif
 DataObj.numBiomarkers = size(DataObj.dataStore,1);
 % Call outputformating here >
 
+end
 
     function DataObj = createDataObj(DataObj,bID,GrpObj)
        
@@ -99,7 +103,7 @@ DataObj.numBiomarkers = size(DataObj.dataStore,1);
                    end
                 end
             end
-           NBTelementCall = NBTelementCall(1:end-1); % to remove ';'
+            NBTelementCall = NBTelementCall(1:end-1); % to remove ';'
             NBTelementCall = [NBTelementCall '},' ''''  subBiomarker '''' ');'];
             [DataObj.dataStore{bID,1}, DataObj.pool{bID,1},  DataObj.poolKey{bID,1}] = evalin('base', NBTelementCall);
             snb = strfind(NBTelementCall,',');
@@ -110,7 +114,6 @@ DataObj.numBiomarkers = size(DataObj.dataStore,1);
                 %Only one Subject?
              %   disp('Assuming only One subject?');
              %   [DataObj.subjectList{bID,1}] = evalin('base', 'constant{nbt_searchvector(constant , {''Subject''}),2};');
+
             end    
     end
-
-end

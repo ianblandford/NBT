@@ -68,25 +68,9 @@ global NBTstudy
     nameGroup1 = Group1.groupName;
     nameGroup2 = Group2.groupName;
     
-    %%% Biomarker names 
-    for m=1:length(StatObj.group{1}.biomarkers)
-        prefixIdx = strfind(StatObj.group{1}.biomarkers{m},'_');
-        prefixIdx = prefixIdx(end);
-        identFlag = true;
-        for identLoop = 1:size(StatObj.group{1}.biomarkerIdentifiers{m},1)
-            if(strcmp(StatObj.group{1}.biomarkerIdentifiers{m}{identLoop},'frequencyRange'))
-                 biomarkerNames{m} = [StatObj.group{1}.biomarkers{m}(prefixIdx+1:end) '.' StatObj.group{1}.subBiomarkers{m} ' : ' StatObj.group{1}.biomarkerIdentifiers{m}{identLoop,2}];
-                 identFlag = false;
-            end
-        end
-        if(identFlag)
-            biomarkerNames{m} = [StatObj.group{1}.biomarkers{m}(prefixIdx+1:end) '.' StatObj.group{1}.subBiomarkers{m}];
-        end
-        biomarkerNames{m} = strrep(biomarkerNames{m},'_','.'); 
-    end
+    %%% Get Biomarker names 
+    biomarkerNames = StatObj.getBiomarkerNames;
     
-
-
 
     %%% Get data for both groups
     DataGroup1 = getData(Group1,StatObj);

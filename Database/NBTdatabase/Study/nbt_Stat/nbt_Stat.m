@@ -6,26 +6,22 @@ classdef (Abstract) nbt_Stat < nbt_Analysis
         testName
         testOptions
         pValues
-        sigPValues
-        ccPValues
-        qPValues
         statValues
-        statStruct 
-        statOptions = statset('UseParallel',true);    
+        statStruct
+        statOptions = statset('UseParallel',true);
     end
     
     methods
         function StatObj = nbt_Stat()
-            
+            %empty
         end
         
-       % plot()
-       % createReport();
-       function obj = calculate(obj)
-          
-       end
-       % checkPreCondition();
-        
+        % plot()
+        % createReport();
+        function obj = calculate(obj)
+        end
+        % checkPreCondition();
+                
     end
     
 end

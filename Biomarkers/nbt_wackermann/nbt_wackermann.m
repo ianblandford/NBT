@@ -17,6 +17,7 @@ classdef nbt_wackermann < nbt_SignalBiomarker
             BiomarkerObject.omega = nan(NumChannels,1);
             BiomarkerObject.primaryBiomarker = 'sigma';
             BiomarkerObject.biomarkers = {'sigma','phi','omega'};
+            BiomarkerObject.uniqueIdentifiers = cell(0,0);
         end
     end
 end

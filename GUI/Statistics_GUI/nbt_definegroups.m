@@ -50,7 +50,7 @@
 % See Readme.txt for additional copyright information.
 % ---------------------------------------------------------------------------------------
 
-function nbt_definegroups
+function nbt_definegroups(~,~)
 global NBTstudy
 global hh2
 [ScreenWidth, ScreenHeight] = nbt_getScreenSize();
