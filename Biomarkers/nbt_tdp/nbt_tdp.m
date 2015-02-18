@@ -15,6 +15,7 @@ classdef nbt_tdp < nbt_SignalBiomarker
            biomarkerObject.f = nan(NumChannels,1);
            biomarkerObject.g = nan(NumChannels,1);
            biomarkerObject.biomarkers = {'f', 'g'};
+           biomarkerObject.uniqueIdentifieres = cell(0,0);
        end
    end
 end 

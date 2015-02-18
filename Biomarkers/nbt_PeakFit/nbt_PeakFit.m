@@ -195,6 +195,7 @@ classdef nbt_PeakFit < nbt_SignalBiomarker
                  'CentralFreq_Delta','CentralFreq_Theta','CentralFreq_Alpha','CentralFreq_Beta','CentralFreq_Gamma','CentralFreq_Broadband','CentralFreq_Alpha1','CentralFreq_Alpha2', ...
                  'SpectralEdge_Delta','SpectralEdge_Theta','SpectralEdge_Alpha','SpectralEdge_Beta','SpectralEdge_Gamma', ...
                  'AbsolutePower_Delta', 'AbsolutePower_Theta', 'AbsolutePower_Alpha', 'AbsolutePower_Beta', 'AbsolutePower_Broadband', 'AbsolutePower_Alpha1', 'AbsolutePower_Alpha2','AbsolutePower_Gamma', 'RelativePower_Delta', 'RelativePower_Theta','RelativePower_Alpha', 'RelativePower_Beta'};
+             BiomarkerObject.uniqueIdentifiers = cell(0,0);
         end
     end
 end
