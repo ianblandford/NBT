@@ -14,7 +14,9 @@ else
     DataObj.biomarkers = StatObj.group{grpNumber}.biomarkers;
     DataObj.subBiomarkers = StatObj.group{grpNumber}.subBiomarkers;
     DataObj.biomarkerIdentifiers = StatObj.group{grpNumber}.biomarkerIdentifiers;
-    DataObj.biomarkerIndex = StatObj.group{grpNumber}.biomarkerIndex;
+    if(isfield(StatObj.group{grpNumber},'biomarkerIndex'))
+        DataObj.biomarkerIndex = StatObj.group{grpNumber}.biomarkerIndex;
+    end
     DataObj.classes = StatObj.group{grpNumber}.classes;
     DataObj.units = StatObj.group{grpNumber}.units;
 end
