@@ -92,7 +92,7 @@ function nbt_Print(NBTstudy,groups)
                 %%% Number of biomarkers
                 nBioms = Data.numBiomarkers;
                 
-                plotValues = zeros(1,129);
+                plotValues = zeros(nBioms,129);
                 for biomID = 1 : nBioms
                     %% Get raw biomarker data, compute means and store them
                     chanValuesGroup1 = Data{biomID,1};
