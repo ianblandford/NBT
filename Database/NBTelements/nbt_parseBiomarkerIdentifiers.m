@@ -1,4 +1,4 @@
-function [biomName,identifiers, biomarker, biomarkerClass] = nbt_parseBiomarkerIdentifiers(biom)
+function [biomName,identifiers, biomarker, biomarkerClass, biomarkerUnit] = nbt_parseBiomarkerIdentifiers(biom)
 %parses a biomarker from the nbt_statistics, into the name, identifiers and
 %biomarker
 
@@ -13,6 +13,7 @@ if isempty(identStart)
     biomarker = biom(fndDot+1:end);
     index = evalin('base',['find(strcmp(' biomName '.Biomarkers , ''' biomarker '''))']);
     biomarkerClass = evalin('base',[biomName '.BiomarkerType{' num2str(index) '};']);
+    biomarkerUnit = evalin('base', [biomName '.BiomarkerUnit{' num2str(index) '};']);
 else
     identEnd = strfind(biom,'}');
     identString = biom(identStart(1)+1:identEnd(end)-1);
@@ -35,6 +36,7 @@ else
     biomName = biom(1:identStart(1)-1);
     index = evalin('base',['find(strcmp(' biomName '.Biomarkers , ''' biomarker '''))']);
     biomarkerClass = evalin('base',[biomName '.BiomarkerType{' num2str(index) '};']);
+    biomarkerUnit = evalin('base',[biomName '.BiomarkerUnit;']);
 end
 
 

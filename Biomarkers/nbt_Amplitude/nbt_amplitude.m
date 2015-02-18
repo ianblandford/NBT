@@ -30,6 +30,7 @@ classdef nbt_amplitude < nbt_SignalBiomarker
     end
       properties (Constant)
          biomarkerType = {'nbt_SignalBiomarker'};
+         units = {'\mu V^2'};
      end
     methods
         function BiomarkerObject = nbt_amplitude(NumChannels,Channels,SubRegions,Normalized, Unit)
@@ -42,7 +43,7 @@ classdef nbt_amplitude < nbt_SignalBiomarker
                 BiomarkerObject.Channels =Channels;
                 BiomarkerObject.NumChannels=NumChannels;
 %                 BiomarkerObject.SubRegions=SubRegions;
-                BiomarkerObject.Biomarkers ={'Channels'};
+                BiomarkerObject.biomarkers ={'Channels'};
                 BiomarkerObject.BiomarkerUnits = Unit;
                 BiomarkerObject = setUniqueIdentifiers(BiomarkerObject);
             end

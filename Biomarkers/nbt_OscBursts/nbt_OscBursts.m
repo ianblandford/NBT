@@ -71,6 +71,7 @@ classdef nbt_OscBursts < nbt_SignalBiomarker
     end
     properties (Constant)
         biomarkerType = {'nbt_SignalBiomarker', 'nbt_SignalBiomarker', 'nbt_SignalBiomarker', 'nbt_SignalBiomarker'};
+        units = {'ms', ' ', ' ', ' '};
     end
     methods
         function OscBobject = nbt_OscBursts(NumChannels)

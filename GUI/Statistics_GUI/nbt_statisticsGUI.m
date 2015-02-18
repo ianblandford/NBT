@@ -122,4 +122,97 @@ downButton = uicontrol(StatSelection,'Style','pushbutton','String','\/','Positio
         groups = get(ListGroup,'Value');
         nbt_Print(NBTstudy,groups);
     end
+
+        function diff_group(d1,d2)
+
+            group_ind = get(ListGroup,'Value'); % obj.groups
+            if length(group_ind)>2
+                warning('Select only two for difference group creation!')
+            elseif length(group_ind) == 1
+                warning('Two groups are necessary for difference group creation!')
+            elseif length(group_ind) == 2
+
+                % if (size(Data1.subjectList{1},2) == size(Data2.subjectList{1},2))
+                NBTstudy.groups{end+1} = NBTstudy.groups{group_ind(1)};
+                NBTstudy.groups{end}.grpNumber = length(NBTstudy.groups);
+                NBTstudy.groups{end}.groupType = 'difference';
+                NBTstudy.groups{end}.groupDifference = group_ind;
+                %NBTstudy.groupName = ;
+                %NBTstudy.groups{end}.subjectList = [Data1.subjectList{1} Data2.subjectList{1}];
+
+                scrsz = get(0,'ScreenSize');
+                % fit figure to screen, adapt to screen resolution
+                hh2 = figure('Units','pixels', 'name','Define group difference' ,'numbertitle','off','Position',[scrsz(3)/4  scrsz(4)/2  250  120],...
+                    'MenuBar','none','NextPlot','new','Resize','off');
+                col =  get(hh2,'Color' );
+                set(hh2,'CreateFcn','movegui')
+                hgsave(hh2,'onscreenfig')
+                close(hh2)
+                hh2 = hgload('onscreenfig');
+                currentFolder = pwd;
+                delete([currentFolder '/onscreenfig.fig']);
+                step = 40;
+
+                nameg1 = NBTstudy.groups{group_ind(1)}.groupName;
+                %                 sep = findstr(nameg1,':');
+                %                 nameg1 = nameg1(sep+1:end);
+                nameg2 = NBTstudy.groups{group_ind(2)}.groupName;
+                %                 sep = findstr(nameg2,':');
+                %                 nameg2 = nameg2(sep+1:end);
+
+                text_diff1= uicontrol(hh2,'Style','text','Position',[25 45+step 200 20],'string','Group 1     minus     Group 2','fontsize',10,'fontweight','Bold','BackgroundColor',col);
+                text_diff2= uicontrol(hh2,'Style','edit','Position',[25 10+step 80 30],'string',nameg1,'fontsize',10);
+                text_diff3= uicontrol(hh2,'Style','text','Position',[115 20+step 20 20],'string',' - ','fontsize',15,'fontweight','Bold','BackgroundColor',col);
+                text_diff4= uicontrol(hh2,'Style','edit','Position',[150 10+step 80 30],'string',nameg2,'fontsize',10,'BackgroundColor',col);
+                OkButton = uicontrol(hh2,'Style','pushbutton','String','OK','Position',[25 10 200 30],'fontsize',10,'callback',{@confirm_diff_group,text_diff2,text_diff4});
+            else
+                warning('The two groups must have same number of subjects!')
+            end
+
+        end
+
+    function confirm_diff_group(d1,d2,text_diff2,text_diff4)
+    nameg1 = get(text_diff2,'string');
+    %             sep = findstr(nameg1,':');
+    %             nameg1 = nameg1(sep+1:end);
+    nameg2 = get(text_diff4,'string');
+    %             sep = findstr(nameg2,':');
+    %             nameg2 = nameg2(sep+1:end);
+
+    new_group_name = [nameg1 ' minus ' nameg2];
+    NBTstudy.groups{end}.groupName = new_group_name;
+
+    groupList{end+1} = ['Group ' num2str(length(NBTstudy.groups)) ' : ' new_group_name];
+    set(ListGroup,'Max',length(groupList),'fontsize',10,'String',groupList,'BackgroundColor','w');
+
+    %assignin('base','NBTstudy',NBTstudy)
+    h = get(0,'CurrentFigure');
+    close(h)
+    end
+
+% remove groups
+    function remove_groups(d1,d2)
+        group_ind = get(ListGroup,'Value');
+        group_name = get(ListGroup,'String');
+        
+        if length(group_name)>1 && length(group_ind)<length(group_name)
+            
+            n_groups = length(NBTstudy.groups);
+            NBTstudy.groups = NBTstudy.groups(setdiff([1:n_groups],group_ind));
+            groupList = groupList(setdiff([1:n_groups],group_ind));
+            
+            for i = 1:length(groupList)
+                oldName = groupList{i};
+                gr_num_loc = strfind(groupList{i},':');
+                groupList{i} = ['Group ',num2str(i),oldName(gr_num_loc-1:end)];
+            end
+        else
+            groupList = {''};
+        end
+        set(ListGroup,'String','');
+        set(ListGroup,'Value',length(groupList));
+        set(ListGroup,'Max',length(groupList),'fontsize',10,'String',groupList,'BackgroundColor','w');
+        
+    end
+
 end

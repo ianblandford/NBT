@@ -9,11 +9,12 @@ classdef nbt_PLI < nbt_CrossChannelBiomarker
     end
     properties (Constant)
         biomarkerType = {'nbt_CrossChannelBiomarker'};
+        units = {' '};
     end
     methods
         function BiomarkerObject = nbt_PLI(NumChannels)
             BiomarkerObject.pliVal = nan(NumChannels,NumChannels); 
-            BiomarkerObject.Biomarkers ={'pliVal'};
+            BiomarkerObject.biomarkers ={'pliVal'};
         end
     end
 

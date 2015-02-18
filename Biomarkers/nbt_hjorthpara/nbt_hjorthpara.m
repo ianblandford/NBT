@@ -8,6 +8,7 @@ classdef nbt_hjorthpara < nbt_SignalBiomarker
    end
    properties (Constant)
         biomarkerType = {'nbt_SignalBiomarker', 'nbt_SignalBiomarker', 'nbt_SignalBiomarker'};
+        units = {' ', ' ', ' '};
    end
 
    methods 
@@ -17,6 +18,7 @@ classdef nbt_hjorthpara < nbt_SignalBiomarker
            BiomarkerObject.complexity = nan(NumChannels,1);
            BiomarkerObject.primaryBiomarker = 'activtiy';
            BiomarkerObject.biomarkers = {'activity', 'mobility', 'complexity'};
+           BiomarkerObject.uniqueIdentifiers = cell(0,0);
        end
    end
 end 

@@ -8,7 +8,7 @@ DataObj             = nbt_Data;
 
 if ~exist('StatObj','var')
     for i=1:length(GrpObj.biomarkerList)
-        [DataObj.biomarkers{i}, DataObj.biomarkerIdentifiers{i}, DataObj.subBiomarkers{i}, DataObj.classes{i}] = nbt_parseBiomarkerIdentifiers(GrpObj.biomarkerList{i});
+        [DataObj.biomarkers{i}, DataObj.biomarkerIdentifiers{i}, DataObj.subBiomarkers{i}, DataObj.classes{i}, DataObj.units{i}] = nbt_parseBiomarkerIdentifiers(GrpObj.biomarkerList{i});
     end
 else
     DataObj.biomarkers = StatObj.group{grpNumber}.biomarkers;
@@ -16,6 +16,7 @@ else
     DataObj.biomarkerIdentifiers = StatObj.group{grpNumber}.biomarkerIdentifiers;
     DataObj.biomarkerIndex = StatObj.group{grpNumber}.biomarkerIndex;
     DataObj.classes = StatObj.group{grpNumber}.classes;
+    DataObj.units = StatObj.group{grpNumber}.units;
 end
 
 numBiomarkers       = length(DataObj.biomarkers);
@@ -34,14 +35,16 @@ switch GrpObj.databaseType
             %then we generate the NBTelement call.
             NBTelementCall = ['nbt_GetData(' biomarker ',{'] ;
             %loop over Group parameters
-            groupParameters = fields(GrpObj.parameters);
-            for gP = 1:length(groupParameters)
-                NBTelementCall = [NBTelementCall groupParameters{gP} ',{' ];
-                for gPP = 1:length(GrpObj.parameters.(groupParameters{gP}))-1
-                    NBTelementCall = [NBTelementCall '''' GrpObj.parameters.(groupParameters{gP}){gPP} ''','];
+            if (~isempty(GrpObj.parameters))
+                groupParameters = fields(GrpObj.parameters);
+                for gP = 1:length(groupParameters)
+                    NBTelementCall = [NBTelementCall groupParameters{gP} ',{' ];
+                    for gPP = 1:length(GrpObj.parameters.(groupParameters{gP}))-1
+                        NBTelementCall = [NBTelementCall '''' GrpObj.parameters.(groupParameters{gP}){gPP} ''','];
+                    end
+                    gPP = length(GrpObj.parameters.(groupParameters{gP}));
+                    NBTelementCall = [NBTelementCall '''' GrpObj.parameters.(groupParameters{gP}){gPP} '''};'];
                 end
-                gPP = length(GrpObj.parameters.(groupParameters{gP}));
-                NBTelementCall = [NBTelementCall '''' GrpObj.parameters.(groupParameters{gP}){gPP} '''};'];
             end
             %then we loop over biomarker identifiers -
             % should be stored as a cell in a cell

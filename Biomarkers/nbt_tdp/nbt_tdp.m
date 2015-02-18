@@ -8,12 +8,14 @@ classdef nbt_tdp < nbt_SignalBiomarker
    end
     properties (Constant)
         biomarkerType = {'nbt_SignalBiomarker','nbt_SignalBiomarker'};
+        units = {' ', ' '};
     end
    methods
        function biomarkerObject = nbt_tdp(NumChannels)
            biomarkerObject.f = nan(NumChannels,1);
            biomarkerObject.g = nan(NumChannels,1);
-           biomarkerObject.Biomarkers = {'f', 'g'};
+           biomarkerObject.biomarkers = {'f', 'g'};
+           biomarkerObject.uniqueIdentifiers = cell(0,0);
        end
    end
 end 

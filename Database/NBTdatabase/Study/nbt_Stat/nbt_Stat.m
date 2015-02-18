@@ -6,9 +6,6 @@ classdef (Abstract) nbt_Stat < nbt_Analysis
         testName
         testOptions
         pValues
-        sigPValues
-        ccPValues
-        qPValues
         statValues
         statStruct 
         statOptions = statset('UseParallel',true);    

@@ -7,6 +7,7 @@ classdef nbt_wackermann < nbt_SignalBiomarker
     end
     properties (Constant)
        biomarkerType = {'nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker'}; 
+       units = {' ',' ',' '};
     end
     
     methods
@@ -14,9 +15,9 @@ classdef nbt_wackermann < nbt_SignalBiomarker
             BiomarkerObject.sigma = nan(NumChannels,1);
             BiomarkerObject.phi = nan(NumChannels,1);
             BiomarkerObject.omega = nan(NumChannels,1);
-            
-            BiomarkerObject.PrimaryBiomarker = 'sigma';
-            BiomarkerObject.Biomarkers = {'sigma','phi','omega'};
+            BiomarkerObject.primaryBiomarker = 'sigma';
+            BiomarkerObject.biomarkers = {'sigma','phi','omega'};
+            BiomarkerObject.uniqueIdentifiers = cell(0,0);
         end
     end
 end

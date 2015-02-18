@@ -49,7 +49,7 @@ end
 
 for gp = 1:length(S.groups)
     for i = 1:length(bioms_ind)
-        [S.group{gp}.biomarkers{i}, S.group{gp}.biomarkerIdentifiers{i}, S.group{gp}.subBiomarkers{i}, S.group{gp}.classes{i}] = nbt_parseBiomarkerIdentifiers(bioms_name{bioms_ind(i)});
+        [S.group{gp}.biomarkers{i}, S.group{gp}.biomarkerIdentifiers{i}, S.group{gp}.subBiomarkers{i}, S.group{gp}.classes{i}, S.group{gp}.units{i}] = nbt_parseBiomarkerIdentifiers(bioms_name{bioms_ind(i)});
     end
 end
 

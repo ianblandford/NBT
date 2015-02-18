@@ -38,6 +38,7 @@ classdef nbt_MFDFA < nbt_SignalBiomarker
     end
     properties (Constant)
        biomarkerType = {'nbt_SignalBiomarker', 'nbt_SignalBiomarker'}; 
+       units =  {' ',' '};
     end
 
     methods
@@ -49,8 +50,8 @@ classdef nbt_MFDFA < nbt_SignalBiomarker
             biomarkerObject.alpha = cell(NumChannels,1);
             biomarkerObject.f_alpha = cell(NumChannels,1);
             
-            biomarkerObject.PrimaryBiomarker = 'alphaRange';
-            biomarkerObject.Biomarkers = {'alphaRange', 'HqRange'};
+            biomarkerObject.primaryBiomarker = 'alphaRange';
+            biomarkerObject.biomarkers = {'alphaRange', 'HqRange'};
         end
     end
 end

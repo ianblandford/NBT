@@ -6,6 +6,7 @@ classdef nbt_DTW < nbt_SignalBiomarker
     end
     properties (Constant)
         biomarkerType = {'nbt_SignalBiomarker'};
+        units = {' '};
     end
     methods
         % Now follows the definition of the function that makes a biomarker

@@ -29,18 +29,17 @@ classdef nbt_Power < nbt_SignalBiomarker
     end
     properties (Constant)
        biomarkerType = {'nbt_SignalBiomarker'}; 
+       units = {'\mu V^2'};
     end
     methods
-        function BiomarkerObject = nbt_Power(NumChannels,fbins,Unit)
+        function BiomarkerObject = nbt_Power(NumChannels,fbins)
             if nargin == 0
                 NumChannels = 1;
                 fbins = 1;
-                Unit = '\muV^2';
             else
                 BiomarkerObject.Power = nan(fbins,NumChannels);
-                BiomarkerObject.Biomarkers ={'Power'};
-                BiomarkerObject.PrimaryBiomarker = 'Power';
-                BiomarkerObject.BiomarkerUnits = Unit;
+                BiomarkerObject.biomarkers ={'Power'};
+                BiomarkerObject.primaryBiomarker = 'Power';
                 BiomarkerObject.Frequencybins = nan(fbins,1);
             end
         end

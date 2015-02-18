@@ -60,6 +60,7 @@ classdef nbt_CrossPhaseLocking < nbt_CrossChannelBiomarker
     end
     properties (Constant)
         biomarkerType = {'nbt_CrossChannelBiomarker','nbt_CrossChannelBiomarker'};
+        units = {' ', ' '};
     end
     
     methods
@@ -87,7 +88,7 @@ classdef nbt_CrossPhaseLocking < nbt_CrossChannelBiomarker
             %% Define fields for additional information
             BiomarkerObject.DateLastUpdate = datestr(now);
             BiomarkerObject.PrimaryBiomarker = 'CrossPhaseLocking';
-            BiomarkerObject.Biomarkers = {'crossplf','crossphase'};
+            BiomarkerObject.biomarkers = {'crossplf','crossphase'};
            
             
         end

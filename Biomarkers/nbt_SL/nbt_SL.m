@@ -16,6 +16,7 @@ classdef nbt_SL < nbt_SignalBiomarker
     end
     properties (Constant)
         biomarkerType = {'nbt_SignalBiomarker','nbt_SignalBiomarker','nbt_SignalBiomarker'};
+        units = {' ', ' ',' '};
     end
     methods        
         function BiomarkerObject = nbt_SL(NumChannels)
@@ -27,7 +28,7 @@ classdef nbt_SL < nbt_SignalBiomarker
             BiomarkerObject.SLm = cell(NumChannels);
             BiomarkerObject.medianSLm = nan(NumChannels,NumChannels);
             BiomarkerObject.meanSLm = nan(NumChannels,NumChannels);
-            BiomarkerObject.Biomarkers ={'SLm', 'medianSLm', 'meanSLm'};
+            BiomarkerObject.biomarkers ={'SLm', 'medianSLm', 'meanSLm'};
         end
     end
 
