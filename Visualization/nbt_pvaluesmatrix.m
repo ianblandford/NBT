@@ -1,5 +1,5 @@
 function nbt_pvaluesmatrix(StatObj)
-
+global NBTstudy
     
     % ---------compare p-values test results
     x = nan(size(StatObj.pValues,1),size(StatObj.pValues,2));
@@ -78,7 +78,7 @@ function nbt_pvaluesmatrix(StatObj)
             ylabel('Regions')
     end
     set(bh,'uicontextmenu',hh2);
-    title(['p-values of biomarkers for ', s.statfuncname, ' for ''', regexprep(nameG2,'_',''),''' vs ''',regexprep(nameG1,'_',''),''''],'fontweight','bold','fontsize',12)
+    title(['p-values of biomarkers for ', StatObj.testName, ' for ''', NBTstudy.groups{StatObj.groups(1)}.groupName,''' vs ''', NBTstudy.groups{StatObj.groups(2)}.groupName ,''''],'fontweight','bold','fontsize',12)
     
     uimenu(hh,'label','Plot topoplot','callback',{@plot_test2Groups,x,stat_results,regs,Group1,Group2});
     uimenu(hh2,'label','Plot boxplot','callback',{@plot_subj_vs_subj,x,stat_results,regs,Group1,Group2,regs_or_chans_name});
