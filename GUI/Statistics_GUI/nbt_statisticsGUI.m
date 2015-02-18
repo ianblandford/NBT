@@ -190,4 +190,29 @@ downButton = uicontrol(StatSelection,'Style','pushbutton','String','\/','Positio
     close(h)
     end
 
+% remove groups
+    function remove_groups(d1,d2)
+        group_ind = get(ListGroup,'Value');
+        group_name = get(ListGroup,'String');
+        
+        if length(group_name)>1 && length(group_ind)<length(group_name)
+            
+            n_groups = length(NBTstudy.groups);
+            NBTstudy.groups = NBTstudy.groups(setdiff([1:n_groups],group_ind));
+            groupList = groupList(setdiff([1:n_groups],group_ind));
+            
+            for i = 1:length(groupList)
+                oldName = groupList{i};
+                gr_num_loc = strfind(groupList{i},':');
+                groupList{i} = ['Group ',num2str(i),oldName(gr_num_loc-1:end)];
+            end
+        else
+            groupList = {''};
+        end
+        set(ListGroup,'String','');
+        set(ListGroup,'Value',length(groupList));
+        set(ListGroup,'Max',length(groupList),'fontsize',10,'String',groupList,'BackgroundColor','w');
+        
+    end
+
 end
