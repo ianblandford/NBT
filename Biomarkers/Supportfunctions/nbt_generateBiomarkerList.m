@@ -59,12 +59,12 @@ function obj = nbt_generateBiomarkerList(NBTstudy,grpNumber)
     
     % Specify the fixed order for the NBT Print plots
     %biomarkersFixedOrder = {'NBTe_nbt_PeakFit', 'NBTe_nbt_PeakFit', 'NBTe_nbt_DFA', 'NBTe_nbt_PeakFit', 'NBTe_nbt_OscBurst', 'NBTe_nbt_PeakFit', 'NBTe_nbt_PeakFit', 'NBTe_nbt_AmpCorr', 'NBTe_nbt_Coherence', 'NBTe_nbt_Phaselock'};
-    %subBiomarkersFixedOrder = {'RelativePower', 'AbsolutePower', 'MarkerValues', 'CentralFreq', 'CumulativeLifetime', 'Bandwidth', 'SpectralEdge', 'MarkerValues', 'coherence', 'PLV'};
+    %subBiomarkersFixedOrder = {'RelativePower_', 'AbsolutePower', 'MarkerValues', 'CentralFreq', 'CumulativeLifetime', 'Bandwidth', 'SpectralEdge', 'MarkerValues', 'coherence', 'PLV'};
     freqBandsFixedOrder = {'1  4', '4  7', '8  13', '13  30', '30  45'};
     freqBandsFixedOrderNames = {'Delta', 'Theta', 'Alpha', 'Beta', 'Gamma'};
     
-    biomarkersFixedOrder = {'', '', 'NBTe_nbt_DFA', 'PeakFit', 'NBTe_nbt_OscBursts'};
-    subBiomarkersFixedOrder = {'', '', 'markerValues', 'CentralFreq', 'CumulativeLifetime'};
+    biomarkersFixedOrder = {'NBTe_nbt_PeakFit', 'NBTe_nbt_PeakFit', 'NBTe_nbt_DFA', 'NBTe_nbt_PeakFit', 'NBTe_nbt_OscBursts','','','','',''};
+    subBiomarkersFixedOrder = {'RelativePower', 'AbsolutePower', 'markerValues', 'CentralFreq', 'CumulativeLifetime','','','','',''};
     
     % Iteate along all fixed biomarkers and then check whether a present
     % biomarker corresponds to the fixed biomarker and store it in the
@@ -72,15 +72,25 @@ function obj = nbt_generateBiomarkerList(NBTstudy,grpNumber)
     % in the fixed NBT Print order.
     obj.group{grpNumber}.biomarkerIndex = zeros(1,50);
     i = 1;  
-    for biomarker = 1 : 5
+    for biomarker = 1 : 10
         for freqBand = 1 : 5
             for presentBiomarker = 1 : length(biomarkerList)
-                currentBiom = biomarkerList{presentBiomarker};
+                currentBiom = biomarkerList{presentBiomarker}
+                %% For all biomarkers except PeakFit
                 if strfind(currentBiom,biomarkersFixedOrder{biomarker}) & strfind(currentBiom,subBiomarkersFixedOrder{biomarker}) & strfind(currentBiom,freqBandsFixedOrder{freqBand})
                     obj.group{grpNumber}.biomarkers{i} = biomarkersFixedOrder{biomarker};
                     obj.group{grpNumber}.subBiomarkers{i} = subBiomarkersFixedOrder{biomarker};
 
                     obj.group{grpNumber}.biomarkerIdentifiers{i} = {'frequencyRange' freqBandsFixedOrder{freqBand}};
+                    obj.group{grpNumber}.classes{i} = {'SignalBiomarker'};
+                    obj.group{grpNumber}.biomarkerIndex((biomarker-1)*5 + freqBand) = i;
+                    i = i + 1;
+                elseif strfind(currentBiom,biomarkersFixedOrder{biomarker}) & strfind(currentBiom,subBiomarkersFixedOrder{biomarker}) & strfind(currentBiom,freqBandsFixedOrderNames{freqBand})
+                    %% For PeakFit
+                    obj.group{grpNumber}.biomarkers{i} = biomarkersFixedOrder{biomarker};
+                    obj.group{grpNumber}.subBiomarkers{i} = [subBiomarkersFixedOrder{biomarker} '_' freqBandsFixedOrderNames{biomarker}];
+
+                    obj.group{grpNumber}.biomarkerIdentifiers{i} = [];
                     obj.group{grpNumber}.classes{i} = {'SignalBiomarker'};
                     obj.group{grpNumber}.biomarkerIndex((biomarker-1)*5 + freqBand) = i;
                     i = i + 1;
