@@ -137,8 +137,6 @@ downButton = uicontrol(StatSelection,'Style','pushbutton','String','\/','Positio
                 NBTstudy.groups{end}.grpNumber = length(NBTstudy.groups);
                 NBTstudy.groups{end}.groupType = 'difference';
                 NBTstudy.groups{end}.groupDifference = group_ind;
-                %NBTstudy.groupName = ;
-                %NBTstudy.groups{end}.subjectList = [Data1.subjectList{1} Data2.subjectList{1}];
 
                 scrsz = get(0,'ScreenSize');
                 % fit figure to screen, adapt to screen resolution
@@ -172,22 +170,24 @@ downButton = uicontrol(StatSelection,'Style','pushbutton','String','\/','Positio
         end
 
     function confirm_diff_group(d1,d2,text_diff2,text_diff4)
-    nameg1 = get(text_diff2,'string');
-    %             sep = findstr(nameg1,':');
-    %             nameg1 = nameg1(sep+1:end);
-    nameg2 = get(text_diff4,'string');
-    %             sep = findstr(nameg2,':');
-    %             nameg2 = nameg2(sep+1:end);
-
-    new_group_name = [nameg1 ' minus ' nameg2];
-    NBTstudy.groups{end}.groupName = new_group_name;
-
-    groupList{end+1} = ['Group ' num2str(length(NBTstudy.groups)) ' : ' new_group_name];
-    set(ListGroup,'Max',length(groupList),'fontsize',10,'String',groupList,'BackgroundColor','w');
-
-    %assignin('base','NBTstudy',NBTstudy)
-    h = get(0,'CurrentFigure');
-    close(h)
+        group_ind = get(ListGroup,'Value'); % obj.groups
+        nameg1 = get(text_diff2,'string');
+        %             sep = findstr(nameg1,':');
+        %             nameg1 = nameg1(sep+1:end);
+        nameg2 = get(text_diff4,'string');
+        %             sep = findstr(nameg2,':');
+        %             nameg2 = nameg2(sep+1:end);
+        
+        new_group_name = [nameg1 ' minus ' nameg2];
+        NBTstudy.groups{end}.groupName = new_group_name;
+        NBTstudy.groups{end}.parameters = [NBTstudy.groups{group_ind(1)}.parameters; NBTstudy.groups{group_ind(2)}.parameters];
+        
+        groupList{end+1} = ['Group ' num2str(length(NBTstudy.groups)) ' : ' new_group_name];
+        set(ListGroup,'Max',length(groupList),'fontsize',10,'String',groupList,'BackgroundColor','w');
+        
+        %assignin('base','NBTstudy',NBTstudy)
+        h = get(0,'CurrentFigure');
+        close(h)
     end
 
 % remove groups

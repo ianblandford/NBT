@@ -2,8 +2,18 @@ function  DataObj = getData(GrpObj,StatObj)
 %Get data loads the data from a Database depending on the settings in the
 %Group Object and the Statistics Object.
 narginchk(1,2);
+
+global NBTstudy
+try
+    NBTstudy = evalin('base','NBTstudy');
+catch
+   evalin('base','global NBTstudy');
+   evalin('base','NBTstudy = nbt_Study;');
+end
+
 %grpNumber refers to the ordering in the StatObj
-grpNumber = GrpObj.grpNumber;
+%grpNumber = GrpObj.grpNumber;
+grpNumber = find(ismember(StatObj.groups, GrpObj.grpNumber)==1);
 DataObj             = nbt_Data;
 
 if ~exist('StatObj','var')
@@ -29,8 +39,32 @@ switch GrpObj.databaseType
         %In this case we load the data directly from the NBTelements in base.
         %We loop over DataObj.biomarkers and generate a cell
         for bID=1:numBiomarkers
+            
+            if isempty(GrpObj.groupDifference) % regular group
+                DataObj = createDataObj(DataObj,bID,GrpObj);
+            else
+                DataObj = createDataObj(DataObj,bID,NBTstudy.groups{GrpObj.groupDifference(1)});
+                DataObj2 = createDataObj(DataObj,bID,NBTstudy.groups{GrpObj.groupDifference(2)});
+                DataObj.dataStore = cellfun(@minus, DataObj.dataStore{1}, DataObj2.dataStore{1},'Un',0);
+                DataObj.subjectList = [DataObj.subjectList; DataObj2.subjectList];
+                DataObj.pool = [DataObj.pool; DataObj2.pool];
+                DataObj.poolKey = [DataObj.poolKey; DataObj2.poolKey];
+            end
+            
+         end
+    case 'File'
+end
+
+DataObj.numSubjects = length(DataObj.subjectList{1,1}); %we assume there not different number of subjects per biomarker!
+DataObj.numBiomarkers = size(DataObj.dataStore,1);
+% Call outputformating here >
+
+
+    function DataObj = createDataObj(DataObj,bID,GrpObj)
+       
             biomarker = DataObj.biomarkers{bID};
             subBiomarker = DataObj.subBiomarkers{bID};
+%            NBTelementCall = generateNBTelementCall(GrpObj);
             %then we generate the NBTelement call.
             NBTelementCall = ['nbt_GetData(' biomarker ',{'] ;
             %loop over Group parameters
@@ -76,13 +110,7 @@ switch GrpObj.databaseType
                 %Only one Subject?
              %   disp('Assuming only One subject?');
              %   [DataObj.subjectList{bID,1}] = evalin('base', 'constant{nbt_searchvector(constant , {''Subject''}),2};');
-            end
-        end
-    case 'File'
-end
-
-DataObj.numSubjects = length(DataObj.subjectList{1,1}); %we assume there not different number of subjects per biomarker!
-DataObj.numBiomarkers = size(DataObj.dataStore,1);
-% Call outputformating here >
+            end    
+    end
 
 end
