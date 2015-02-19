@@ -1,7 +1,7 @@
 function GrpObj = defineSubjectGroupGUI(GrpObj, InfoCell, BioCell, IdentCell)
 %defineGroupGUI returns a nbt_Group object based on the selection made in
 %the GUI
-for m = 1:length(InfoCell)
+for m = 1:size(InfoCell,1)
    InfoCellList{m} = InfoCell{m,1}; 
 end
 
