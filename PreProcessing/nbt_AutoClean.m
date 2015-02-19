@@ -87,7 +87,7 @@ if(cznotfound)
 end
 
 
-%Downsample to 250 Hz
+%Downsample
 if(exist('ResampleFS','var'))
     if(~isempty(ResampleFS))
        [Signal, SignalInfo] = nbt_EEGLABwrp(@pop_resample, Signal, SignalInfo, [], 0, ResampleFS);

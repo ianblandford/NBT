@@ -20,7 +20,7 @@ if(auto ==1)
     SignalInfo.signalName = name;
     SignalInfo.signalSHA256 = nbt_getHash(Signal);
     eval(['[',name,'Info]=SignalInfo;']);
-    fn=SignalInfo.subjectInfo(1:end-9);
+    fn=SignalInfo.subjectInfo;
 
     if(isempty(directoryname))
         disp('select directory to save NBT file')

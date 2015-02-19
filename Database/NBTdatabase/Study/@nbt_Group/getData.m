@@ -105,7 +105,7 @@ end
             end
             NBTelementCall = NBTelementCall(1:end-1); % to remove ';'
             NBTelementCall = [NBTelementCall '},' ''''  subBiomarker '''' ');'];
-            [DataObj.dataStore{bID,1}, DataObj.pool{bID,1},  DataObj.poolKey{bID,1}] = evalin('base', NBTelementCall);
+            [DataObj.dataStore{bID,1}, DataObj.pool{bID,1},  DataObj.poolKey{bID,1}, DataObj.units{bID,1}] = evalin('base', NBTelementCall);
             snb = strfind(NBTelementCall,',');
             subNBTelementCall = NBTelementCall(snb(1):snb(end)-1);
             try
