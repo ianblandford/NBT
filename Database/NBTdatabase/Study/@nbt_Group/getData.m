@@ -13,7 +13,7 @@ end
 
 %grpNumber refers to the ordering in the StatObj
 %grpNumber = GrpObj.grpNumber;
-grpNumber = find(ismember(StatObj.groups, GrpObj.grpNumber)==1);
+
 DataObj             = nbt_Data;
 
 if ~exist('StatObj','var')
@@ -21,6 +21,7 @@ if ~exist('StatObj','var')
         [DataObj.biomarkers{i}, DataObj.biomarkerIdentifiers{i}, DataObj.subBiomarkers{i}, DataObj.classes{i}, DataObj.units{i}] = nbt_parseBiomarkerIdentifiers(GrpObj.biomarkerList{i});
     end
 else
+    grpNumber = find(ismember(StatObj.groups, GrpObj.grpNumber)==1);
     DataObj.biomarkers = StatObj.group{grpNumber}.biomarkers;
     DataObj.subBiomarkers = StatObj.group{grpNumber}.subBiomarkers;
     DataObj.biomarkerIdentifiers = StatObj.group{grpNumber}.biomarkerIdentifiers;
