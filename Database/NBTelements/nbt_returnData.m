@@ -1,5 +1,5 @@
 %Copyright (C) 2010 Simon-Shlomo Poil
-function [Data, Pool, PoolKey]=nbt_returnData(NBTelement,Pool,PoolKey, SubBiomarker)
+function [Data, Pool, PoolKey, Units]=nbt_returnData(NBTelement,Pool,PoolKey, SubBiomarker)
 error(nargchk(3,4,nargin));
 if(isempty(Pool))
     Data = [];
@@ -53,11 +53,13 @@ if(~exist('SubBiomarker','var'))
     else
         Data = NBTelement.Data((str2double(strtok(DataID(IncludePool),'.'))));
     end
+    Units = NBTelement.BiomarkerUnit;
 else
     for mm=1:length(NBTelement.Biomarkers)
         if(strcmp(NBTelement.Biomarkers{mm,1}, SubBiomarker))
             for i=1:length(IncludePool)
             Data{i,1} =  NBTelement.Data{mm,(str2double(strtok(DataID(IncludePool(i)),'.')))};
+            Units = NBTelement.BiomarkerUnit{mm};
             end
             break
         end

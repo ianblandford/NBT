@@ -119,19 +119,19 @@ if(~auto)
             indelec = false(size(indelec,1),size(indelec,2));
             indelec(temp) =1;
         end
-        if(~isempty(EEG.NBTinfo.BadChannels))
-            EEG.NBTinfo.BadChannels(indelec) = 1;
+        if(~isempty(EEG.NBTinfo.badChannels))
+            EEG.NBTinfo.badChannels(indelec) = 1;
         else
-            EEG.NBTinfo.BadChannels = indelec;
+            EEG.NBTinfo.badChannels = indelec;
         end
     else
         disp('No bad channels found.')
     end
 else
-    if(~isempty(EEG.NBTinfo.BadChannels))
-        EEG.NBTinfo.BadChannels(indelec) = 1;
+    if(~isempty(EEG.NBTinfo.badChannels))
+        EEG.NBTinfo.badChannels(indelec) = 1;
     else
-        EEG.NBTinfo.BadChannels = indelec;
+        EEG.NBTinfo.badChannels = indelec;
     end
 end
 end

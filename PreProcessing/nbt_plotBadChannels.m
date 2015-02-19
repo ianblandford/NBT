@@ -1,5 +1,5 @@
 function nbt_plotBadChannels(EEG)
-        badchan = find(EEG.NBTinfo.BadChannels);
+        badchan = find(EEG.NBTinfo.badChannels);
         if(~isempty(badchan))
         colors = cell(1,size(EEG.data,1)); colors(:) = { 'k' };
         colors(badchan) = { 'r' }; colors = colors(end:-1:1);

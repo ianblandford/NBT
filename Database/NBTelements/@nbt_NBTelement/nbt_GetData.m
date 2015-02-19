@@ -50,7 +50,7 @@
 % ChangeLog - see version control log for details
 % First version written by Simon-Shlomo Poil
 
-function [Data, Pool, PoolKey] = nbt_GetData(NBTelement, Parameters, SubBiomarker)
+function [Data, Pool, PoolKey, Units] = nbt_GetData(NBTelement, Parameters, SubBiomarker)
 error(nargchk(2,3,nargin));
 %% First find structure.
 StructureTable = cell(1,1);
@@ -128,9 +128,9 @@ end
 
 %Return Data
 if(exist('SubBiomarker','var'))
-    [Data, Pool, PoolKey]=nbt_returnData(NBTelement,Pool,PoolKey, SubBiomarker);
+    [Data, Pool, PoolKey, Units]=nbt_returnData(NBTelement,Pool,PoolKey, SubBiomarker);
 else
-    [Data, Pool, PoolKey]=nbt_returnData(NBTelement,Pool,PoolKey);
+    [Data, Pool, PoolKey, Units]=nbt_returnData(NBTelement,Pool,PoolKey);
 end
 end
 
