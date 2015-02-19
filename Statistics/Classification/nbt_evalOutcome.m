@@ -57,7 +57,7 @@
 % See Readme.txt for additional copyright information.
 % ---------------------------------------------------------------------------------------
 
-function [FP, TP, FN, TN, SE, SP, PP, NN, LP, LN, MM, AUC, H, ACC]=nbt_evalOutcome(pp, outcome, Threshold)
+function [FP, TP, FN, TN, SE, SP, PP, NN, LP, LN, MM, ACC, AUC, H]=nbt_evalOutcome(pp, outcome, Threshold)
 error(nargchk(2, 3, nargin))
 if(~exist('Threshold','var'))
     Threshold = 0.5;
@@ -68,6 +68,7 @@ if(length(GrpID) <= 2)
         TP = length(find(pp(outcome==1)>=Threshold));
         FN = length(find(pp(outcome==1)<Threshold));
         TN = length(find(pp(outcome==0)<Threshold));
+        ACC = (TP+TN)/(TP+TN+FP+FN);
         SE = TP/(TP+FN);
         SP = TN/(TN+FP);
         PP = TP /(TP + FP);
