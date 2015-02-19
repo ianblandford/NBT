@@ -47,8 +47,20 @@ switch GrpObj.databaseType
                 DataObj = createDataObj(DataObj,bID,GrpObj);
             else
                 DataObj = createDataObj(DataObj,bID,NBTstudy.groups{GrpObj.groupDifference(1)});
-                DataObj2 = createDataObj(DataObj,bID,NBTstudy.groups{GrpObj.groupDifference(2)});
-                DataObj.dataStore = cellfun(@minus, DataObj.dataStore{1}, DataObj2.dataStore{1},'Un',0);
+                DataObj2 = createDataObj(DataObj,bID,NBTstudy.groups{GrpObj.groupDifference(2)});                
+                d1 = DataObj.dataStore{bID};
+                d2 = DataObj2.dataStore{bID};
+                for k=1:size(d1)
+                    d1{k} = d1{k}-d2{k};
+                    %d3{k} = abs(d1{k}-d2{k}); % abs difference
+                    %d3{k} = (d1{k}-d2{k}).^2; % square difference
+                end
+                DataObj.dataStore{1} = d1';
+
+%                DataObj.dataStore = cellfun(@minus, DataObj.dataStore{1}, DataObj2.dataStore{1},'Un',0);
+%                 for k=1:size(DataObj.dataStore,1)
+%                     DataObj.dataStore{k} = num2cell(DataObj.dataStore{k}');
+%                 end
                 DataObj.subjectList = [DataObj.subjectList; DataObj2.subjectList];
                 DataObj.pool = [DataObj.pool; DataObj2.pool];
                 DataObj.poolKey = [DataObj.poolKey; DataObj2.poolKey];

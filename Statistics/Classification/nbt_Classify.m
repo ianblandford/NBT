@@ -11,15 +11,36 @@ end
 
 %following should be removed in later versions and be set before the call
 %of nbt_Classify
-ClassificationStatObj.nCrossVals = 100;
+if isempty(ClassificationStatObj.nCrossVals) 
+    ClassificationStatObj.nCrossVals = 100; 
+end
 NCrossVals = ClassificationStatObj.nCrossVals;
+% temp=Data_groups{1};
 ClassificationStatObj.channels = 1:size(Data_groups{1}{1,1},1);
 warning('Now just using all channels - .channels should be set properly')
 ClassificationStatObj.classificationType = 'crossValidate';
 Type = 'crossValidate';
 ClassificationStatObj.uniqueBiomarkers = size(Data_groups{1}.biomarkers,2);
 
+if ~isempty(ClassificationStatObj.dimensionReduction)
 
+    switch ClassificationStatObj.dimensionReduction
+        case 'PCA'
+            
+            [pc,score,latent] = princomp(DataMatrix);
+            tmp=cumsum(latent);
+            nr = find(tmp/tmp(end)>0.95,1);
+            DataMatrix = score(:,1:nr);
+            
+            ClassificationStatObj.removeFeaturesType = [];
+            
+        case 'PLS'
+            
+        case 'ICA'
+    end
+    
+end
+    
 % n_group1=size(BCell{1},2); % no of subjects in the first group
 % n_group2=size(BCell{2},2); % no of subjects in the second group
 
@@ -83,8 +104,7 @@ switch lower(Type)
             nbt_RandomSubsampler( DataMatrix,Outcome,TestLimit,'stratified');
         %We use a stratified sample to preserve the class balance.
         %% Feature selction - we first prune the biomarkers given to the classsification algorithm
-        % [TrainMatrix, BiomsToUse] = nbt_RemoveFeatures( TrainMatrix,TrainOutcome,'ttest2',ChannelsToUse, size(BCell{1},3));
-        
+        % [TrainMatrix, BiomsToUse] = nbt_RemoveFeatures( TrainMatrix,TrainOutcome,'ttest2',ChannelsToUse, size(BCell{1},3));       
         
         % call nbt_TrainClassifier
         [ClassificationStatObj] = nbt_TrainClassifier(TrainMatrix,TrainOutcome, ClassificationStatObj);
@@ -102,7 +122,7 @@ switch lower(Type)
         % call nbt_TestClassifier
         [pp, ClassificationStatObj] = nbt_UseClassifier(TestMatrix, ClassificationStatObj);
         %eval outcome
-        [FP, TP, FN, TN, SE, SP, PP, NN, LP, LN, MM, AUC, H_measure] = nbt_evalOutcome(pp, TestOutcome);
+        [FP, TP, FN, TN, SE, SP, PP, NN, LP, LN, MM, ACC, AUC, H_measure] = nbt_evalOutcome(pp, TestOutcome);
         toc
     case 'train'
         % Type Train
@@ -111,7 +131,7 @@ switch lower(Type)
         % Type Use
         [pp, ClassificationStatObj] = nbt_UseClassifier(DataMatrix, ClassificationStatObj);
         %eval outcome
-        [FP, TP, FN, TN, SE, SP, PP, NN, LP, LN, MM] = nbt_evalOutcome(pp, TestOutcome);
+        [FP, TP, FN, TN, SE, SP, PP, NN, LP, LN, MM, ACC] = nbt_evalOutcome(pp, TestOutcome);
     otherwise
         error('The specified Type is not known - Please use either CrossValidate, Validate, Train, or Use')
 end
@@ -123,13 +143,35 @@ ClassificationStatObj.outcomeEval.FalseNegative =  FN;
 ClassificationStatObj.outcomeEval.TrueNegative =  TN;
 ClassificationStatObj.outcomeEval.Sensitivity =  SE;
 ClassificationStatObj.outcomeEval.Specificity =  SP;
+ClassificationStatObj.outcomeEval.Accuracy =  ACC;
 ClassificationStatObj.outcomeEval.PositivePredictiveValue  =  PP;
 ClassificationStatObj.outcomeEval.NegativePredictiveValue =  NN;
 ClassificationStatObj.outcomeEval.LikelihoodRatioPos =  LP;
 ClassificationStatObj.outcomeEval.LikelihoodRatioNeg  =  LN;
 ClassificationStatObj.outcomeEval.MatthewCorr =  MM;
-ClassificationStatObj.outcomeEval.AUC=AUC;
+ClassificationStatObj.outcomeEval.AUC = AUC;
 ClassificationStatObj.modelVarsStore = modelVars;
+
+figure('Name','Classification performance')
+subplot(2,2,1)
+boxplot(ACC)
+set(gca,'YLim',[0.5 1])
+title('Accuracy')
+
+subplot(2,2,2)
+boxplot(SE)
+set(gca,'YLim',[0.5 1])
+title('Sensitivity (SE)')
+
+subplot(2,2,3)
+boxplot(SP)
+set(gca,'YLim',[0.5 1])
+title('Specificity (SP)')
+
+subplot(2,2,4)
+boxplot(PP)
+set(gca,'YLim',[0.5 1])
+title('Precision (PP)')
 
 %save s s
 
@@ -141,7 +183,6 @@ ClassificationStatObj.modelVarsStore = modelVars;
 %                 s.EAUC=EAUC;
 %                 s.HAE=HAE;
 %                 s.HE=HE;
-
 
 
 end
@@ -191,6 +232,6 @@ end
 
 [ClassificationStatObj] = nbt_TrainClassifier(TrainMatrix,TrainOutcome, ClassificationStatObj);
 [pp, ClassificationStatObj ] = nbt_UseClassifier(TestMatrix, ClassificationStatObj);
-[FP, TP, FN, TN, SE, SP, PP, NN, LP, LN, MM, AUC, H, ACC] = nbt_evalOutcome(pp, TestOutcome);
+[FP, TP, FN, TN, SE, SP, PP, NN, LP, LN, MM, ACC, AUC, H] = nbt_evalOutcome(pp, TestOutcome);
 modelVars = ClassificationStatObj.modelVars;
 end

@@ -53,6 +53,15 @@ for gp = 1:length(S.groups)
     end
 end
 
+if strcmp(class(S),'nbt_lssvm')
+    %cv_type = input('Cross validation: 10-fold or random subsampler? (F/RS)');
+    S.nCrossVals = input('Input the desired number of cross-validations (e.g. 100) ');
+    dimRed = input('Would you like to perform dimensionality reduction first? Y/N ','s');
+    if strcmp(dimRed,'Y')
+        S.dimensionReduction = input('Which kind of dimensionality reduction? PCA/PLS/ICA? ','s');
+    end    
+end
+
 S = S.calculate(NBTstudy);
 
 NBTstudy.statAnalysis{length(NBTstudy.statAnalysis)+1} = S;
