@@ -21,6 +21,5 @@ classdef nbt_ttest2 < nbt_UnPairedStat
             end
         end
     end
-    
 end
 

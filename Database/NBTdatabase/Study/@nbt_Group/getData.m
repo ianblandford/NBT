@@ -28,7 +28,6 @@ else
         DataObj.biomarkerIndex = StatObj.group{grpNumber}.biomarkerIndex;
     end
     DataObj.classes = StatObj.group{grpNumber}.classes;
-    %DataObj.units = StatObj.group{grpNumber}.units;
 end
 
 numBiomarkers       = length(DataObj.biomarkers);
