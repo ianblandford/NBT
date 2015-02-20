@@ -12,6 +12,7 @@ catch
 end
 
 
+%grpNumber refers to the ordering in the StatObj
 grpNumber = GrpObj.grpNumber;
 %grpNumber = find(StatObj.groups == GrpObj.grpNumber);
 DataObj             = nbt_Data;
