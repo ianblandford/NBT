@@ -105,7 +105,7 @@ function nbt_Print(NBTstudy,groups)
                         meanGroup1 = mean(chanValuesGroup1');
                         plotValues(biomID,:) = meanGroup1;
                     end
-                    biomarkerIndex = StatObj.group{groups}.biomarkerIndex;
+                    biomarkerIndex = StatObj.group{1}.biomarkerIndex;
                     units = StatObj.group{groups}.units;
                 end
             elseif size(groups,2) == 2
@@ -154,10 +154,15 @@ function nbt_Print(NBTstudy,groups)
     % Set custom names for frequency bands?
     declareFreqBands();
     
-    perPage = 25;
+    if nBioms < 25
+        perPage = nBioms;
+    else
+        perPage = 25;
+    end
+    
     nPages=ceil(nBioms/25);
     fgh=[];
-    for page = 1 : 1
+    for page = 1 : nPages
         %% Generates a new figure for each page defined by iotta
         switch dataType
             case {'mean' 'raw'}
@@ -189,7 +194,7 @@ function nbt_Print(NBTstudy,groups)
         end
         
         for i = page * perPage - perPage + 1 : (page * perPage)
-            %% LOADS DATA TO BE VISUALIZED IN SUBPLOT  
+            %% LOADS DATA TO BE VISUALIZED IN SUBPLOT
             if biomarkerIndex(i) ~= 0
                 if nGroups > 1 % 2 groups
                    biomholder = plotValues(biomarkerIndex(i),:);
