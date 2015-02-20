@@ -71,11 +71,12 @@ function obj = nbt_generateBiomarkerList(NBTstudy,grpNumber)
     % analysis object. This will make sure that the biomarkers are stored
     % in the fixed NBT Print order.
     obj.group{grpNumber}.biomarkerIndex = zeros(1,50);
-    i = 1;  
-    for biomarker = 1 : 10
-        for freqBand = 1 : 5
-            for presentBiomarker = 1 : length(biomarkerList)
-                currentBiom = biomarkerList{presentBiomarker}
+    i = 1;
+    for presentBiomarker = 1 : length(biomarkerList)
+        currentBiom = biomarkerList{presentBiomarker};
+
+        for biomarker = 1 : 10
+            for freqBand = 1 : 5
                 %% For all biomarkers except PeakFit
                 if strfind(currentBiom,biomarkersFixedOrder{biomarker}) & strfind(currentBiom,subBiomarkersFixedOrder{biomarker}) & strfind(currentBiom,freqBandsFixedOrder{freqBand})
                     obj.group{grpNumber}.biomarkers{i} = biomarkersFixedOrder{biomarker};

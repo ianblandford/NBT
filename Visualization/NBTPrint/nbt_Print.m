@@ -48,6 +48,7 @@ function nbt_Print(NBTstudy,groups)
                     plotValues(biomID,:) = chanValuesGroup1(:,subjectNumber);
                 end
                 biomarkerIndex = StatObj.group{groups}.biomarkerIndex;
+                units = StatObj.group{groups}.units;
             elseif size(groups,2) == 2
                 %%% Get groups NBTstudy
                 Group1 = NBTstudy.groups{groups(1)};
@@ -76,31 +77,37 @@ function nbt_Print(NBTstudy,groups)
                 biomarkerIndex = StatObjGroup1.group{1}.biomarkerIndex;
             else
                 error('nbt_Print can not handle more than two groups');
+                units = StatObjGroup1.group{groups}.units;
             end            
         case 'mean'
             disp('Computing means');
-            if size(groups,2) == 1          
+            if size(groups,2) == 1    
                 %%% Get groups NBTstudy
                 Group1 = NBTstudy.groups{groups};
                 
-                %%% Generate fixed biomarker list
-                StatObj = nbt_generateBiomarkerList(NBTstudy,groups);
-                
-                %%% Get the data
-                Data = getData(Group1,StatObj);
-                
-                %%% Number of biomarkers
-                nBioms = Data.numBiomarkers;
-                
-                plotValues = zeros(nBioms,129);
-                for biomID = 1 : nBioms
-                    %% Get raw biomarker data, compute means and store them
-                    chanValuesGroup1 = Data{biomID,1};
-                    meanGroup1 = mean(chanValuesGroup1');   
+                %%% Check whether the group is a difference group
+                if ~isempty(Group1.groupType)
+                    
+                else
+                    %%% Generate fixed biomarker list
+                    StatObj = nbt_generateBiomarkerList(NBTstudy,groups);
 
-                    plotValues(biomID,:) = meanGroup1;
+                    %%% Get the data
+                    Data = getData(Group1,StatObj);
+
+                    %%% Number of biomarkers
+                    nBioms = Data.numBiomarkers;
+
+                    plotValues = zeros(nBioms,129);
+                    for biomID = 1 : nBioms
+                        %% Get raw biomarker data, compute means and store them
+                        chanValuesGroup1 = Data{biomID,1};
+                        meanGroup1 = mean(chanValuesGroup1');
+                        plotValues(biomID,:) = meanGroup1;
+                    end
+                    biomarkerIndex = StatObj.group{groups}.biomarkerIndex;
+                    units = StatObj.group{groups}.units;
                 end
-                biomarkerIndex = StatObj.group{groups}.biomarkerIndex;
             elseif size(groups,2) == 2
                 %%% Get groups NBTstudy
                 Group1 = NBTstudy.groups{groups(1)};
@@ -127,6 +134,7 @@ function nbt_Print(NBTstudy,groups)
                     plotValues(biomID,:) = meanGroup2 - meanGroup1;
                 end
                 biomarkerIndex = StatObjGroup1.group{1}.biomarkerIndex;
+                units = StatObjGroup1.group{1}.units;
             else
                 error('nbt_Print can not handle more than two groups');
             end
@@ -137,6 +145,9 @@ function nbt_Print(NBTstudy,groups)
         case 'cstm'
     end
 
+    disp('Specify plot quality:');
+    plotQual = input('1: low (fast / analysis), 2: high (slow / print), 3: very high (very slow / final print) ');
+        
     %%% Get the channel locations from one of the two groups
     chanLocs = Group1.chanLocs;
 
@@ -146,7 +157,7 @@ function nbt_Print(NBTstudy,groups)
     perPage = 25;
     nPages=ceil(nBioms/25);
     fgh=[];
-    for page = 1 : nPages
+    for page = 1 : 1
         %% Generates a new figure for each page defined by iotta
         switch dataType
             case {'mean' 'raw'}
@@ -157,19 +168,27 @@ function nbt_Print(NBTstudy,groups)
                 end
         end      
         
-        xSize =27; ySize = 19.;
+        xSize = 27;
+        ySize = 19.;
         xLeft = (30-xSize)/2; yTop = (21-ySize)/2;
         set(gcf,'PaperPosition',[xLeft yTop xSize ySize]);
         set(gcf,'Position',[0 0 xSize*50 ySize*50]);
+        set(gcf, 'PaperOrientation', 'landscape');
+        
+        if plotQual == 2
+            set(gcf,'Renderer','painters');
+            circgrid = 300;
+            gridscale = 100;
+        elseif plotQual == 3
+            set(gcf,'Renderer','painters');
+            circgrid = 1000;
+            gridscale = 300;
+        else
+            circgrid = 100;
+            gridscale = 32;           
+        end
         
         for i = page * perPage - perPage + 1 : (page * perPage)
-            % Loads p-vals when there is a group difference
-%             if ~isempty(G(group_ind).group_difference) && ~isempty(char(biom(i)))
-%                 sig_biom=find(stat_results(1,pzindex(i)).p<alpha);
-%             else
-%                 sig_biom=[];
-%             end
-            
             %% LOADS DATA TO BE VISUALIZED IN SUBPLOT  
             if biomarkerIndex(i) ~= 0
                 if nGroups > 1 % 2 groups
@@ -177,8 +196,6 @@ function nbt_Print(NBTstudy,groups)
                 else
                    biomholder = plotValues(biomarkerIndex(i),:);
                 end
-            else
-                biomholder = 0;
             end
 
             switch VIZ_SIG
@@ -192,16 +209,14 @@ function nbt_Print(NBTstudy,groups)
             end
             %Check if all biomarker vals are NaN, which often happens for
             % alpha and beta peak frequencies
-            if any(~isnan(biomholder))==0
-                sig_biom = [];
-                biomholder = zeros(size(chanLocs)).';
-            end
+%             if any(~isnan(biomholder))==0
+%                 sig_biom = [];
+%                 biomholder = zeros(size(chanLocs)).';
+%             end
             
-%             subaxis(1+ceil(perpage/5),5,6+mod(i-1,25), 'Spacing', 0.03, 'Padding', 0, 'Margin', 0)
-            
-            if size(biomholder,2) == length(chanLocs)
-                subaxis(6,5,6+mod(i-1,25), 'Spacing', 0.03, 'Padding', 0, 'Margin', 0)
-                
+            subaxis(6,5,6+mod(i-1,25), 'Spacing', 0.03, 'Padding', 0, 'Margin', 0)
+            axis off;
+            if biomarkerIndex(i) ~= 0               
                 if nGroups == 1
                     Red_cbrewer5colors = load('Red_cbrewer5colors','Red_cbrewer5colors');
                     Red_cbrewer5colors = Red_cbrewer5colors.Red_cbrewer5colors;
@@ -214,20 +229,17 @@ function nbt_Print(NBTstudy,groups)
                 
                 figure(fgh(end));
                 sig_biom = [];
-                modplot(biomholder,chanLocs,'headrad','rim','emarker2',{sig_biom,'o','w',6,2},'maplimits',[-3 3],'style','map');
+                topoplot(biomholder,chanLocs,'headrad','rim','maplimits',[-3 3],'style','map','numcontour',0,'electrodes','on','circgrid',circgrid,'gridscale',gridscale,'shading','flat');
                 set(gca, 'LooseInset', get(gca,'TightInset'));
                 
-                switch dataType
-                    case {'mean' 'raw'}
-                        plot_colorbar();
-                end
-            end
+                plot_colorbar();
+           end
             
             %% PLOTTING FREQUENCY BANDS ABOVE THE TOP ROW
             % omega is the # index of the last pre-defined biomarker
             switch VIZ_LAYOUT
                 case 'dflt'
-                    if mod(i,25)==1 && i<= omega;
+                    if mod(i,25)==1 && i <= omega;
                         title ('Delta','FontSize',10,'interpreter','tex','fontweight','demi');
                     elseif mod(i,25)==2 && i<= omega;
                         title ('Theta','FontSize',10,'interpreter','tex','fontweight','demi');
@@ -244,6 +256,8 @@ function nbt_Print(NBTstudy,groups)
                     title (biom{i},'FontSize',9,'interpreter','tex')
             end
         end
+        
+        
         % Colorbar right alignment
         switch dataType
 %             case 'zscore'
@@ -255,22 +269,21 @@ function nbt_Print(NBTstudy,groups)
         ha = axes('Position',[0 0 1 1],'Xlim',[0 1],'Ylim',[0 1],'Box','off','Visible','off','Units','normalized', 'clipping' , 'off');
         switch dataType
             case 'zscore'
-            case 'mean'
+            case {'mean' 'raw'}
                 if nGroups > 1 % there are two groups
                     group1 = strtrim(regexprep(Group1.groupName,'Group \d : ',''));
                     group2 = strtrim(regexprep(Group2.groupName,'Group \d : ',''));
-                    text(0.5,0.9,['Average difference between ', group1 ,' and ', group2, ', with ref. electrode ',chanLocs(1).ref],'horizontalalignment','center','FontSize',14,'Interpreter','tex');
+                    text(0.5,0.9,['Average difference between ', group1 ,' and ', group2, ', with reference electrode: ',chanLocs(1).ref],'horizontalalignment','center','FontSize',14,'Interpreter','tex');
                 else
 %                     if ~isempty(G(group_ind).group_difference)
 %                      text(0.85,0.9,['Average of ',int2str(length(G(group_ind).fileslist)/2),' subject pairs with ref. electrode ',G(1,1).chansregs.chanloc(1,1).ref],'horizontalalignment','right','FontSize',14,'Interpreter','tex');
 %                  else
-                     text(0.5,0.9,['Average of ',int2str(Group1.fileList),' subjects with ref. electrode ',chanLocs(1).ref],'horizontalalignment','center','FontSize',14,'Interpreter','tex');
+                     text(0.5,0.9,['Average of ',int2str(Group1.fileList),' subjects with reference electrode: ',chanLocs(1).ref],'horizontalalignment','center','FontSize',14,'Interpreter','tex');
 %                     end
                 end
-            case 'raw'
         end
         switch dataType
-            case 'mean'
+            case {'mean' 'raw'}
                 if nGroups>1 % there are two groups
                     group1=strtrim(regexprep(Group1.groupName,'Group \d : ',''));
                     group2=strtrim(regexprep(Group2.groupName,'Group \d : ',''));
@@ -286,35 +299,35 @@ function nbt_Print(NBTstudy,groups)
             case 'dflt'
                 if page==1
                     get(gcf,'CurrentAxes');
-                    ABSAMP = text(0.02,9/12, 'Relative','horizontalalignment', 'center');
+                    ABSAMP = text(0.02,9/12, 'Relative Power','horizontalalignment', 'center', 'fontweight','demi');
                     set(ABSAMP,'rotation',90);
                     get(gcf,'CurrentAxes');
-                    RELAMP= text(0.02,7/12, 'Absolute','horizontalalignment', 'center');
+                    RELAMP= text(0.02,7/12, 'Absolute Power','horizontalalignment', 'center', 'fontweight','demi');
                     set(RELAMP,'rotation',90);
                     get(gcf,'CurrentAxes');
-                    DFA= text(0.02,5/12, 'DFA','horizontalalignment', 'center');
+                    DFA= text(0.02,5/12, 'DFA','horizontalalignment', 'center', 'fontweight','demi');
                     set(DFA,'rotation',90);
                     get(gcf,'CurrentAxes');
-                    CENTRAL= text(0.02,3/12, 'Central Freq.','horizontalalignment', 'center');
+                    CENTRAL= text(0.02,3/12, 'Central Frequency','horizontalalignment', 'center', 'fontweight','demi');
                     set(CENTRAL,'rotation',90);
                     get(gcf,'CurrentAxes');
-                    LIFETIME= text(0.02,1/12, 'Lifetime','horizontalalignment', 'center');
+                    LIFETIME= text(0.02,1/12, 'Cumulative Lifetime','horizontalalignment', 'center', 'fontweight','demi');
                     set(LIFETIME,'rotation',90);
                 elseif page==2;
                     get(gcf,'CurrentAxes');
-                    ABSAMP = text(0.02,9/12, 'Bandwidth','horizontalalignment', 'center');
+                    ABSAMP = text(0.02,9/12, 'Bandwidth','horizontalalignment', 'center', 'fontweight','demi');
                     set(ABSAMP,'rotation',90);
                     get(gcf,'CurrentAxes');
-                    RELAMP= text(0.02,7/12, 'Spectral edge','horizontalalignment', 'center');
+                    RELAMP= text(0.02,7/12, 'Spectral edge','horizontalalignment', 'center', 'fontweight','demi');
                     set(RELAMP,'rotation',90);
                     get(gcf,'CurrentAxes');
-                    DFA= text(0.02,5/12, 'Amplitude Correlations','horizontalalignment', 'center');
+                    DFA= text(0.02,5/12, 'Amplitude Correlations','horizontalalignment', 'center', 'fontweight','demi');
                     set(DFA,'rotation',90);
                     get(gcf,'CurrentAxes');
-                    CENTRAL= text(0.02,3/12, 'Coherence','horizontalalignment', 'center');
+                    CENTRAL= text(0.02,3/12, 'Coherence','horizontalalignment', 'center', 'fontweight','demi');
                     set(CENTRAL,'rotation',90);
                     get(gcf,'CurrentAxes');
-                    LIFETIME= text(0.02,1/12, 'PhaseLock PLV','horizontalalignment', 'center');
+                    LIFETIME= text(0.02,1/12, 'Phase Locking Value','horizontalalignment', 'center', 'fontweight','demi');
                     set(LIFETIME,'rotation',90);
                 end
             case 'cstm'
@@ -365,16 +378,15 @@ function nbt_Print(NBTstudy,groups)
     end
 
     function plot_colorbar()
-        %%% Plot the colorbar on the lefthand side of the topoplot
-       cbar=colorbar('location','west');
+        cbar=colorbar('location','west');
         posish=get(cbar,'position');
-        set(cbar,'position',[0.14+mod(i-1,5)*.205,posish(2),0.01,posish(4)+.2*posish(4)],'fontsize',7);                        
+        set(cbar,'position',[0.14+mod(i-1,5)*.205,posish(2),0.01,posish(4)+.2*posish(4)],'fontsize',8);                        
 
         cmin = min(biomholder); 
         cmax = max(biomholder);
 
         caxis([cmin,cmax]);
-        set(cbar,'FontSize', 10);
+        set(cbar,'FontSize', 8);
        % ticks = get(cbar,'YTick');
        % if length(ticks)>4 ... force no more than 4?
        % set(cbar,'YTick',round([min_cbar:(max_cbar-min_cbar)/3:max_cbar]/0.01)*0.01); 
@@ -390,12 +402,16 @@ function nbt_Print(NBTstudy,groups)
 
         cticks = linspace(cmin,cmax,size(colormap,1)+1);
         %cticks = cticks(1:2:end); % make ticks more sparse
-        caxis([min(cticks) max(cticks)]);
+        caxis([min(cticks)-0.000000001 max(cticks)+0.000000001]);
         set(cbar,'YTick',cticks);
+        
         if((abs(cmax) - abs(cmin))/(size(colormap,1)+1)<=1)
             set(cbar,'YTickLabel',round(cticks/0.01)*0.01);
         else
             set(cbar,'YTickLabel',round(cticks));
-        end
+        end 
+        
+        % Put the unit on top of the colorbar
+        title(cbar, units(i))
     end
 end
