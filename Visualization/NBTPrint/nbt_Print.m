@@ -47,7 +47,7 @@ function nbt_Print(NBTstudy,groups)
                     chanValuesGroup1 = Data{biomID,1};                   
                     plotValues(biomID,:) = chanValuesGroup1(:,subjectNumber);
                 end
-                biomarkerIndex = StatObj.group{groups}.biomarkerIndex;
+                biomarkerIndex = StatObj.group{1}.biomarkerIndex;
                 units = StatObj.group{groups}.units;
             elseif size(groups,2) == 2
                 %%% Get groups NBTstudy
@@ -160,6 +160,9 @@ function nbt_Print(NBTstudy,groups)
         perPage = 25;
     end
     
+    %%% Set maximum number of columns on the topoplot, fixed (5) for
+    %%% nbt_Print and other NBT visualization tools
+    maxColumns = 5;
     nPages=ceil(nBioms/25);
     fgh=[];
     for page = 1 : nPages
@@ -219,17 +222,36 @@ function nbt_Print(NBTstudy,groups)
 %                 biomholder = zeros(size(chanLocs)).';
 %             end
             
-            subaxis(6,5,6+mod(i-1,25), 'Spacing', 0.03, 'Padding', 0, 'Margin', 0)
+            subaxis(6, maxColumns, 6+mod(i-1,25), 'Spacing', 0.03, 'Padding', 0, 'Margin', 0)
             axis off;
             if biomarkerIndex(i) ~= 0               
                 if nGroups == 1
                     Red_cbrewer5colors = load('Red_cbrewer5colors','Red_cbrewer5colors');
                     Red_cbrewer5colors = Red_cbrewer5colors.Red_cbrewer5colors;
                     colormap(Red_cbrewer5colors);
+                    cmin = min(biomholder); 
+                    cmax = max(biomholder);
                 else
-                    RedBlue_cbrewer10colors = load('RedBlue_cbrewer10colors','RedBlue_cbrewer10colors');
-                    RedBlue_cbrewer10colors = RedBlue_cbrewer10colors.RedBlue_cbrewer10colors;
-                    colormap(RedBlue_cbrewer10colors);
+                    climit = max(abs(biomholder)); %colorbar limit
+                    if(length(find(biomholder>=0)) == length(biomholder(~isnan(biomholder))))  % only positive values
+                        Red_cbrewer5colors = load('Red_cbrewer5colors','Red_cbrewer5colors');
+                        Red_cbrewer5colors = Red_cbrewer5colors.Red_cbrewer5colors;
+                        colormap(Red_cbrewer5colors);
+                        cmin = 0;
+                        cmax = climit;
+                    elseif(length(find(biomholder<=0)) == length(biomholder(~isnan(biomholder)))) % only negative values
+                        Blue_cbrewer5colors = load('Blue_cbrewer5colors','Blue_cbrewer5colors');
+                        Blue_cbrewer5colors = Blue_cbrewer5colors.Blue_cbrewer5colors;
+                        colormap(Blue_cbrewer5colors);
+                        cmin = -1*climit;
+                        cmax = 0;
+                    else
+                        RedBlue_cbrewer10colors = load('RedBlue_cbrewer10colors','RedBlue_cbrewer10colors');
+                        RedBlue_cbrewer10colors = RedBlue_cbrewer10colors.RedBlue_cbrewer10colors;
+                        colormap(RedBlue_cbrewer10colors);
+                        cmin = -1*climit;
+                        cmax = climit;
+                    end
                 end
                 
                 figure(fgh(end));
@@ -237,7 +259,7 @@ function nbt_Print(NBTstudy,groups)
                 topoplot(biomholder,chanLocs,'headrad','rim','maplimits',[-3 3],'style','map','numcontour',0,'electrodes','on','circgrid',circgrid,'gridscale',gridscale,'shading','flat');
                 set(gca, 'LooseInset', get(gca,'TightInset'));
                 
-                plot_colorbar();
+                nbt_plotColorbar(i, cmin, cmax, 6, units, maxColumns);
            end
             
             %% PLOTTING FREQUENCY BANDS ABOVE THE TOP ROW
@@ -382,41 +404,37 @@ function nbt_Print(NBTstudy,groups)
         end
     end
 
-    function plot_colorbar()
-        cbar=colorbar('location','west');
-        posish=get(cbar,'position');
-        set(cbar,'position',[0.14+mod(i-1,5)*.205,posish(2),0.01,posish(4)+.2*posish(4)],'fontsize',8);                        
-
-        cmin = min(biomholder); 
-        cmax = max(biomholder);
-
-        caxis([cmin,cmax]);
-        set(cbar,'FontSize', 8);
-       % ticks = get(cbar,'YTick');
-       % if length(ticks)>4 ... force no more than 4?
-       % set(cbar,'YTick',round([min_cbar:(max_cbar-min_cbar)/3:max_cbar]/0.01)*0.01); 
-
-        %%% Round the YTick to 2 decimals
-        if((abs(cmax) - abs(cmin))/(size(colormap,1)+1)<=1)
-            cmin = round(cmin/0.01)*0.01;
-            cmax = round(cmax/0.01)*0.01;
-        else
-            cmin = round(cmin);
-            cmax = round(cmax);
-        end
-
-        cticks = linspace(cmin,cmax,size(colormap,1)+1);
-        %cticks = cticks(1:2:end); % make ticks more sparse
-        caxis([min(cticks)-0.000000001 max(cticks)+0.000000001]);
-        set(cbar,'YTick',cticks);
-        
-        if((abs(cmax) - abs(cmin))/(size(colormap,1)+1)<=1)
-            set(cbar,'YTickLabel',round(cticks/0.01)*0.01);
-        else
-            set(cbar,'YTickLabel',round(cticks));
-        end 
-        
-        % Put the unit on top of the colorbar
-        title(cbar, units(i))
-    end
+%     function plot_colorbar()
+%         cbar=colorbar('location','west');
+%         posish=get(cbar,'position');
+%         set(cbar,'position',[0.14+mod(i-1,5)*.205,posish(2),0.01,posish(4)+.2*posish(4)],'fontsize',10);
+% 
+%         %%% Round the YTick to 2 decimals
+%         if((abs(cmax) - abs(cmin))/(size(colormap,1)+1)<=1)
+%             cmin = round(cmin/0.01)*0.01;
+%             cmax = round(cmax/0.01)*0.01;
+%         else
+%             cmin = round(cmin);
+%             cmax = round(cmax);
+%         end
+% 
+%         cticks = linspace(cmin,cmax,size(colormap,1)+1);
+%         if length(cticks) > 6
+%             cticks = cticks(1:2:end); % make ticks more sparse
+%         end
+%         caxis([min(cticks)-0.00000000000000000000000000000001 max(cticks)+0.00000000000000000000000000000001]);
+%         set(cbar,'YTick',cticks);
+%         
+%         if((abs(cmax) - abs(cmin))/(size(colormap,1)+1)<=1)
+%             set(cbar,'YTickLabel',round(cticks/0.01)*0.01);
+%         else
+%             set(cbar,'YTickLabel',round(cticks));
+%         end 
+%         
+%         % Put the unit on top of the colorbar
+%         cbarTitle = title(cbar, units(i));
+%         set(cbarTitle, 'fontsize', 8);
+%         
+%         freezeColors();
+%     end
 end
