@@ -61,7 +61,6 @@ end
 %Otherwise we return the specific statistics object
 switch index
     case 1
-        
         %'Grand median plot';
         
     case 2
