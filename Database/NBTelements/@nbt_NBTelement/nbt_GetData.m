@@ -51,7 +51,7 @@
 % First version written by Simon-Shlomo Poil
 
 function [Data, Pool, PoolKey, Units] = nbt_GetData(NBTelement, Parameters, SubBiomarker)
-error(nargchk(2,3,nargin));
+narginchk(2,3);
 %% First find structure.
 StructureTable = cell(1,1);
 % Find main branch
@@ -123,6 +123,7 @@ if(isempty(Pool))
     Pool = [];
     Data = [];
     PoolKey = [];
+    Units = [];
     return
 end
 
