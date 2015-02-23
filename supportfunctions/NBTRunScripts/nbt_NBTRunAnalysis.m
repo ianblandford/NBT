@@ -22,7 +22,7 @@
 % ChangeLog - see version control log for details
 % <date> - Version <#> - <text>
 
-function nbt_NBTRunAnalysisAll(varargin)
+function nbt_NBTRunAnalysis(varargin)
 script = NBTwrapper();
 nbt_NBTcompute(script,'RawSignal',pwd,pwd)
 end
@@ -30,7 +30,8 @@ end
 
 function NBTfunction_handle = NBTwrapper()
     function NBTscript(Signal, SignalInfo, SaveDir)        
-        nbt_importARSQStudent(SignalInfo.file_name, SignalInfo, SaveDir)
+        QBiomarker = nbt_importXLStoQBiomarker('Questionscores_meditation.xls', 1, SignalInfo);
+        nbt_SaveClearObject('QBiomarker', SignalInfo, SaveDir)
     end
 
 NBTfunction_handle = @NBTscript;
