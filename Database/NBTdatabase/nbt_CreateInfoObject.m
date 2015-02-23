@@ -39,11 +39,11 @@ function [SignalInfo, SubjectInfo] = nbt_CreateInfoObject(filename, FileExt, Fs,
 disp('Creating Info objects')
 
 
-if(~exist('Fs'))
+if(isempty(Fs))
     Fs = input('Please, specify the sampling frequency? ');
 end
-if(~exist('SignalName'))
-   SignalName = input('Please, specify the signal name? '); 
+if(isempty(SignalName))
+   SignalName = input('Please, specify the signal name? ','s'); 
 end
 try
     IDdots = strfind(filename,'.');

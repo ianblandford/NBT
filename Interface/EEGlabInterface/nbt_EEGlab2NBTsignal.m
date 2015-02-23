@@ -46,21 +46,23 @@ Signal = double(EEG.data');
 if(~isempty(EEG.filepath))
     SignalPath = EEG.filepath;
 else
-try
-    SignalPath = evalin('base', 'SignalPath');
-catch
-    SignalPath = input('Please specify signal path : ','s');
-end
+    try
+        SignalPath = evalin('base', 'SignalPath');
+    catch
+        SignalPath = input('Please specify signal path : ','s');
+    end
 end
 
 %--- make Info object
-if isfield(EEG,'NBTinfo') 
+if isfield(EEG,'NBTinfo')
     if(isa(EEG.NBTinfo,'nbt_SignalInfo'))
         SignalInfo = EEG.NBTinfo;
         EEG=rmfield(EEG,'NBTinfo');
     else
-        SignalInfo = nbt_CreateInfoObject(EEG.setname, [], EEG.srate);
+        [SignalInfo, SubjectInfo] = nbt_CreateInfoObject(EEG.setname, [], EEG.srate,[],double(EEG.data'));
     end
+else
+    [SignalInfo, SubjectInfo] = nbt_CreateInfoObject(EEG.setname, [], EEG.srate,[],double(EEG.data'));
 end
 
 SignalInfo.convertedSamplingFrequency = EEG.srate;
@@ -76,8 +78,8 @@ if (strcmpi(input('Do you want to save this signal? ([Y]es/[N]o)','s'),'y'))
     EEG.data=[];
     EEG.history = [];
     EEG.icaact = [];
-    SignalInfo.Interface.EEG = EEG;
-
+    SignalInfo.interface.EEG = EEG;
+    
     eval(['[',name,'Info]=SignalInfo;']);
     fn=SignalInfo.subjectInfo;
     
@@ -98,8 +100,14 @@ if (strcmpi(input('Do you want to save this signal? ([Y]es/[N]o)','s'),'y'))
             if present
                 try
                     save([directoryname filesep fn ],[name 'Info'],'-append')
+                    if(exist('SubjectInfo','var'))
+                        save([directoryname filesep fn ],'SubjectInfo','-append')
+                    end
                 catch
                     save([directoryname filesep fn ],[name 'Info'])
+                    if(exist('SubjectInfo','var'))
+                        save([directoryname filesep fn ],'SubjectInfo','-append')
+                    end
                 end
                 
                 try
@@ -111,7 +119,10 @@ if (strcmpi(input('Do you want to save this signal? ([Y]es/[N]o)','s'),'y'))
             else
                 OptionSave = input(['A file named ' fn(1:-9) '.mat does not exist in this directory. Do you want create a new file? [[Y]es [N]o]'],'s'); % e.g. RawSignal, CleanSigna
                 if strcmp(OptionSave(1),'Y') || strcmp(OptionSave(1),'y')
-                    save([directoryname filesep fn ],[name 'Info'])
+                    save([directoryname filesep fn ],[name 'Info']) 
+                    if(exist('SubjectInfo','var'))
+                        save([directoryname filesep fn ],'SubjectInfo','-append')
+                    end
                     save([directoryname filesep fn(1:end-9) '.mat'],name)
                 end
             end
