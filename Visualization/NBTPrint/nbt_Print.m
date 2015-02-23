@@ -196,7 +196,11 @@ function nbt_Print(NBTstudy,groups)
             gridscale = 32;           
         end
         
-        for i = page * perPage - perPage + 1 : (page * perPage)
+        upperBound = page * perPage;
+        if upperBound > nBioms
+            upperBound = nBioms;
+        end
+        for i = page * perPage - perPage + 1 : upperBound
             %% LOADS DATA TO BE VISUALIZED IN SUBPLOT
             if biomarkerIndex(i) ~= 0
                 if nGroups > 1 % 2 groups

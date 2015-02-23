@@ -91,43 +91,43 @@ function nbt_plotColorbar(subplotIndex, cmin, cmax, maxTicks, units, maxColumns)
     end
     
     
-    %%% Make sure that the number of decimals is the same for all labels
-    tickStringOriginal = num2str(cticks');
-    
-    %%% Get the length of the longest tick label
-    maxLength = 0;
-    for k = 1 : length(tickStringOriginal)
-        if numel(tickStringOriginal(k,:)) > maxLength
-            maxLength = numel(tickStringOriginal(k,:));
-        end
-    end
-    
-    %%% Initialize a new char array of size (0,maxLength)
-    tickString = char.empty(0,maxLength);
-    
-    %%% Iterate along the original ticks-string and add a '0' at the end of
-    %%% the string if it is missing
-    for k = 1 : length(cticks)
-        [head, tail] = strtok(tickStringOriginal(k,:),'.');
-        
-        %%% Add 1 zero at the end
-        if numel(tail) == 2
-            %%% Remove the space at the beginning
-            head = head(2:end);
-
-            %%% And add the zero at the end
-            tickString(k,:) = [head tail '0'];
-        elseif numel(tail) == 1
-            %%% Not possible
-        elseif numel(tail) == 0
-            %%% Add a dot and two zeros
-            tickString(k,:) = [head tail];
-        else
-            tickString(k,:) = [head tail];
-        end
-    end
-    
-    set(cbar,'YTickLabel',tickString);
+%     %%% Make sure that the number of decimals is the same for all labels
+%     tickStringOriginal = num2str(cticks');
+%     
+%     %%% Get the length of the longest tick label
+%     maxLength = 0;
+%     for k = 1 : length(tickStringOriginal)
+%         if numel(tickStringOriginal(k,:)) > maxLength
+%             maxLength = numel(tickStringOriginal(k,:));
+%         end
+%     end
+%     
+%     %%% Initialize a new char array of size (0,maxLength)
+%     tickString = char.empty(0,maxLength);
+%     
+%     %%% Iterate along the original ticks-string and add a '0' at the end of
+%     %%% the string if it is missing
+%     for k = 1 : length(cticks)
+%         [head, tail] = strtok(tickStringOriginal(k,:),'.');
+%         
+%         %%% Add 1 zero at the end
+%         if numel(tail) == 2
+%             %%% Remove the space at the beginning
+%             head = head(2:end);
+% 
+%             %%% And add the zero at the end
+%             tickString(k,:) = [head tail '0'];
+%         elseif numel(tail) == 1
+%             %%% Not possible
+%         elseif numel(tail) == 0
+%             %%% Add a dot and two zeros
+%             tickString(k,:) = [head tail];
+%         else
+%             tickString(k,:) = [head tail];
+%         end
+%     end
+%     
+    set(cbar,'YTickLabel',cticks);
         
     %%% Put the unit on the colorbar
     if ~isempty(units(subplotIndex))
