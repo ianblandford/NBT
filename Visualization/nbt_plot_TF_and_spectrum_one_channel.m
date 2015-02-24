@@ -76,8 +76,8 @@ type='p';% p=power, a = amplitude
 
 %--- remove artifact intervals:
 
-if isfield(Info.Interface,'noisey_intervals')
-    intervals=Info.Interface.noisey_intervals;
+if isfield(Info.interface,'noisey_intervals')
+    intervals=Info.interface.noisey_intervals;
     good=1:size(Signal,1);
     for i=1:size(intervals,1)
         good =setdiff(good, intervals(i,1):intervals(i,2));
@@ -110,7 +110,7 @@ function plotting
     %--- TF plot
     subplot(2,1,1)
     if strcmp(tf_type,'m')
-        mtcsg(Signal(interval,channel_nr),nFFT,Info.converted_sample_frequency,[],[],[],[],[],frequency_interval,type);
+        mtcsg(Signal(interval,channel_nr),nFFT,Info.convertedSamplingFrequency,[],[],[],[],[],frequency_interval,type);
     else
        
         fs=Info.converted_sample_frequency;
@@ -126,7 +126,7 @@ function plotting
         ylabel('Frequency (Hz)')
         xlabel('Time (seconds)')
     end
-    title(['Time-frequency representation of channel ',num2str(channel_nr),' from experiment ' Info.file_name],'interpreter','none','fontweight','bold')
+    title(['Time-frequency representation of channel ',num2str(channel_nr),' from experiment ' Info.subjectInfo],'interpreter','none','fontweight','bold')
     colorbar
     x=xlim;
     y=ylim;
@@ -145,7 +145,7 @@ function plotting
 
     %--- Fourier spectrum
     subplot(2,3,4)
-    [p,f]=pwelch(Signal(interval,channel_nr),hamming(nFFT),0,nFFT,Info.converted_sample_frequency);
+    [p,f]=pwelch(Signal(interval,channel_nr),hamming(nFFT),0,nFFT,Info.convertedSamplingFrequency);
     ind=find(f>frequency_interval(1)&f<frequency_interval(2));
     if strcmp(type,'a')
         p=sqrt(p);
@@ -162,9 +162,9 @@ function plotting
     end
 
     %--- EEG channel locations
-    if isfield(Info.Interface,'EEG')
+    if isfield(Info.interface,'EEG')
         %load locations
-        [inty,intx]=nbt_loadintxinty(Info.Interface.EEG.chanlocs);
+        [inty,intx]=nbt_loadintxinty(Info.interface.EEG.chanlocs);
 
         % plot
         subplot(2,3,6)
@@ -182,9 +182,9 @@ function plotting
 
     %--- button & uicontrols
 
-    if isfield(Info.Interface,'EEG') %% eeg signal;
+    if isfield(Info.interface,'EEG') %% eeg signal;
         for chl = 1:size(Signal,2)
-            chanlocs{chl,1} = Info.Interface.EEG.chanlocs(chl).labels;
+            chanlocs{chl,1} = Info.interface.EEG.chanlocs(chl).labels;
         end
         u(1)=uicontrol('Units', 'normalized', ...
             'style','listbox','string',chanlocs, 'position',[0.4 0 0.3 0.05], 'callback',@plot_channel,'position',[0.4339    0.1136    0.0804    0.2745],'value',channel_nr);
@@ -212,13 +212,13 @@ function plotting
             set(tt,'visible','off')
             %set(pp,'visible','off')
         end
-        print(gcf,'-dpdf',[save_directory,'/',Info.file_name,' TF_and_spectrum_channel ',num2str(channel_nr),' between ',num2str(frequency_interval(1)),' and ',num2str(frequency_interval(2)),' Hz.pdf'])
+        print(gcf,'-dpdf',[save_directory, filesep ,Info.fileName,' TF_and_spectrum_channel ',num2str(channel_nr),' between ',num2str(frequency_interval(1)),' and ',num2str(frequency_interval(2)),' Hz.pdf'])
         if(ispc)
-            winopen([save_directory ,'/',Info.file_name,' TF_and_spectrum_channel ',num2str(channel_nr),' between ',num2str(frequency_interval(1)),' and ',num2str(frequency_interval(2)),' Hz.pdf'])
+            winopen([save_directory ,filesep ,Info.fileName,' TF_and_spectrum_channel ',num2str(channel_nr),' between ',num2str(frequency_interval(1)),' and ',num2str(frequency_interval(2)),' Hz.pdf'])
         end
         %          set(pp,'visible','on')
         set(u,'visible','on')
-        if isfield(Info.Interface,'EEG')
+        if isfield(Info.interface,'EEG')
             set(tt,'visible','on')
             %set(pp,'visible','on')
         end
