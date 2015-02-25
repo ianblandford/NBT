@@ -73,15 +73,15 @@ if(~exist('FrequencyBandsInput','var'))
     FrequencyBandsInput = [];
 end
 if(~exist('PSDWindow','var'))
-    PSDWindow = hamming(2^9);
+    PSDWindow = hamming(2^10); %before 2^9
 end
 if(~exist('PSDFreqResolution','var'))
-    PSDFreqResolution = 2^14;
+    PSDFreqResolution = 2^10; %vefore 2^14
 else
     PSDFreqResolution = 2^(nextpow2(1/(PSDFreqResolution/InfoObject.convertedSamplingFrequency))); %because padded resolution is given by SamplingFreq/WindowLength
 end
 if(~exist('PSDOverlap','var'))
-    PSDOverlap = 0;
+    PSDOverlap = []; %before 0
 end
 
 
@@ -92,7 +92,7 @@ PeakFitObject.PSDOverlap = PSDOverlap;
 
 %Prepare Signal
 NBTSignal = nbt_RemoveIntervals(NBTSignal,InfoObject);
-[NBTSignal] = nbt_filter_firHp(NBTSignal,0.5,InfoObject.convertedSamplingFrequency,4); %this high-pass is done to get a better PSD
+%[NBTSignal] = nbt_filter_firHp(NBTSignal,0.5,InfoObject.convertedSamplingFrequency,4); %this high-pass is done to get a better PSD
 
 
 for ChId=1:size(NBTSignal(:,:),2)
