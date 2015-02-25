@@ -59,7 +59,11 @@ else
         if(strcmp(NBTelement.Biomarkers{mm,1}, SubBiomarker))
             for i=1:length(IncludePool)
             Data{i,1} =  NBTelement.Data{mm,(str2double(strtok(DataID(IncludePool(i)),'.')))};
-            Units = NBTelement.BiomarkerUnit{mm};
+            if (~isempty(NBTelement.BiomarkerUnit))
+                Units = NBTelement.BiomarkerUnit{mm};
+            else
+               Units = [];
+            end
             end
             break
         end
@@ -71,6 +75,7 @@ PoolKey = NBTelement.Key;
 if(isempty(IncludePool))
    Data = [];
    Pool = [];
+   Units = [];
 end
 
 end
