@@ -56,7 +56,6 @@ switch GrpObj.databaseType
                     %d3{k} = abs(d1{k}-d2{k}); % abs difference
                     %d3{k} = (d1{k}-d2{k}).^2; % square difference
                 end
-                DataObj.dataStore{1} = d1';
 
 %                DataObj.dataStore = cellfun(@minus, DataObj.dataStore{1}, DataObj2.dataStore{1},'Un',0);
 %                 for k=1:size(DataObj.dataStore,1)

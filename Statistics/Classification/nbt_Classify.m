@@ -36,7 +36,39 @@ if ~isempty(ClassificationStatObj.dimensionReduction)
             
         case 'PLS'
             
+            n_comps = floor(size(DataMatrix,2)/2);
+            %n_comps = 10;
+            [XL,yl,XS,YS,beta,PCTVAR] = plsregress(DataMatrix,Outcome,n_comps);
+            plot(1:10,cumsum(100*PCTVAR(2,:)),'-bo');
+            tmp=cumsum(PCTVAR(2,:)); % PCTVAR - 1st row: % variance explained in X, 2nd row Y (labels)
+            nr = find(tmp/tmp(end)>0.90,1);
+            [XL,yl,XS,YS,beta,PCTVAR,MSE,stats] = plsregress(DataMatrix,Outcome,nr);
+            yfit = [ones(size(DataMatrix,1),1) DataMatrix]*beta;
+            DataMatrix = XS;
+            plot(y,yfit,'o')
+            TSS = sum((y-mean(y)).^2);
+            RSS = sum((y-yfit).^2);
+            Rsquared = 1 - RSS/TSS
+            
+            ClassificationStatObj.removeFeaturesType = 'Partial Least Squares';
+            
         case 'ICA'
+            % DataMatrix = fastica(DataMatrix'); % from FastICA package
+              DataMatrix(find(isnan(DataMatrix)))=0;
+              [E, D] = pcamat(DataMatrix);
+              [whitesig, whiteningMatrix, dewhiteningMatrix] = whitenv(DataMatrix, E, D);
+              [A, W] = fpica(whitesig, whiteningMatrix, dewhiteningMatrix); % A mixing matrix, W inverse
+              %[icasig, A2, W2] = fastica(DataMatrix);
+              %[icasig] = fastica(W);
+%             pop_runica(DataMatrix, 'icatype','jader')
+%             edit nbt_AutoRejectICA.m
+%             edit nbt_filterbeforeICA.m
+        
+        case 'LDA'
+              linclass = fitcdiscr(DataMatrix,Outcome,'CrossVal','on');
+              % linclass = fitcdiscr(DataMatrix(1:52,:),Outcome,'CrossVal','on');
+              % klase = predict(linclass,DataMatrix(1,:));
+
     end
     
 end
