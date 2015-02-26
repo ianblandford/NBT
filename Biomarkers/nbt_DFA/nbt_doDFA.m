@@ -162,9 +162,9 @@ if (DFA_Plot ~=0)
         DFA_Plot = axes;
     end
     ChannelID = ChannelToPlot;
-    DFA_y = DFAobject.DFA_y{GetChannelID,1};
+    DFA_y = DFAobject.DFA_y{ChannelID,1};
     disp('Plotting Channel')
-    disp(GetChannelID)
+    disp(ChannelID)
     try
         axes(DFA_Plot)
     catch
@@ -188,18 +188,10 @@ if (DFA_Plot ~=0)
     axis([log10(min(DFA_x/Fs))-0.1 log10(max(DFA_x/Fs))+0.1 log10(min(DFA_y(3:end)))-0.1 log10(max(DFA_y))+0.1])
     xlabel('log_{10}(time), [Seconds]','Fontsize',12)
     ylabel('log_{10} F(time)','Fontsize',12)
-    title(['DFA-exp=', num2str(DFAobject.MarkerValues(GetChannelID,1))],'Fontsize',12)
+    title(['DFA-exp=', num2str(DFAobject.markerValues(ChannelID,1))],'Fontsize',12)
 end
 
-%% Nested functions part
-    function ChID = GetChannelID
-        % function finds the current ChannelID
-        if ( InfoObject.channelID ~= 0)
-            ChID = InfoObject.channelID;
-        else
-            ChID = ChannelID;
-        end
-    end
+
 end
 
 %% Supporting functions
