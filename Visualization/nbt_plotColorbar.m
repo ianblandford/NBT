@@ -64,7 +64,11 @@ function nbt_plotColorbar(subplotIndex, cmin, cmax, maxTicks, units, maxColumns)
     set(get(cbar,'title'),'String','');
     
     %%% Set caxis
-    caxis([cmin,cmax]);
+    if cmin ~= cmax
+        caxis([cmin,cmax]);
+    else
+        caxis([0,1]);
+    end
     
     %%% Round the ticks to 2 decimals
     if((abs(cmax) - abs(cmin))/maxTicks<=1)
@@ -90,48 +94,39 @@ function nbt_plotColorbar(subplotIndex, cmin, cmax, maxTicks, units, maxColumns)
         cticks = round(cticks);
     end
     
+    %%% Make sure that the number of decimals is the same for all labels
+    %%% Convert the ticks to string
+    tickStringOriginal = num2str(cticks');
     
-%     %%% Make sure that the number of decimals is the same for all labels
-%     tickStringOriginal = num2str(cticks');
-%     
-%     %%% Get the length of the longest tick label
-%     maxLength = 0;
-%     for k = 1 : length(tickStringOriginal)
-%         if numel(tickStringOriginal(k,:)) > maxLength
-%             maxLength = numel(tickStringOriginal(k,:));
-%         end
-%     end
-%     
-%     %%% Initialize a new char array of size (0,maxLength)
-%     tickString = char.empty(0,maxLength);
-%     
-%     %%% Iterate along the original ticks-string and add a '0' at the end of
-%     %%% the string if it is missing
-%     for k = 1 : length(cticks)
-%         [head, tail] = strtok(tickStringOriginal(k,:),'.');
-%         
-%         %%% Add 1 zero at the end
-%         if numel(tail) == 2
-%             %%% Remove the space at the beginning
-%             head = head(2:end);
-% 
-%             %%% And add the zero at the end
-%             tickString(k,:) = [head tail '0'];
-%         elseif numel(tail) == 1
-%             %%% Not possible
-%         elseif numel(tail) == 0
-%             %%% Add a dot and two zeros
-%             tickString(k,:) = [head tail];
-%         else
-%             tickString(k,:) = [head tail];
-%         end
-%     end
-%     
-    set(cbar,'YTickLabel',cticks);
+    for k = 1 : size(tickStringOriginal,1)
+        %%% If the tick is not rounded to an int, look for the dot
+        if ~isempty(strfind(tickStringOriginal(k,:),'.'))
+            [head, tail] = strtok(tickStringOriginal(k,:),'.');
+            if numel(tail) ~= 3
+                %%% Remove the space at the beginning
+                head = head(2:end);
+
+                %%% And add the zero at the end
+                tickString(k,:) = [head tail '0'];
+            else
+                tickString(k,:) = [head tail];
+            end
+        else
+            %%% If there is no dot, take the original
+            tickString(k,:) = tickStringOriginal(k,:);
+        end
+    end
+    
+     set(cbar,'YTickLabel',tickString,'FontName','FixedWidth');
+%     set(cbar,'YTickLabel',tickString,'FontName','Helvetica');
         
     %%% Put the unit on the colorbar
     if ~isempty(units(subplotIndex))
         cbarTitle = title(cbar, units(subplotIndex));
-        set(cbarTitle, 'fontsize', 8);
+        set(cbarTitle, 'fontsize', 8,'FontName','Helvetica');
     end
+    
+    %%% Freeze the colorbar colors
+    cbfreeze
+    freezeColors
 end

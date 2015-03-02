@@ -37,12 +37,7 @@ function nbt_topoplotConnect(NBTstudy,connMatrix,threshold)
 
 
     x    = x*squeezefac;
-    y    = y*squeezefac;  
-
-    load('coors.mat','coors');
-    x = coors.x;
-    y = coors.y;
-
+    y    = y*squeezefac;
 
     cmin = threshold;
     cmax = max(connMatrix(:)<0.99);

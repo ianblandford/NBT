@@ -12,6 +12,9 @@
     %%% Check whether the input is valid
     checkInput();
     
+    %%% Number of groups
+    nGroups = size(groups,2);
+    
     %% Display the NBT Print visualization window
     %% NBT Print visualization options
     dataType = '';
@@ -25,31 +28,42 @@
     switch dataType
         case 'raw'
             disp('Getting raw values');
-            if size(groups,2) == 1          
+            if nGroups == 1          
                 %%% Get groups NBTstudy
                 Group1 = NBTstudy.groups{groups};
                 
-                %%% Generate fixed biomarker list
-                StatObj = nbt_generateBiomarkerList(NBTstudy,groups);
-                
-                %%% Get the data
-                Data = getData(Group1,StatObj);
-                
-                %%% Number of biomarkers
-                nBioms = Data.numBiomarkers;
-                
-                %% Get subject number from the command line
-                subjectNumber = input('Please specify the number of the subject');
+                %%% Check whether the group is a difference group
+                if ~isempty(Group1.groupType)
                     
-                plotValues = zeros(1,129);
-                for biomID = 1 : nBioms
-                    %% Get raw biomarker data, compute means and store them
-                    chanValuesGroup1 = Data{biomID,1};                   
-                    plotValues(biomID,:) = chanValuesGroup1(:,subjectNumber);
+                else
+                    %%% Generate fixed biomarker list
+                    StatObj = nbt_generateBiomarkerList(NBTstudy,groups);
+
+                    %%% Get the data
+                    Data = getData(Group1,StatObj);
+
+                    %%% Number of biomarkers
+                    nBioms = Data.numBiomarkers;
+                    
+                    %%% Get subject number from the command line
+                    subjectNumber = input('Specify the number of the subject');
+
+                    signalBiomarkers = zeros(nBioms,129);
+                    crossChannelBiomarkers = zeros(129,129,nBioms);
+                    for biomID = 1 : nBioms
+                        biomDataGroup1 = Data.dataStore{biomID};
+                        if size(biomDataGroup1{1},2) == 129
+                            %% chan * chan biomarker
+                            crossChannelBiomarkers(:,:,biomID) = biomDataGroup1{subjectNumber};
+                        else
+                            %% Get raw biomarker data, compute means and store them
+                            signalBiomarkers(biomID,:) = Data{biomID,1};
+                        end
+                    end
+                    biomarkerIndex = StatObj.group{1}.biomarkerIndex;
+                    units = StatObj.group{groups}.units;
                 end
-                biomarkerIndex = StatObj.group{1}.biomarkerIndex;
-                units = StatObj.group{groups}.units;
-            elseif size(groups,2) == 2
+            elseif nGroups == 2
                 %%% Get groups NBTstudy
                 Group1 = NBTstudy.groups{groups(1)};
                 Group2 = NBTstudy.groups{groups(2)};
@@ -65,23 +79,32 @@
                 %%% Number of biomarkers
                 nBioms = DataGroup1.numBiomarkers;
                 
-                plotValues = zeros(1,129);
+                %%% Get subject number from the command line
+                subjectNumber = input('Specify the number of the subject');
+ 
+                signalBiomarkers = zeros(nBioms,129);
+                crossChannelBiomarkers = zeros(129,129,nBioms);
                 for biomID = 1 : nBioms
-                    %% Get biomarker data, compute means and store them
-                    chanValuesGroup1 = DataGroup1{biomID,1};
-                    chanValuesGroup2 = DataGroup2{biomID,1};
-                    meanGroup1 = mean(chanValuesGroup1');
-                    meanGroup2 = mean(chanValuesGroup2');
-                    plotValues(biomID,:) = meanGroup2 - meanGroup1;
+                    biomDataGroup1 = DataGroup1.dataStore{biomID};
+                    biomDataGroup2 = DataGroup2.dataStore{biomID};
+                    
+                    %% Check whether the biomarker is a cross channel biomarker
+                    if size(biomDataGroup1{1},2) == 129
+                        %% chan * chan biomarker
+                        crossChannelBiomarkers(:,:,biomID) = biomDataGroup2{subjectNumber} - biomDataGroup1{subjectNumber};
+                    else
+                        %% Get raw biomarker data, and store them
+                        signalBiomarkers(biomID,:) = DataGroup2{biomID,1} - DataGroup1{biomID,1};
+                    end
                 end
                 biomarkerIndex = StatObjGroup1.group{1}.biomarkerIndex;
+                units = StatObjGroup1.group{groups(1)}.units;
             else
                 error('nbt_Print can not handle more than two groups');
-                units = StatObjGroup1.group{groups}.units;
             end            
         case 'mean'
             disp('Computing means');
-            if size(groups,2) == 1    
+            if nGroups == 1    
                 %%% Get groups NBTstudy
                 Group1 = NBTstudy.groups{groups};
                 
@@ -98,30 +121,30 @@
                     %%% Number of biomarkers
                     nBioms = Data.numBiomarkers;
 
-                    biomholder = zeros(nBioms,129);
-                    biomholder2 = zeros(129,129,nBioms);
+                    signalBiomarkers = zeros(nBioms,129);
+                    crossChannelBiomarkers = zeros(129,129,nBioms);
                     for biomID = 1 : nBioms
-                        test = Data.dataStore{biomID};
-                        if size(test{1},2) == 129
-                            values = zeros(129,129);
-                            for subj = 1 : size(test,1)
-                                values = values + test{subj};
+                        biomDataGroup1 = Data.dataStore{biomID};
+                        if size(biomDataGroup1{1},2) == 129
+                            chanValues = zeros(129,129);
+                            for subject = 1 : size(biomDataGroup1,1)
+                                chanValues = chanValues + biomDataGroup1{subject};
                             end
                             
                             %% chan * chan biomarker
-                            biomholder2(:,:,biomID) = values / size(test,1);
+                            crossChannelBiomarkers(:,:,biomID) = chanValues / size(biomDataGroup1,1);
                         else
                             %% Get raw biomarker data, compute means and store them
                             chanValuesGroup1 = Data{biomID,1};
 
-                            meanGroup1 = mean(chanValuesGroup1');
-                            biomholder(biomID,:) = meanGroup1;
+                            meanGroup1 = nanmean(chanValuesGroup1',1);
+                            signalBiomarkers(biomID,:) = meanGroup1;
                         end
                     end
                     biomarkerIndex = StatObj.group{1}.biomarkerIndex;
                     units = StatObj.group{groups}.units;
                 end
-            elseif size(groups,2) == 2
+            elseif nGroups == 2
                 %%% Get groups NBTstudy
                 Group1 = NBTstudy.groups{groups(1)};
                 Group2 = NBTstudy.groups{groups(2)};
@@ -136,18 +159,37 @@
                 
                 %%% Number of biomarkers
                 nBioms = DataGroup1.numBiomarkers;
-                
-                plotValues = zeros(1,129);
+ 
+                signalBiomarkers = zeros(nBioms,129);
+                crossChannelBiomarkers = zeros(129,129,nBioms);
                 for biomID = 1 : nBioms
-                    %% Get biomarker data, compute means and store them
-                    chanValuesGroup1 = DataGroup1{biomID,1};
-                    chanValuesGroup2 = DataGroup2{biomID,1};
-                    meanGroup1 = mean(chanValuesGroup1');
-                    meanGroup2 = mean(chanValuesGroup2');
-                    plotValues(biomID,:) = meanGroup2 - meanGroup1;
+                    biomDataGroup1 = DataGroup1.dataStore{biomID};
+                    biomDataGroup2 = DataGroup2.dataStore{biomID};
+                    
+                    %% Check whether the biomarker is a cross channel biomarker
+                    if size(biomDataGroup1{1},2) == 129
+                        chanValuesGroup1 = zeros(129,129);
+                        chanValuesGroup2 = zeros(129,129);
+                        
+                        for subject = 1 : size(biomDataGroup1,1)
+                            chanValuesGroup1 = chanValuesGroup1 + biomDataGroup1{subject};
+                            chanValuesGroup2 = chanValuesGroup2 + biomDataGroup2{subject};
+                        end
+
+                        %% chan * chan biomarker
+                        crossChannelBiomarkers(:,:,biomID) = (chanValuesGroup2 / size(biomDataGroup2,1)) - (chanValuesGroup1 / size(biomDataGroup1,1));
+                    else
+                        %% Get raw biomarker data, compute means and store them
+                        chanValuesGroup1 = DataGroup1{biomID,1};
+                        chanValuesGroup2 = DataGroup2{biomID,1};
+
+                        meanGroup1 = nanmean(chanValuesGroup1',1);
+                        meanGroup2 = nanmean(chanValuesGroup2',1);
+                        signalBiomarkers(biomID,:) = meanGroup2 - meanGroup1;
+                    end
                 end
                 biomarkerIndex = StatObjGroup1.group{1}.biomarkerIndex;
-                units = StatObjGroup1.group{1}.units;
+                units = StatObjGroup1.group{groups(1)}.units;
             else
                 error('nbt_Print can not handle more than two groups');
             end
@@ -215,54 +257,31 @@
         if upperBound > nBioms
             upperBound = nBioms;
         end
-        for i = page * perPage - perPage + 1 : upperBound
-            %% LOADS DATA TO BE VISUALIZED IN SUBPLOT
-%             if biomarkerIndex(i) ~= 0
-%                 if nGroups > 1 % 2 groups
-%                    biomholder = plotValues(biomarkerIndex(i),:);
-%                 else
-%                     if i > 35 & i < 51
-%                         biomholder = plotValues2(biomarkerIndex(i),:,:);
-%                     else
-%                         biomholder = plotValues(biomarkerIndex(i),:);
-%                     end
-%                 end
-%             end
-
-            switch VIZ_SIG
-%                 case 'sig'
-%                     if ~isempty(sig_biom)
-%                         biomholder(setdiff(1:numel(biomholder),sig_biom))=NaN;
-%                         sig_biom=[];
-%                     else
-%                         biomholder=zeros(size(chanLocs)).';
-%                     end
-            end
-            %Check if all biomarker vals are NaN, which often happens for
-            % alpha and beta peak frequencies
-%             if any(~isnan(biomholder))==0
-%                 sig_biom = [];
-%                 biomholder = zeros(size(chanLocs)).';
-%             end
-            
+        for i = page * perPage - perPage + 1 : upperBound    
             subaxis(6, maxColumns, 6+mod(i-1,25), 'Spacing', 0.03, 'Padding', 0, 'Margin', 0)
             axis off;
-            if biomarkerIndex(i) ~= 0               
+            if biomarkerIndex(i) ~= 0
+                if i > 35 & i < 51
+                    biomarkerValues = nanmean(crossChannelBiomarkers(:,:,biomarkerIndex(i)),3);
+                else
+                    biomarkerValues = signalBiomarkers(biomarkerIndex(i),:);
+                end
+                
                 if nGroups == 1
                     Red_cbrewer5colors = load('Red_cbrewer5colors','Red_cbrewer5colors');
                     Red_cbrewer5colors = Red_cbrewer5colors.Red_cbrewer5colors;
                     colormap(Red_cbrewer5colors);
-                    cmin = min(biomholder); 
-                    cmax = max(biomholder);
+                    cmin = min(biomarkerValues);
+                    cmax = max(biomarkerValues);
                 else
-                    climit = max(abs(biomholder)); %colorbar limit
-                    if(length(find(biomholder>=0)) == length(biomholder(~isnan(biomholder))))  % only positive values
+                    climit = max(abs(biomarkerValues)); %colorbar limit
+                    if(length(find(biomarkerValues>=0)) == length(biomarkerValues(~isnan(biomarkerValues))))  % only positive values
                         Red_cbrewer5colors = load('Red_cbrewer5colors','Red_cbrewer5colors');
                         Red_cbrewer5colors = Red_cbrewer5colors.Red_cbrewer5colors;
                         colormap(Red_cbrewer5colors);
                         cmin = 0;
                         cmax = climit;
-                    elseif(length(find(biomholder<=0)) == length(biomholder(~isnan(biomholder)))) % only negative values
+                    elseif(length(find(biomarkerValues<=0)) == length(biomarkerValues(~isnan(biomarkerValues)))) % only negative values
                         Blue_cbrewer5colors = load('Blue_cbrewer5colors','Blue_cbrewer5colors');
                         Blue_cbrewer5colors = Blue_cbrewer5colors.Blue_cbrewer5colors;
                         colormap(Blue_cbrewer5colors);
@@ -279,19 +298,16 @@
                 
                 figure(fgh(end));
                 sig_biom = [];
+                %%% Plot topoplotConnect for CrossChannelBiomarkers
                 if i > 35 & i < 51
-                    %% chan * chan biomarker
-                    cmin = chanChanThreshold;
-                    cmax = 1;
-                    nbt_topoplotConnect(NBTstudy,mean(biomholder2(:,:,biomarkerIndex(i)),3),chanChanThreshold)
-                    nbt_plotColorbar(i, cmin, cmax, 6, units, maxColumns);
+                    nbt_topoplotConnect(NBTstudy,biomarkerValues,chanChanThreshold)
+                    nbt_plotColorbar(i, chanChanThreshold, 1, 6, units, maxColumns);
                 else
-                    cmin = min(biomholder(biomarkerIndex(i),:)); 
-                    cmax = max(biomholder(biomarkerIndex(i),:));                   
-                    topoplot(biomholder(biomarkerIndex(i),:),chanLocs,'headrad','rim','maplimits',[-3 3],'style','map','numcontour',0,'electrodes','on','circgrid',circgrid,'gridscale',gridscale,'shading','flat');
+                    %%% Biomarker is not a CrossChannelBiomarker
+                    %%% Plot the topoplot for the biomarker
+                    topoplot(biomarkerValues,chanLocs,'headrad','rim','maplimits',[-3 3],'style','map','numcontour',0,'electrodes','on','circgrid',circgrid,'gridscale',gridscale,'shading','flat');
                     set(gca, 'LooseInset', get(gca,'TightInset'));
                     nbt_plotColorbar(i, cmin, cmax, 6, units, maxColumns);
-
                 end
                 
            end
@@ -311,22 +327,13 @@
                     elseif mod(i,25)==5 && i<= omega;
                         title ('Gamma','FontSize',10,'interpreter','tex','fontweight','demi');
                     elseif i>omega
-                        title (biom{i},'FontSize',9,'interpreter','tex');
+                        title (biom{i},'FontSize',10,'interpreter','tex');
                     end
                 case 'cstm'
-                    title (biom{i},'FontSize',9,'interpreter','tex')
+                    title (biom{i},'FontSize',10,'interpreter','tex')
             end
         end
         
-        
-        % Colorbar right alignment
-        switch dataType
-%             case 'zscore'
-%                 caxis([-3,3])
-%                 cb = colorbar('location','WestOutside','position',[1-0.02,0.41,0.007,1/6]);
-%                 set(get(cb,'title'),'String','Z','interpreter','tex');
-        end
-        set(gca,'fontsize',8)
         ha = axes('Position',[0 0 1 1],'Xlim',[0 1],'Ylim',[0 1],'Box','off','Visible','off','Units','normalized', 'clipping' , 'off');
         switch dataType
             case 'zscore'
@@ -437,38 +444,4 @@
             Gamma = [30,45];
         end
     end
-
-%     function plot_colorbar()
-%         cbar=colorbar('location','west');
-%         posish=get(cbar,'position');
-%         set(cbar,'position',[0.14+mod(i-1,5)*.205,posish(2),0.01,posish(4)+.2*posish(4)],'fontsize',10);
-% 
-%         %%% Round the YTick to 2 decimals
-%         if((abs(cmax) - abs(cmin))/(size(colormap,1)+1)<=1)
-%             cmin = round(cmin/0.01)*0.01;
-%             cmax = round(cmax/0.01)*0.01;
-%         else
-%             cmin = round(cmin);
-%             cmax = round(cmax);
-%         end
-% 
-%         cticks = linspace(cmin,cmax,size(colormap,1)+1);
-%         if length(cticks) > 6
-%             cticks = cticks(1:2:end); % make ticks more sparse
-%         end
-%         caxis([min(cticks)-0.00000000000000000000000000000001 max(cticks)+0.00000000000000000000000000000001]);
-%         set(cbar,'YTick',cticks);
-%         
-%         if((abs(cmax) - abs(cmin))/(size(colormap,1)+1)<=1)
-%             set(cbar,'YTickLabel',round(cticks/0.01)*0.01);
-%         else
-%             set(cbar,'YTickLabel',round(cticks));
-%         end 
-%         
-%         % Put the unit on top of the colorbar
-%         cbarTitle = title(cbar, units(i));
-%         set(cbarTitle, 'fontsize', 8);
-%         
-%         freezeColors();
-%     end
 end
