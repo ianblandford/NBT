@@ -1,4 +1,4 @@
-function nbt_Print(NBTstudy,groups)
+    function nbt_Print(NBTstudy,groups)
     %%% Todo
     % * Can't handle difference group yet, look up how this is stored
     % CHECK * Can't handle GUI yet, command line only
@@ -98,12 +98,25 @@ function nbt_Print(NBTstudy,groups)
                     %%% Number of biomarkers
                     nBioms = Data.numBiomarkers;
 
-                    plotValues = zeros(nBioms,129);
+                    biomholder = zeros(nBioms,129);
+                    biomholder2 = zeros(129,129,nBioms);
                     for biomID = 1 : nBioms
-                        %% Get raw biomarker data, compute means and store them
-                        chanValuesGroup1 = Data{biomID,1};
-                        meanGroup1 = mean(chanValuesGroup1');
-                        plotValues(biomID,:) = meanGroup1;
+                        test = Data.dataStore{biomID};
+                        if size(test{1},2) == 129
+                            values = zeros(129,129);
+                            for subj = 1 : size(test,1)
+                                values = values + test{subj};
+                            end
+                            
+                            %% chan * chan biomarker
+                            biomholder2(:,:,biomID) = values / size(test,1);
+                        else
+                            %% Get raw biomarker data, compute means and store them
+                            chanValuesGroup1 = Data{biomID,1};
+
+                            meanGroup1 = mean(chanValuesGroup1');
+                            biomholder(biomID,:) = meanGroup1;
+                        end
                     end
                     biomarkerIndex = StatObj.group{1}.biomarkerIndex;
                     units = StatObj.group{groups}.units;
@@ -147,6 +160,8 @@ function nbt_Print(NBTstudy,groups)
 
     disp('Specify plot quality:');
     plotQual = input('1: low (fast / analysis), 2: high (slow / print), 3: very high (very slow / final print) ');
+
+    chanChanThreshold = input('Specify chan x chan threshold: ');
         
     %%% Get the channel locations from one of the two groups
     chanLocs = Group1.chanLocs;
@@ -202,13 +217,17 @@ function nbt_Print(NBTstudy,groups)
         end
         for i = page * perPage - perPage + 1 : upperBound
             %% LOADS DATA TO BE VISUALIZED IN SUBPLOT
-            if biomarkerIndex(i) ~= 0
-                if nGroups > 1 % 2 groups
-                   biomholder = plotValues(biomarkerIndex(i),:);
-                else
-                   biomholder = plotValues(biomarkerIndex(i),:);
-                end
-            end
+%             if biomarkerIndex(i) ~= 0
+%                 if nGroups > 1 % 2 groups
+%                    biomholder = plotValues(biomarkerIndex(i),:);
+%                 else
+%                     if i > 35 & i < 51
+%                         biomholder = plotValues2(biomarkerIndex(i),:,:);
+%                     else
+%                         biomholder = plotValues(biomarkerIndex(i),:);
+%                     end
+%                 end
+%             end
 
             switch VIZ_SIG
 %                 case 'sig'
@@ -260,10 +279,21 @@ function nbt_Print(NBTstudy,groups)
                 
                 figure(fgh(end));
                 sig_biom = [];
-                topoplot(biomholder,chanLocs,'headrad','rim','maplimits',[-3 3],'style','map','numcontour',0,'electrodes','on','circgrid',circgrid,'gridscale',gridscale,'shading','flat');
-                set(gca, 'LooseInset', get(gca,'TightInset'));
+                if i > 35 & i < 51
+                    %% chan * chan biomarker
+                    cmin = chanChanThreshold;
+                    cmax = 1;
+                    nbt_topoplotConnect(NBTstudy,mean(biomholder2(:,:,biomarkerIndex(i)),3),chanChanThreshold)
+                    nbt_plotColorbar(i, cmin, cmax, 6, units, maxColumns);
+                else
+                    cmin = min(biomholder(biomarkerIndex(i),:)); 
+                    cmax = max(biomholder(biomarkerIndex(i),:));                   
+                    topoplot(biomholder(biomarkerIndex(i),:),chanLocs,'headrad','rim','maplimits',[-3 3],'style','map','numcontour',0,'electrodes','on','circgrid',circgrid,'gridscale',gridscale,'shading','flat');
+                    set(gca, 'LooseInset', get(gca,'TightInset'));
+                    nbt_plotColorbar(i, cmin, cmax, 6, units, maxColumns);
+
+                end
                 
-                nbt_plotColorbar(i, cmin, cmax, 6, units, maxColumns);
            end
             
             %% PLOTTING FREQUENCY BANDS ABOVE THE TOP ROW

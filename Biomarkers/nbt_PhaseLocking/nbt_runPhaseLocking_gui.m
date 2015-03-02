@@ -48,40 +48,47 @@
 % -------------------------------------------------------------------------
 
 function nbt_runPhaseLocking_gui(Signal, SignalInfo, SaveDir)
-SettingsPLV = evalin('base','SettingsPLV');
-duration = floor(size(Signal,1)/SignalInfo.converted_sample_frequency);
-display(['Signal duration: ' num2str(duration) ' sec' ])
-if isempty(SettingsPLV)
-Frange = input('Specify frequency range in Hz [lowF highF] (i.e. [8 13]): ');
-Trange = input('Specify time interval in sec (i.e. [0 5] or all): ','s');
-if strcmp(Trange,'all')
-    Trange = [0 length(Signal)/SignalInfo.converted_sample_frequency];
-else
-    Trange = str2num(Trange);
-end
-filterorder = 2/Frange(1);
-windowleng = [];
-overlap = [];
-indexPhase = [1 1];
-SettingsPLV.Frange = Frange;
-SettingsPLV.Trange = Trange;
-SettingsPLV.windowleng = windowleng;
-SettingsPLV.filterorder = filterorder;
-SettingsPLV.overlap = overlap;
-SettingsPLV.indexPhase = indexPhase ;
-assignin('base','SettingsPLV',SettingsPLV);
-else
-Frange = SettingsPLV.Frange;
-Trange = SettingsPLV.Trange;
-windowleng = SettingsPLV.windowleng;
-filterorder = SettingsPLV.filterorder;
-overlap = SettingsPLV.overlap;
-indexPhase = SettingsPLV.indexPhase;
-end
-name = genvarname (['PhaseLocking' num2str(Frange(1)) '_' num2str(Frange(2)) 'Hz' num2str(Trange(1)) '_' num2str(Trange(2)) 'sec']); 
-% compute biomarker
-eval([name '= nbt_doPhaseLocking(Signal,SignalInfo,Frange,Trange,filterorder,windowleng,overlap,indexPhase)']);
-% save biomarker
-nbt_SaveClearObject(name,SignalInfo,SaveDir);
-eval(['evalin(''caller'',''clear ' name ''');']);
+    % Get the settings
+    settingsPLV = evalin('base','SettingsPLV');
+
+    % Get the signal duration
+    signalDuration = floor(size(Signal,1)/SignalInfo.convertedSamplingFrequency);
+    display(['Signal duration: ' num2str(signalDuration) ' sec' ])
+
+    if isempty(settingsPLV)
+        freqRange = input('Specify frequency range in Hz [lowF highF] (i.e. [8 13]): ');
+        timeRange = input('Specify time interval in sec (i.e. [0 5] or all): ','s');
+
+        if strcmp(timeRange,'all')
+            timeRange = [0 length(Signal)/SignalInfo.convertedSamplingFrequency];
+        else
+            timeRange = str2num(timeRange);
+        end
+
+        filterOrder = 2/freqRange(1);
+        windowLength = [];
+        overlap = [];
+        indexPhase = [1 1];
+        settingsPLV.freqRange = freqRange;
+        settingsPLV.timeRange = timeRange;
+        settingsPLV.windowLength = windowLength;
+        settingsPLV.filterOrder = filterOrder;
+        settingsPLV.overlap = overlap;
+        settingsPLV.indexPhase = indexPhase;
+        assignin('base','SettingsPLV',settingsPLV);
+    else
+        freqRange = settingsPLV.freqRange;
+        timeRange = settingsPLV.timeRange;
+        windowLength = settingsPLV.windowLength;
+        filterOrder = settingsPLV.filterOrder;
+        overlap = settingsPLV.overlap;
+        indexPhase = settingsPLV.indexPhase;
+    end
+
+    biomarkerName = genvarname(['PhaseLocking' num2str(freqRange(1)) '_' num2str(freqRange(2)) 'Hz' num2str(timeRange(1)) '_' num2str(timeRange(2)) 'sec']); 
+    % compute biomarker
+    eval([biomarkerName '= nbt_doPhaseLocking(Signal,SignalInfo,freqRange,timeRange,filterOrder,windowLength,overlap,indexPhase)']);
+    % save biomarker
+    nbt_SaveClearObject(biomarkerName,SignalInfo,SaveDir);
+    eval(['evalin(''caller'',''clear ' biomarkerName ''');']);
 end

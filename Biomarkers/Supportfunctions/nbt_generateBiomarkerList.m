@@ -65,8 +65,8 @@ function obj = nbt_generateBiomarkerList(NBTstudy,grpNumber)
     freqBandsFixedOrder = {'1  4', '4  7', '8  13', '13  30', '30  45'};
     freqBandsFixedOrderNames = {'Delta', 'Theta', 'Alpha', 'Beta', 'Gamma'};
     
-    biomarkersFixedOrder = {'NBTe_nbt_PeakFit', 'NBTe_nbt_PeakFit', 'NBTe_nbt_DFA', 'NBTe_nbt_PeakFit', 'NBTe_nbt_OscBursts','NBTe_nbt_PeakFit','NBTe_nbt_PeakFit','','',''};
-    subBiomarkersFixedOrder = {'RelativePower', 'AbsolutePower', 'markerValues', 'CentralFreq', 'CumulativeLifetime','Bandwidth','SpectralEdge','','',''};
+    biomarkersFixedOrder = {'NBTe_nbt_PeakFit', 'NBTe_nbt_PeakFit', 'NBTe_nbt_DFA', 'NBTe_nbt_PeakFit', 'NBTe_nbt_OscBursts','NBTe_nbt_PeakFit','NBTe_nbt_PeakFit','NBTe_nbt_AmplitudeCorr','NBTe_nbt_',''};
+    subBiomarkersFixedOrder = {'RelativePower', 'AbsolutePower', 'markerValues', 'CentralFreq', 'CumulativeLifetime','Bandwidth','SpectralEdge','MarkerValues','PLV',''};
     
     % Iteate along all fixed biomarkers and then check whether a present
     % biomarker corresponds to the fixed biomarker and store it in the
