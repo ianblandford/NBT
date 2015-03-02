@@ -62,6 +62,10 @@ elseif(exist(an_file,'file') == 0)
     save(an_file, ObjectName,'-v7') 
 end
 
+SignalInfo.listOfBiomarkers{end+1} = ObjectName;
+info_name = [SaveDir filesep SignalInfo.subjectInfo '_info.mat'];
+save(info_name, 'SignalInfo');
+
 %And then we clear it
 eval(['evalin(''caller'',''clear ' ObjectName ''');']);
 
