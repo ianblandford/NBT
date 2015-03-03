@@ -107,7 +107,7 @@ function obj = nbt_generateBiomarkerList(NBTstudy,grpNumber)
                     
                     index = evalin('base',['find(strcmp(' biomName '.Biomarkers , ''' subBiomName '''))']);
             
-                    obj.group{grpNumber}.units{(biomarker-1)*5 + freqBand} = evalin('base', [biomName '.BiomarkerUnit{' num2str(index) '};']);
+                   % obj.group{grpNumber}.units{(biomarker-1)*5 + freqBand} = evalin('base', [biomName '.BiomarkerUnit{' num2str(index) '};']);
                 
                     i = i + 1;
                 end
