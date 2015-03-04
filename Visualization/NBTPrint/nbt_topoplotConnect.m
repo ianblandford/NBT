@@ -2,7 +2,7 @@ function nbt_topoplotConnect(NBTstudy,connMatrix,threshold)
     chanLocs = NBTstudy.groups{1}.chanLocs;
     
     %%% Draw the empty topoplot
-    topoplot(zeros(1,129),chanLocs,'headrad','rim','maplimits',[-3 3],'style','map','numcontour',0,'electrodes','on','circgrid',100,'gridscale',32,'shading','flat');
+    topoplot([],chanLocs,'headrad','rim','maplimits',[-3 3],'style','map','numcontour',0,'electrodes','on','circgrid',100,'gridscale',32,'shading','flat');
     set(gca, 'LooseInset', get(gca,'TightInset'));
 
     hold on
