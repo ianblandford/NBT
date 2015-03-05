@@ -49,7 +49,7 @@
 % See Readme.txt for additional copyright information.
 % ---------------------------------------------------------------------------------------
 
-function nbt_plotColorbar(subplotIndex, cmin, cmax, maxTicks, unit, maxColumns)
+function nbt_plotColorbar(subplotIndex, cmin, cmax, maxTicks, unit, maxColumns, cbType)
     if ~exist('maxTicks')
         disp('Maximum number of ticks was not specified, using default of 6 ticks.');
         maxTicks = 6;
@@ -76,9 +76,11 @@ function nbt_plotColorbar(subplotIndex, cmin, cmax, maxTicks, unit, maxColumns)
         cmax = round(cmax);
     end
     
-    %%% Set the colorbar ticks
-    cticks = linspace(cmin,cmax,maxTicks);
-    
+    if strcmp(cbType,'diffPosNeg')
+        cticks = linspace(cmin,cmax,8);
+    else
+        cticks = linspace(cmin,cmax,maxTicks);
+    end
     %%% Increase the colobar limits by a very small number, otherwise the
     %%% first or the last tick might fall off (Fix for Matlab bug)
     %%% Note: if you decrease this number further, ticks will fall off
@@ -118,18 +120,32 @@ function nbt_plotColorbar(subplotIndex, cmin, cmax, maxTicks, unit, maxColumns)
         end
     end
     
+%     %%% Set the colorbar ticks
+%     if strcmp(cbType,'diffPosNeg')
+%         keepTicks = [1 7 13 19 26 33 39 45 51];
+%         for tick = 1 : length(tickString)
+%             if ~ismember(tick,keepTicks);
+%                 tickString(tick,:) = ' ';
+%             end
+%         end
+%         %set(cbar,'YTickLabel',tickString,'FontName','Helvetica');
+%         set(cbar,'YTick',cticks(keepTicks));
+%     else
+%             
+%     end
+set(cbar,'YTickLabel',tickString,'FontName','Helvetica');    
 %      set(cbar,'YTickLabel',tickString,'FontName','FixedWidth');
-    set(cbar,'YTickLabel',tickString,'FontName','Helvetica');
+
     
     %%% Freeze the colorbar colors
     cbar = cbfreeze(cbar);
     freezeColors;
     
     %%% hack: No labels for connectivity measures
-    if subplotIndex <= 35
-        %%% Put the unit on the colorbar
-        set(get(cbar,'title'),'String',unit,'interpreter','tex','fontsize',8,'FontName','Helvetica');
-    end
+%     if subplotIndex <= 35
+%         %%% Put the unit on the colorbar
+%         set(get(cbar,'title'),'String',unit,'interpreter','tex','fontsize',8,'FontName','Helvetica');
+%     end
     
     %%% Change the colorbar position [left, bottom, width, height]
     cbarPos = [0.14+mod(subplotIndex-1,5)*.205, posish(2), 0.008, posish(4)+.2*posish(4)];

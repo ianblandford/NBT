@@ -21,7 +21,7 @@
 
 function PLIobject = nbt_doPLI(Signal,SignalInfo)
 %%   give information to the user
-disp(['Computing marker values for ',SignalInfo.file_name])
+%disp(['Computing marker values for ',SignalInfo.file_name])
 
 %% remove artifact intervals
 Signal = nbt_RemoveIntervals(Signal,SignalInfo);

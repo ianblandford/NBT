@@ -70,7 +70,7 @@ switch GrpObj.databaseType
     case 'File'
 end
 
-DataObj.numSubjects = length(DataObj.subjectList{1,1}); %we assume there not different number of subjects per biomarker!
+%DataObj.numSubjects = length(DataObj.subjectList{1,1}); %we assume there not different number of subjects per biomarker!
 DataObj.numBiomarkers = size(DataObj.dataStore,1);
 % Call outputformating here >
 

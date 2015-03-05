@@ -66,9 +66,9 @@ function obj = nbt_generateBiomarkerList(NBTstudy,grpNumber)
     freqBandsFixedOrderNames = {'Delta', 'Theta', 'Alpha', 'Beta', 'Gamma'};
     
     biomarkersFixedOrder = {'NBTe_nbt_PeakFit', 'NBTe_nbt_PeakFit', 'NBTe_nbt_PeakFit', 'NBTe_nbt_DFA', 'NBTe_nbt_PLI','NBTe_nbt_PeakFit','NBTe_nbt_PeakFit','NBTe_nbt_AmplitudeCorr','NBTe_nbt_Coher','NBTe_nbt_PhaseLocking'};
-    subBiomarkersFixedOrder = {'AbsolutePower', 'RelativePower', 'CentralFreq', 'markerValues', 'filler','Bandwidth','SpectralEdge','MarkerValues','Coherence','PLV'};
+    subBiomarkersFixedOrder = {'AbsolutePower', 'RelativePower', 'CentralFreq', 'markerValues', 'pliVal','Bandwidth','SpectralEdge','MarkerValues','Coherence','PLV'};
     
-    % Iteate along all fixed biomarkers and then check whether a present
+    % Iterate along all fixed biomarkers and then check whether a present
     % biomarker corresponds to the fixed biomarker and store it in the
     % analysis object. This will make sure that the biomarkers are stored
     % in the fixed NBT Print order.
@@ -76,34 +76,47 @@ function obj = nbt_generateBiomarkerList(NBTstudy,grpNumber)
     i = 1;
     for presentBiomarker = 1 : length(biomarkerList)
         currentBiom = biomarkerList{presentBiomarker};
+        
+        [biomName, tail] = strtok(currentBiom,'.');
+        subBiomName = strrep(tail,'.','');
+
+        if strfind(biomName,'{')
+            [biomName, biomIdent] = strtok(biomName,'{');
+            [~, tail] = strtok(biomIdent,'_');
+            [~, freqRange] = strtok(tail,'_');
+            freqRange = strrep(freqRange,'_','');
+            freqRange = strrep(freqRange,'}','');
+        else
+            [subBiomName, freqRange] = strtok(subBiomName,'_');
+            freqRange = strrep(freqRange,'_','');
+        end     
 
         for biomarker = 1 : 10
             for freqBand = 1 : 5
                 %% For all biomarkers except PeakFit
-                if strfind(currentBiom,biomarkersFixedOrder{biomarker}) & strfind(currentBiom,subBiomarkersFixedOrder{biomarker}) & strfind(currentBiom,freqBandsFixedOrder{freqBand})
-                    biomName = biomarkersFixedOrder{biomarker};
-                    subBiomName = subBiomarkersFixedOrder{biomarker};
+                if strcmp(biomName,biomarkersFixedOrder{biomarker}) & strcmp(subBiomName,subBiomarkersFixedOrder{biomarker}) & strcmp(freqRange,freqBandsFixedOrder{freqBand})
+                    obj.group{1}.originalBiomNames{i} = currentBiom;
                     obj.group{1}.biomarkers{i} = biomName;
                     obj.group{1}.subBiomarkers{i} = subBiomName;
 
                     obj.group{1}.biomarkerIdentifiers{i} = {'frequencyRange' freqBandsFixedOrder{freqBand}};
                     obj.group{1}.classes{i} = {'SignalBiomarker'};
                     obj.group{1}.biomarkerIndex((biomarker-1)*5 + freqBand) = i;
-                    
+
                     index = evalin('base',['find(strcmp(' biomName '.Biomarkers , ''' subBiomName '''))']);
                     obj.group{1}.units{(biomarker-1)*5 + freqBand} = evalin('base', [biomName '.BiomarkerUnit{' num2str(index) '};']);
-                    
+
                     i = i + 1;
-                elseif strfind(currentBiom,biomarkersFixedOrder{biomarker}) & strfind(currentBiom,subBiomarkersFixedOrder{biomarker}) & strfind(currentBiom,freqBandsFixedOrderNames{freqBand})
+                elseif strcmp(biomName,biomarkersFixedOrder{biomarker}) & strcmp(subBiomName,subBiomarkersFixedOrder{biomarker}) & strcmp(freqRange,freqBandsFixedOrderNames{freqBand})
                     %% For PeakFit
-                    biomName = biomarkersFixedOrder{biomarker};
-                    subBiomName = subBiomarkersFixedOrder{biomarker};
+                    obj.group{1}.originalBiomNames{i} = currentBiom;
                     obj.group{1}.biomarkers{i} = biomarkersFixedOrder{biomarker};
                     obj.group{1}.subBiomarkers{i} = [subBiomarkersFixedOrder{biomarker} '_' freqBandsFixedOrderNames{freqBand}];
 
                     obj.group{1}.biomarkerIdentifiers{i} = [];
                     obj.group{1}.classes{i} = {'SignalBiomarker'};
                     obj.group{1}.biomarkerIndex((biomarker-1)*5 + freqBand) = i;
+                    
                     
                     index = evalin('base',['find(strcmp(' biomName '.Biomarkers , ''' subBiomName '''))']);
             

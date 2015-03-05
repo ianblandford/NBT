@@ -8,7 +8,8 @@ classdef nbt_Data
         numSubjects
         numBiomarkers
         pool
-        poolKey  
+        poolKey
+        originalBiomNames
         biomarkers
         biomarkerIdentifiers
         subBiomarkers

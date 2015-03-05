@@ -66,7 +66,7 @@ S = S.calculate(NBTstudy);
 
 NBTstudy.statAnalysis{length(NBTstudy.statAnalysis)+1} = S;
 disp('Statistics done.')
-if ~strcmp(class(S),'nbt_lssvm')
-    nbt_plot_2conditions_topoAll(S)
-end
+% if ~strcmp(class(S),'nbt_lssvm')
+%     nbt_plot_2conditions_topoAll(S)
+% end
 end

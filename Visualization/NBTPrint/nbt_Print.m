@@ -223,60 +223,99 @@
     end
     switch VIZ_SIG
         case 'all'
-            %sigBioms = 1:129;
+            %%% Show all channels
+            disp('You chose to show all channels, not running statistics');
+            
+            significantChannels = [];
         case 'sig'
-            %sigBioms = NBTstudy.statAnalysis{end}.pValues;
-    end
+            %%% We only run statistics if the user wants to show
+            %%% significant channels
+            
+            %%% Run statistics?
+            disp('You chose to show significant channels only');
+            runStats = input('Run statistics (1) or use statistics from NBTstudy object (2)?');
 
-    %%% Run statistics?
-    runStats = input('Run statistics? (y/n)','s');
-    
-    if strcmp(runStats,'y')
-        statTestList = NBTstudy.getStatisticsTests(0);
-        
-        for mm=1:size(statTestList,2)
-            disp([int2str(mm) ':' statTestList{1,mm}])
-        end
-        
-        statTestIdx = input('Please select test above ');
-        
-        S = NBTstudy.getStatisticsTests(statTestIdx);
-        
-        disp('Biomarkers')
-        bioms_name = Group1.biomarkerList;
-        ll=0;
-        for mm=1:length(bioms_name)
-            disp([int2str(mm) ':' bioms_name{1,mm} ])
-            ll=ll+1;
-            if(ll ==20)
-                input('More (press enter)');
-                ll = 0;
+            if runStats == 1
+                %%% Run the statistics, will be stored in:
+                %%% NBTstudy.statAnalysis{end}
+
+                
+                
+                
+                statTestList = NBTstudy.getStatisticsTests(0);
+                for mm=1:size(statTestList,2)
+                    disp([int2str(mm) ':' statTestList{1,mm}])
+                end
+                statTestIdx = input('Please select test above ');
+                S = NBTstudy.getStatisticsTests(statTestIdx);
+                
+                
+                
+                S.groups = groups;
+                
+                
+                
+                
+                disp('Biomarkers')
+                bioms_name = AnalysisObjGrp1.group{1}.originalBiomNames;
+                ll=0;
+                for mm=1:length(bioms_name)
+                    disp([int2str(mm) ':' bioms_name{1,mm} ])
+                    ll=ll+1;
+                    if(ll ==20)
+                        input('More (press enter)');
+                        ll = 0;
+                    end
+                end
+                bioms_ind = input('Please select biomarkers above ');
+
+
+                disp('1:Channels');
+                disp('2:Regions');
+                disp('3:Match channels');
+                S.channelsRegionsSwitch  = input('Please select channels, regions, or match channels ');
+                
+                for gp = 1:length(S.groups)
+                    for i = 1:length(bioms_ind)
+                        [S.group{gp}.biomarkers{i}, S.group{gp}.biomarkerIdentifiers{i}, S.group{gp}.subBiomarkers{i}, S.group{gp}.classes{i}, S.group{gp}.units{i}] = nbt_parseBiomarkerIdentifiers(bioms_name{bioms_ind(i)});
+                    end
+                end
+
+                if strcmp(class(S),'nbt_lssvm')
+                    %cv_type = input('Cross validation: 10-fold or random subsampler? (F/RS)');
+                    S.nCrossVals = input('Input the desired number of cross-validations (e.g. 100) ');
+                    dimRed = input('Would you like to perform dimensionality reduction first? Y/N ','s');
+                    if strcmp(dimRed,'Y')
+                        S.dimensionReduction = input('Which kind of dimensionality reduction? PCA/PLS/ICA? ','s');
+                    end    
+                end
+
+                S = S.calculate(NBTstudy);
+
+                NBTstudy.statAnalysis{length(NBTstudy.statAnalysis)+1} = S;
+                disp('Statistics done.')
+                
+                
+                %%% Get the pValues
+                pValues = NBTstudy.statAnalysis{end}.pValues;
+
+                %%% Statistics threshold
+                sigThresh = input('Significance threshold? (0.05)');
+            elseif runStats == 2
+                %%% Use previously computed statistics
+                disp('Which statistics object do you want to choose from NBTstudy.statAnalysis?');
+                selectStats = input('Statistics object: ');
+                
+                %%% Get the pValues
+                pValues = NBTstudy.statAnalysis{selectStats}.pValues;
+                
+                %%% Statistics threshold
+                sigThresh = input('Significance threshold? (0.05)');
+
+                %%% Set the significant channels
+                significantChannels = find(pValues <= sigThresh);
             end
-        end
-        bioms_ind = input('Please select biomarkers above ');
-        
-        for gp = 1:length(groups)
-            for i = 1:length(bioms_ind)
-                [S.group{gp}.biomarkers{i}, S.group{gp}.biomarkerIdentifiers{i}, S.group{gp}.subBiomarkers{i}, S.group{gp}.classes{i}, S.group{gp}.units{i}] = nbt_parseBiomarkerIdentifiers(bioms_name{bioms_ind(i)});
-            end
-        end
-        
-        StatObj = S.calculate(NBTstudy);
-        
-        sigBioms = StatObj.pValues;
-        
-        disp('Statistics done.')
-        pValuesRandom = rand(1,129);
-        sigBioms = [];
-        for chan = 1 : nChannels
-            if pValuesRandom(chan) > 0.9
-                sigBioms = [sigBioms chan];
-            end
-        end
-    else
-        sigBioms = [];
-        disp('Not running statistics');
-    end   
+    end
     
     units = 0;
     
@@ -354,6 +393,7 @@
                     Red_cbrewer5colors = load('Red_cbrewer5colors','Red_cbrewer5colors');
                     Red_cbrewer5colors = Red_cbrewer5colors.Red_cbrewer5colors;
                     colormap(Red_cbrewer5colors);
+
                     cmin = min(biomarkerValues);
                     cmax = max(biomarkerValues);
                     cbType = 'singleGroup';
@@ -363,6 +403,7 @@
                         Red_cbrewer5colors = load('Red_cbrewer5colors','Red_cbrewer5colors');
                         Red_cbrewer5colors = Red_cbrewer5colors.Red_cbrewer5colors;
                         colormap(Red_cbrewer5colors);
+
                         cmin = 0;
                         cmax = climit;
                         cbType = 'diffPos';
@@ -370,6 +411,7 @@
                         Blue_cbrewer5colors = load('Blue_cbrewer5colors','Blue_cbrewer5colors');
                         Blue_cbrewer5colors = Blue_cbrewer5colors.Blue_cbrewer5colors;
                         colormap(Blue_cbrewer5colors);
+
                         cmin = -1*climit;
                         cmax = 0;
                         cbType = 'diffNeg';
@@ -377,14 +419,11 @@
                         RedBlue_cbrewer10colors = load('RedBlue_cbrewer10colors','RedBlue_cbrewer10colors');
                         RedBlue_cbrewer10colors = RedBlue_cbrewer10colors.RedBlue_cbrewer10colors;
                         
-                        RedBlue_cbrewercolors = [RedBlue_cbrewer10colors(2:5,:); [1 1 1]; RedBlue_cbrewer10colors(6:9,:)];
-                        
-                        
-                        
-                        
+                        RedBlue_cbrewercolors = [RedBlue_cbrewer10colors(1:3,:); [1 1 1]; RedBlue_cbrewer10colors(8:10,:)];
+                                            
                         cmin = -1*climit;
                         cmax = climit;
-                        colormap(b2r(cmin,cmax));
+                        colormap(RedBlue_cbrewercolors);
                         cbType = 'diffPosNeg';
                     end
                 end
@@ -396,8 +435,8 @@
                     nbt_plotColorbar(i, chanChanThreshold, 1, 6, units, maxColumns);
                 else
                     %%% Biomarker is not a CrossChannelBiomarker
-                    %%% Plot the topoplot for the biomarker
-                    topoplot(biomarkerValues,chanLocs,'headrad','rim','emarker2',{sigBioms,'o','g',5,2},'maplimits',[-3 3],'style','map','numcontour',0,'electrodes','on','circgrid',circgrid,'gridscale',gridscale,'shading','flat');
+                    %%% Plot the topoplot for the biomarker,{significantChannels(i,:),'o','g',5,2}
+                    topoplot(biomarkerValues,chanLocs,'headrad','rim','maplimits',[-3 3],'style','map','numcontour',0,'electrodes','on','circgrid',circgrid,'gridscale',gridscale,'shading','flat');
                     set(gca, 'LooseInset', get(gca,'TightInset'));
                     nbt_plotColorbar(i, cmin, cmax, 6, units, maxColumns, cbType);
                 end
@@ -535,5 +574,33 @@
             Beta = [13,30];
             Gamma = [30,45];
         end
+    end
+
+    function runStatsNBTPrint()
+        %global NBTstudy;
+        
+        statTestList = NBTstudy.getStatisticsTests(0);
+        for mm=1:size(statTestList,2)
+            disp([int2str(mm) ':' statTestList{1,mm}])
+        end
+        statTestIdx = input('Please select test above ');
+        S = NBTstudy.getStatisticsTests(statTestIdx);
+        
+        S.groups = groups;
+
+        disp('Biomarkers')
+        biomarkerList = NBTstudy.groups{1}.biomarkerList(biomarkerIndex ~= 0);
+
+        for group = 1 : length(S.groups)
+            for i = 1 : length(biomarkerList)
+                i
+                [S.group{group}.biomarkers{i}, S.group{group}.biomarkerIdentifiers{i}, S.group{group}.subBiomarkers{i}, S.group{group}.classes{i}, S.group{group}.units{i}] = nbt_parseBiomarkerIdentifiers(biomarkerList{i});
+            end
+        end
+        
+        S = S.calculate(S);
+
+        NBTstudy.statAnalysis{length(NBTstudy2.statAnalysis)+1} = S;
+        disp('Statistics done.')
     end
 end
