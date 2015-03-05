@@ -11,6 +11,7 @@ classdef nbt_Group %NBT GroupObject - contains group definitions + Database poin
         biomarkerList
         identList
         chanLocs
+        listRegData
     end
     
     methods (Access = public)

@@ -3,6 +3,10 @@ function [ClassificationStatObj]=nbt_Classify(ClassificationStatObj, StudyObj)
 n_groups = length(ClassificationStatObj.groups);
 DataMatrix = []; % n_sub x (n_freq_bands*n_channels)
 Outcome = [];
+
+% if (ClassificationStatObj.channelsRegionsSwitch == 2) % regions
+% StudyObj.groups{1}.chanLocs
+
 for j=1:n_groups
     Data_groups{j} = StudyObj.groups{ClassificationStatObj.groups(j)}.getData(ClassificationStatObj);
     if (Data_groups{j}.numSubjects == size(Data_groups{j}(),1)) % global biomarker
@@ -119,9 +123,8 @@ switch lower(Type)
         % Type CrossValidate
         disp('Cross validation needs work')
         %   DataMatrix = abs(DataMatrix);
-        %   DataMatrix = zscore(DataMatrix);
-        
-        
+        DataMatrix = zscore(DataMatrix);
+                
         modelVars = cell(1, NCrossVals);
         if(ClassificationStatObj.statOptions.UseParallel)
             parfor i=1:NCrossVals

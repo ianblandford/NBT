@@ -55,6 +55,8 @@
 % --------------
 
 function nbt_selectchansregs
+global NBTstudy
+
 try
     %check if "matching channels" has been selected
     if(get(findobj('tag','ListRegion'),'Value')==3)
@@ -69,7 +71,6 @@ try
 catch
     error('NBT Error: You can only have one statistics window open. Please close one, and try again.')
 end
-
 
 
 global G
@@ -325,11 +326,12 @@ u(6) = uicontrol(Chans_RegsSelection,'Units', 'pixels','style','text','Position'
             set(SubmitRegion, 'UserData',data);
         end
         data = get(SubmitRegion,'UserData');
-        G = evalin('base','G');
+        %G = evalin('base','G');
         if(SelectionType == 0)
-            for i = 1:length(G)
-                G(i).chansregs = data;
-            end
+%             for i = 1:length(G)
+%                 G(i).chansregs = data;
+%             end
+        NBTstudy.groups{1}.listRegData = data.listregdata;
         else %  we have two groups with different channel locations
             G(group_ind(1)).chansregs = data;
             %load SignalInfo for group to
@@ -346,7 +348,7 @@ u(6) = uicontrol(Chans_RegsSelection,'Units', 'pixels','style','text','Position'
             end   
             G(group_ind(2)).chansregs.chanloc = Loaded.(Infofields{im}).Interface.EEG.chanlocs;
         end
-        assignin('base','G',G);
+        %assignin('base','G',G);
         disp('Channels and Regions Selection Completed.')
         h = get(0,'CurrentFigure');
         close(h);
