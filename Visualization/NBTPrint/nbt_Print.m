@@ -64,7 +64,7 @@
                         end
                     end
                     biomarkerIndex = AnalysisObj.group{1}.biomarkerIndex;
-                    units = AnalysisObj.group{groups}.units;
+%                     units = AnalysisObj.group{groups}.units;
                 end
             elseif nGroups == 2
                 %%% Get groups NBTstudy
@@ -104,7 +104,7 @@
                     end
                 end
                 biomarkerIndex = AnalysisObjGrp1.group{1}.biomarkerIndex;
-                units = AnalysisObjGrp1.group{groups(1)}.units;
+%                 units = AnalysisObjGrp1.group{groups(1)}.units;
             else
                 error('nbt_Print can not handle more than two groups');
             end            
@@ -151,7 +151,7 @@
                         end
                     end
                     biomarkerIndex = AnalysisObj.group{1}.biomarkerIndex;
-                    units = AnalysisObj.group{groups}.units;
+%                     units = AnalysisObj.group{groups}.units;
                 end
             elseif nGroups == 2
                 %%% Get groups NBTstudy
@@ -189,6 +189,7 @@
                             biomName = AnalysisObjGrp1.group{1}.biomarkers(biomID);
                             subBiomName = AnalysisObjGrp1.group{1}.subBiomarkers(biomID);
                             %error(['The number of subjects differs between the groups for biomarker: ', biomName{1}, '.', subBiomName{1}]);
+                            disp('Warning');
                             nSubjects = min(size(biomDataGroup1,1),size(biomDataGroup2,1));
                         else
                             nSubjects = size(biomDataGroup1,1);
@@ -210,7 +211,7 @@
                     end
                 end
                 biomarkerIndex = AnalysisObjGrp1.group{1}.biomarkerIndex;
-                units = AnalysisObjGrp1.group{groups(1)}.units;
+%                 units = AnalysisObjGrp1.group{groups(1)}.units;
             else
                 error('nbt_Print can not handle more than two groups');
             end
@@ -231,40 +232,40 @@
     runStats = input('Run statistics? (y/n)','s');
     
     if strcmp(runStats,'y')
-%         statTestList = NBTstudy.getStatisticsTests(0);
-%         
-%         for mm=1:size(statTestList,2)
-%             disp([int2str(mm) ':' statTestList{1,mm}])
-%         end
-%         
-%         statTestIdx = input('Please select test above ');
-%         
-%         S = NBTstudy.getStatisticsTests(statTestIdx);
-%         
-%         disp('Biomarkers')
-%         bioms_name = Group1.biomarkerList;
-%         ll=0;
-%         for mm=1:length(bioms_name)
-%             disp([int2str(mm) ':' bioms_name{1,mm} ])
-%             ll=ll+1;
-%             if(ll ==20)
-%                 input('More (press enter)');
-%                 ll = 0;
-%             end
-%         end
-%         bioms_ind = input('Please select biomarkers above ');
-%         
-%         for gp = 1:length(groups)
-%             for i = 1:length(bioms_ind)
-%                 [S.group{gp}.biomarkers{i}, S.group{gp}.biomarkerIdentifiers{i}, S.group{gp}.subBiomarkers{i}, S.group{gp}.classes{i}, S.group{gp}.units{i}] = nbt_parseBiomarkerIdentifiers(bioms_name{bioms_ind(i)});
-%             end
-%         end
-%         
-%         StatObj = S.calculate(NBTstudy);
-%         
-%         sigBioms = StatObj.pValues;
-%         
-%         disp('Statistics done.')
+        statTestList = NBTstudy.getStatisticsTests(0);
+        
+        for mm=1:size(statTestList,2)
+            disp([int2str(mm) ':' statTestList{1,mm}])
+        end
+        
+        statTestIdx = input('Please select test above ');
+        
+        S = NBTstudy.getStatisticsTests(statTestIdx);
+        
+        disp('Biomarkers')
+        bioms_name = Group1.biomarkerList;
+        ll=0;
+        for mm=1:length(bioms_name)
+            disp([int2str(mm) ':' bioms_name{1,mm} ])
+            ll=ll+1;
+            if(ll ==20)
+                input('More (press enter)');
+                ll = 0;
+            end
+        end
+        bioms_ind = input('Please select biomarkers above ');
+        
+        for gp = 1:length(groups)
+            for i = 1:length(bioms_ind)
+                [S.group{gp}.biomarkers{i}, S.group{gp}.biomarkerIdentifiers{i}, S.group{gp}.subBiomarkers{i}, S.group{gp}.classes{i}, S.group{gp}.units{i}] = nbt_parseBiomarkerIdentifiers(bioms_name{bioms_ind(i)});
+            end
+        end
+        
+        StatObj = S.calculate(NBTstudy);
+        
+        sigBioms = StatObj.pValues;
+        
+        disp('Statistics done.')
         pValuesRandom = rand(1,129);
         sigBioms = [];
         for chan = 1 : nChannels
@@ -276,6 +277,8 @@
         sigBioms = [];
         disp('Not running statistics');
     end   
+    
+    units = 0;
     
     disp('Specify plot quality:');
     plotQual = input('1: low (fast / analysis), 2: high (slow / print), 3: very high (very slow / final print) ');
@@ -302,7 +305,7 @@
     maxColumns = 5;
     nPages=ceil(nBioms/25);
     fgh=[];
-    for page = 1 : nPages
+    for page = 1 : 1%nPages
         %% Generates a new figure for each page defined by iotta
         switch dataType
             case {'mean' 'raw'}
@@ -353,6 +356,7 @@
                     colormap(Red_cbrewer5colors);
                     cmin = min(biomarkerValues);
                     cmax = max(biomarkerValues);
+                    cbType = 'singleGroup';
                 else
                     climit = max(abs(biomarkerValues)); %colorbar limit
                     if(length(find(biomarkerValues>=0)) == length(biomarkerValues(~isnan(biomarkerValues))))  % only positive values
@@ -361,18 +365,27 @@
                         colormap(Red_cbrewer5colors);
                         cmin = 0;
                         cmax = climit;
+                        cbType = 'diffPos';
                     elseif(length(find(biomarkerValues<=0)) == length(biomarkerValues(~isnan(biomarkerValues)))) % only negative values
                         Blue_cbrewer5colors = load('Blue_cbrewer5colors','Blue_cbrewer5colors');
                         Blue_cbrewer5colors = Blue_cbrewer5colors.Blue_cbrewer5colors;
                         colormap(Blue_cbrewer5colors);
                         cmin = -1*climit;
                         cmax = 0;
+                        cbType = 'diffNeg';
                     else
                         RedBlue_cbrewer10colors = load('RedBlue_cbrewer10colors','RedBlue_cbrewer10colors');
                         RedBlue_cbrewer10colors = RedBlue_cbrewer10colors.RedBlue_cbrewer10colors;
-                        colormap(RedBlue_cbrewer10colors);
+                        
+                        RedBlue_cbrewercolors = [RedBlue_cbrewer10colors(2:5,:); [1 1 1]; RedBlue_cbrewer10colors(6:9,:)];
+                        
+                        
+                        
+                        
                         cmin = -1*climit;
                         cmax = climit;
+                        colormap(b2r(cmin,cmax));
+                        cbType = 'diffPosNeg';
                     end
                 end
                 
@@ -386,7 +399,7 @@
                     %%% Plot the topoplot for the biomarker
                     topoplot(biomarkerValues,chanLocs,'headrad','rim','emarker2',{sigBioms,'o','g',5,2},'maplimits',[-3 3],'style','map','numcontour',0,'electrodes','on','circgrid',circgrid,'gridscale',gridscale,'shading','flat');
                     set(gca, 'LooseInset', get(gca,'TightInset'));
-                    nbt_plotColorbar(i, cmin, cmax, 6, units{i}, maxColumns);
+                    nbt_plotColorbar(i, cmin, cmax, 6, units, maxColumns, cbType);
                 end
                 
            end
