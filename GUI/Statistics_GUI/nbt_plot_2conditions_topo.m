@@ -526,12 +526,32 @@ end
             colormap(RedBlue_cbrewer10colors);
             
             if strcmp(char(statfunc),'ttest') || strcmp(char(statfunc),'signrank')
-                topoplot(statistic(diffC2C1,2),chanloc,'headrad','rim','numcontour',3,'electrodes','off');
+                chans_Psignificant = find(p<0.05);
+                %topoplot(statistic(diffC2C1,2),chanloc,'headrad','rim','numcontour',0,'electrodes','on','emarker',{'.','k',6,1},'emarker2',{[chans_Psignificant],'o','w',4,1});
+                nbt_topoplot(statistic(diffC2C1,2),chanloc,'headrad','rim','numcontour',0,'electrodes','on','emarker2',{[chans_Psignificant],'o','w',4,1});
                 textThis = sprintf('Grand average for condition %s minus incondition %s ',condition2,condition1);
+                cmax = max(statistic(diffC2C1,2));
+                cmin = min(statistic(diffC2C1,2));
+              
+                cmax =  max(abs([cmin cmax]));
+                cmin = -1.*cmax;
+                 
+                caxis([cmin cmax])
+                
             else
-                topoplot(statistic(diffC2C1_2,2),chanloc,'headrad','rim','numcontour',3,'electrodes','off');
+                nbt_topoplot(statistic(diffC2C1_2,2),chanloc,'headrad','rim','numcontour',3,'electrodes','off');
                 textThis = sprintf('Grand average for group %s minus group %s',condition2,condition1);
+                cmax = max(statistic(diffC2C1,2));
+                cmin = min(statistic(diffC2C1,2));
+              
+                cmax =  max(abs([cmin cmax]));
+                cmin = -1.*cmax;
+                 
+                caxis([cmin cmax])
+                
             end
+           
+        
         else
 %             nbt_redwhite = load('nbt_redwhite', 'nbt_redwhite');
 %             nbt_redwhite = nbt_redwhite.nbt_redwhite;
@@ -541,11 +561,16 @@ end
             colormap(Reds5);
             
             if(ConditionNr == 1)
-                topoplot(meanc1',chanloc,'headrad','rim','numcontour',6,'electrodes','off');
+                nbt_topoplot(meanc1',chanloc,'headrad','rim','numcontour',0,'electrodes','on','emarker',{'.','k',6,1});
+                
             else
-                topoplot(meanc2',chanloc,'headrad','rim','numcontour',6 ,'electrodes','off');
+                nbt_topoplot(meanc2',chanloc,'headrad','rim','numcontour',0 ,'electrodes','on','emarker',{'.','k',6,1});
             end
-             caxis([cmin,cmax])
+            
+            cmin = min(min(meanc1),min(meanc2)); 
+            cmax = max(max(meanc1),max(meanc2));
+            caxis([cmin,cmax])
+            
             if strcmp(char(statfunc),'ttest') || strcmp(char(statfunc),'signrank')
                 if(ConditionNr == 1)
                     textThis = sprintf('Grand average for  %s (n = %i)',condition1,size(c1,2));
@@ -560,8 +585,33 @@ end
                 end
             end
         end
+        
+            
                cb = colorbar('westoutside');
             set(get(cb,'title'),'String',unit);
+            
+            %if (ConditionNr ~= 3)
+        nTicks = size(colormap,1)+1;
+        cticks = linspace(cmin,cmax,nTicks);
+        % cticks(2:2:end) = []; % for more sparse tick marks
+        caxis([min(cticks) max(cticks)]);
+        set(cb,'YTick',cticks);
+        if((abs(cmax) - abs(cmin))/nTicks<=1)
+            set(cb,'YTickLabel',round(cticks/0.01)*0.01);
+        else
+            set(cb,'YTickLabel',round(cticks));
+        end 
+           % else
+%                 cin = (cmax-cmin)/10;
+% 
+%                 set(cb,'YTick',[cmin:cin:cmax]);
+%                 %set(cb,'YTickLabel',);
+% 
+%                 
+           % end
+            
+
+
            
         nbt_split_text(xa,ya,textThis,maxline,fontsize);
         axis off
@@ -575,7 +625,7 @@ end
         CoolWarm = load('nbt_DarkBlueWhiteDarkRedSharp', 'nbt_DarkBlueWhiteDarkRedSharp');
         CoolWarm = CoolWarm.nbt_DarkBlueWhiteDarkRedSharp;
         colormap(CoolWarm);
-        topoplot(pLog,chanloc,'headrad','rim','numcontour',3,'electrodes','off')
+        nbt_topoplot(pLog,chanloc,'headrad','rim','numcontour',3,'electrodes','off')
         cb = colorbar('westoutside');
         caxis([minPValue maxPValue])
         
@@ -607,6 +657,11 @@ end
         saveas(gcf, 'FigPtopo.eps','epsc');
         close gcf
     end
+% 
+% filename='experiencia'
+% set(gcf,'PaperPositionMode','auto')
+%  print('-depsc',filename)
+ 
 
 %---- check if the selected regions are equal to the default regions for
 %129 EEG channels

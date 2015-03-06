@@ -164,9 +164,33 @@ pLog(pLog> maxPValue) = maxPValue;
             RedBlue_cbrewer10colors = load('RedBlue_cbrewer10colors','RedBlue_cbrewer10colors');
             RedBlue_cbrewer10colors = RedBlue_cbrewer10colors.RedBlue_cbrewer10colors;
             colormap(RedBlue_cbrewer10colors);
+                patches = findall(gcf,'Type','patch') ;
+
+cm = colormap ;
+j=size(cm,1)+1 ;
+for i=1:numel(patches)
+    set(patches(i),'CDataMapping','direct')
+    c = get(patches(i),'FaceColor') ;
+    if strcmpi('flat',c)
+        c = get(patches(i),'FaceVertexCData') ;
+        if size(c,2)>1
+            cm = [cm; c] ;
+            n = size(c,1) ;
+            set(patches(i),'FaceVertexCData',j+(0:n-1)')
+            j=j+n ;
+        end
+    end
+end
+
+colormap(cm)
             
             if strcmp(char(statfunc),'ttest') || strcmp(char(statfunc),'signrank')
-                topoplot(statistic(diffC2C1,2),chanloc,'headrad','rim','numcontour',0,'electrodes','on');
+               
+                 chans_Psignificant = find(p<0.05);
+                 nbt_topoplot(statistic(diffC2C1,2),chanloc,'headrad','rim','numcontour',0,'electrodes','on','emarker2',{[chans_Psignificant],'o','w',4,1});
+                 
+                
+                 
                 if(subplotIndex ==1)
                     textThis = sprintf('Grand average for %s minus %s ',condition2,condition1);
                 end
@@ -181,7 +205,7 @@ pLog(pLog> maxPValue) = maxPValue;
                 
                 
             else
-                topoplot(statistic(diffC2C1_2,2),chanloc,'headrad','rim','numcontour',0,'electrodes','on');
+                nbt_topoplot(statistic(diffC2C1_2,2),chanloc,'headrad','rim','numcontour',0,'electrodes','on');
                 if(subplotIndex == 1)
                     textThis = sprintf('Grand average for group %s minus group %s',condition2,condition1);
                 end
@@ -202,13 +226,34 @@ pLog(pLog> maxPValue) = maxPValue;
             Reds5 = load('Reds5','Reds5');
             Reds5 = Reds5.Reds5;
             colormap(Reds5);
+            
+            patches = findall(gcf,'Type','patch') ;
+
+cm = colormap ;
+j=size(cm,1)+1 ;
+for i=1:numel(patches)
+    set(patches(i),'CDataMapping','direct')
+    c = get(patches(i),'FaceColor') ;
+    if strcmpi('flat',c)
+        c = get(patches(i),'FaceVertexCData') ;
+        if size(c,2)>1
+            cm = [cm; c] ;
+            n = size(c,1) ;
+            set(patches(i),'FaceVertexCData',j+(0:n-1)')
+            j=j+n ;
+        end
+    end
+end
+
+colormap(cm)
+
             if(ConditionNr == 1)
-%                 topoplot(meanc1',chanloc,'headrad','rim','numcontour',NumberOfContours1,'electrodes','on');
-                topoplot(meanc1',chanloc,'headrad','rim','numcontour',0,'electrodes','on');
+%                 nbt_topoplot(meanc1',chanloc,'headrad','rim','numcontour',NumberOfContours1,'electrodes','on');
+                nbt_topoplot(meanc1',chanloc,'headrad','rim','numcontour',0,'electrodes','on');
                 cmin = min(min(meanc1),min(meanc2)); cmax = max(max(meanc1),max(meanc2));
             else
-%                 topoplot(meanc2',chanloc,'headrad','rim','numcontour',NumberOfContours2,'electrodes','on');
-                topoplot(meanc2',chanloc,'headrad','rim','numcontour',0,'electrodes','on');
+%                 nbt_topoplot(meanc2',chanloc,'headrad','rim','numcontour',NumberOfContours2,'electrodes','on');
+                nbt_topoplot(meanc2',chanloc,'headrad','rim','numcontour',0,'electrodes','on');
               
                  cmin = min(min(meanc1),min(meanc2)); cmax = max(max(meanc1),max(meanc2));
             end
@@ -265,7 +310,7 @@ pLog(pLog> maxPValue) = maxPValue;
 %        CoolWarm = load('nbt_colortmap', 'nbt_colortmap');
  %       CoolWarm = CoolWarm.nbt_colortmap;
         colormap(CoolWarm);
-        topoplot(pLog,chanloc,'headrad','rim','numcontour',0,'electrodes','on')
+        nbt_topoplot(pLog,chanloc,'headrad','rim','numcontour',0,'electrodes','on')
         cb = colorbar('westoutside');
         caxis([minPValue maxPValue])
         
