@@ -115,6 +115,10 @@ classdef (Abstract) nbt_SignalBiomarker < nbt_CoreBiomarker
             BiomarkerObject.nbtVersion = BiomarkerObject.NBTversion;
             BiomarkerObject.subjectInfo = subjectInfo(1:end-13);
             BiomarkerObject = setUniqueIdentifiers(BiomarkerObject);
+            
+           % if isempty(BiomarkerObject.frequencyRange)
+                
+            
         end 
     end % end methods
 end

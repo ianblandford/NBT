@@ -120,12 +120,12 @@ end
             [DataObj.dataStore{bID,1}, DataObj.pool{bID,1},  DataObj.poolKey{bID,1}, DataObj.units{bID,1}] = evalin('base', NBTelementCall);
             snb = strfind(NBTelementCall,',');
             subNBTelementCall = NBTelementCall(snb(1):snb(end)-1);
-            try
-                [DataObj.subjectList{bID,1}] = evalin('base', ['nbt_GetData(Subject' subNBTelementCall ');']);
-            catch me
-                %Only one Subject?
-             %   disp('Assuming only One subject?');
-             %   [DataObj.subjectList{bID,1}] = evalin('base', 'constant{nbt_searchvector(constant , {''Subject''}),2};');
-
-            end    
+%             try
+%                 [DataObj.subjectList{bID,1}] = evalin('base', ['nbt_GetData(Subject' subNBTelementCall ');']);
+%             catch me
+%                 %Only one Subject?
+%              %   disp('Assuming only One subject?');
+%              %   [DataObj.subjectList{bID,1}] = evalin('base', 'constant{nbt_searchvector(constant , {''Subject''}),2};');
+% 
+%             end    
     end
