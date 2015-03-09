@@ -657,10 +657,7 @@ end
         saveas(gcf, 'FigPtopo.eps','epsc');
         close gcf
     end
-% 
-% filename='experiencia'
-% set(gcf,'PaperPositionMode','auto')
-%  print('-depsc',filename)
+
  
 
 %---- check if the selected regions are equal to the default regions for
