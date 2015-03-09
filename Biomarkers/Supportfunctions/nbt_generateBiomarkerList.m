@@ -66,7 +66,7 @@ function obj = nbt_generateBiomarkerList(NBTstudy,grpNumber)
     freqBandsFixedOrderNames = {'Delta', 'Theta', 'Alpha', 'Beta', 'Gamma'};
     
     biomarkersFixedOrder = {'NBTe_nbt_PeakFit', 'NBTe_nbt_PeakFit', 'NBTe_nbt_PeakFit', 'NBTe_nbt_DFA', 'NBTe_nbt_PLI','NBTe_nbt_PeakFit','NBTe_nbt_PeakFit','NBTe_nbt_AmplitudeCorr','NBTe_nbt_Coher','NBTe_nbt_PhaseLocking'};
-    subBiomarkersFixedOrder = {'AbsolutePower', 'RelativePower', 'CentralFreq', 'markerValues', 'pliVal','Bandwidth','SpectralEdge','MarkerValues','Coherence','PLV'};
+    subBiomarkersFixedOrder = {'AbsolutePower', 'RelativePower', 'CentralFreq', 'markerValues', 'pliVal','Bandwidth','SpectralEdge','','',''};
     
     % Iterate along all fixed biomarkers and then check whether a present
     % biomarker corresponds to the fixed biomarker and store it in the
@@ -75,7 +75,7 @@ function obj = nbt_generateBiomarkerList(NBTstudy,grpNumber)
     %obj.group{1}.biomarkerIndex = zeros(1,50);
     i = 1;
     for presentBiomarker = 1 : length(biomarkerList)
-        currentBiom = biomarkerList{presentBiomarker};
+        currentBiom = biomarkerList{presentBiomarker}
         
         [biomName, tail] = strtok(currentBiom,'.');
         subBiomName = strrep(tail,'.','');

@@ -226,7 +226,7 @@
             %%% Show all channels
             disp('You chose to show all channels, not running statistics');
             
-            significantChannels = [];
+            significanceMask = zeros(nBioms,nChannels);
         case 'sig'
             %%% We only run statistics if the user wants to show
             %%% significant channels
@@ -301,19 +301,38 @@
 
                 %%% Statistics threshold
                 sigThresh = input('Significance threshold? (0.05)');
+                
+                significanceMask = zeros(nBioms,nChannels);
+                %significantChannels = zeros(nBioms,nChannels);
+                for biomID = 1 : nBioms
+                    if ismember(biomID,bioms_ind)
+                        biomIndex = find(ismember(bioms_ind,biomID));
+                        if find(pValues(:,biomIndex)' <= sigThresh)
+                            significanceMask(biomID,:) = pValues(:,biomIndex)' <= sigThresh;
+                        end
+                    end
+                end
+                disp('test')
+                
             elseif runStats == 2
-                %%% Use previously computed statistics
-                disp('Which statistics object do you want to choose from NBTstudy.statAnalysis?');
-                selectStats = input('Statistics object: ');
-                
-                %%% Get the pValues
-                pValues = NBTstudy.statAnalysis{selectStats}.pValues;
-                
-                %%% Statistics threshold
-                sigThresh = input('Significance threshold? (0.05)');
-
-                %%% Set the significant channels
-                significantChannels = find(pValues <= sigThresh);
+%                 %%% Use previously computed statistics
+%                 disp('Which statistics object do you want to choose from NBTstudy.statAnalysis?');
+%                 selectStats = input('Statistics object: ');
+%                 
+%                 %%% Get the pValues
+%                 pValues = NBTstudy.statAnalysis{selectStats}.pValues;
+%                 
+%                 %%% Statistics threshold
+%                 sigThresh = input('Significance threshold? (0.05)');
+% 
+%                 %%% Set the significant channels
+%                 significanceMask = zeros(nBioms,nChannels);
+%                 for biomID = 1 : nBioms
+%                     biomIndex = find(ismember(bioms_ind,biomID));
+%                     if find(pValues(:,biomIndex)' <= sigThresh)
+%                         significanceMask(biomID,:) = pValues(:,biomIndex)' <= sigThresh;
+%                     end
+%                 end
             end
     end
     
@@ -435,8 +454,8 @@
                     nbt_plotColorbar(i, chanChanThreshold, 1, 6, units, maxColumns);
                 else
                     %%% Biomarker is not a CrossChannelBiomarker
-                    %%% Plot the topoplot for the biomarker,{significantChannels(i,:),'o','g',5,2}
-                    topoplot(biomarkerValues,chanLocs,'headrad','rim','maplimits',[-3 3],'style','map','numcontour',0,'electrodes','on','circgrid',circgrid,'gridscale',gridscale,'shading','flat');
+                    %%% Plot the topoplot for the biomarker
+                    nbt_topoplot(biomarkerValues,chanLocs,'headrad','rim','emarker2',{find(significanceMask(biomarkerIndex(i),:)==1),'o','g',4,1},'maplimits',[-3 3],'style','map','numcontour',0,'electrodes','on','circgrid',circgrid,'gridscale',gridscale,'shading','flat');
                     set(gca, 'LooseInset', get(gca,'TightInset'));
                     nbt_plotColorbar(i, cmin, cmax, 6, units, maxColumns, cbType);
                 end

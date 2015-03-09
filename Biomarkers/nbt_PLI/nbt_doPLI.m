@@ -19,39 +19,67 @@
 %
 % See Readme.txt for additional copyright information.
 
-function PLIobject = nbt_doPLI(Signal,SignalInfo)
-%%   give information to the user
-%disp(['Computing marker values for ',SignalInfo.file_name])
-
-%% remove artifact intervals
-Signal = nbt_RemoveIntervals(Signal,SignalInfo);
-
-%% Initialize the biomarker object
-numChannels = size(Signal,2);
-PLIobject = nbt_PLI(numChannels);
-
-phaseSignal = angle(hilbert(Signal));
-
-for i = 1:(numChannels-1)
-    for m = (i+1):numChannels
-        PLIobject.pliVal(i,m) = abs(mean(sign(phaseSignal(:,i)-phaseSignal(:,m))));
+function PLIobject = nbt_doPLI(Signal, SignalInfo, FrequencyBand, interval, filterorder)
+    %%% Initialize the PLI biomarker object
+    nChannels = size(Signal(:,:),2);
+    PLIobject = nbt_PLI(nChannels);
+    
+    %%% Remove artifact intervals
+    Signal = nbt_RemoveIntervals(Signal,SignalInfo);
+    
+    %%% Get the signal for the specified interval
+    Fs = SignalInfo.convertedSamplingFrequency;
+    if ~isempty(interval)
+        if interval(1) == 0
+            Signal = Signal(1:interval(2)*Fs,:);
+        else
+            Signal = Signal(interval(1)*Fs:interval(2)*Fs,:);
+        end
     end
-end
-
-pli = PLIobject.pliVal;
-pli = triu(pli);
-pli = pli+pli';
-pli(eye(size(pli))~=0)=1;
-PLIobject.pliVal = pli;
-
-for i=1:numChannels
-    pli_chan = pli(i,:);
-    PLIobject.Median(i) = nanmedian(pli_chan(pli_chan ~= 1));
-    PLIobject.Mean(i) = nanmean(pli_chan(pli_chan ~= 1));
-    PLIobject.IQR(i) = iqr(pli_chan(pli_chan ~= 1));
-    PLIobject.Std(i) = std(pli_chan(pli_chan ~= 1));
-end
-
-%% update biomarker objects (here we used the biomarker template):
-PLIobject = nbt_UpdateBiomarkerInfo(PLIobject, SignalInfo);
+    
+    %%% The signal length must be at least 3 times the filter order
+    if exist('filterorder', 'var')
+        if filterorder >= size(Signal,1)/(3*2)
+            error('The signal length must be at least 3 times the filter order')
+        end
+    else
+        filterorder = 2/FrequencyBand(1);
+    end
+    
+    %%% Filter the signal for the selected frequency band
+    disp('Zero-Phase Filtering and Hilbert Transform...')
+    b1 = fir1(floor(filterorder*Fs),[FrequencyBand(1) FrequencyBand(2)]/(Fs/2));
+    for k = 1 : nChannels
+        FilteredSignal(:,k) = filtfilt(b1,1,double(Signal(:,k)));
+    end
+    
+    %%% Do Hilbert transform and compute the phase of the signal
+    phaseSignal = angle(hilbert(FilteredSignal));
+    
+    %%% Calculate the Phase Lag Index
+    for i = 1 : (nChannels-1)
+        for m = (i+1) : nChannels
+            PLIobject.pliVal(i,m) = abs(mean(sign(phaseSignal(:,i)-phaseSignal(:,m))));
+        end
+    end
+    
+    pli = PLIobject.pliVal;
+    pli = triu(pli);
+    pli = pli+pli';
+    pli(eye(size(pli))~=0)=1;
+    PLIobject.pliVal = pli;
+    
+    for i = 1 : nChannels
+        pli_chan = pli(i,:);
+        PLIobject.Median(i) = nanmedian(pli_chan(pli_chan ~= 1));
+        PLIobject.Mean(i) = nanmean(pli_chan(pli_chan ~= 1));
+        PLIobject.IQR(i) = iqr(pli_chan(pli_chan ~= 1));
+        PLIobject.Std(i) = std(pli_chan(pli_chan ~= 1));
+    end
+    
+    %%% Save the frequency range
+    SignalInfo.frequencyRange = FrequencyBand;
+    
+    %%% Update the biomarker info
+    PLIobject = nbt_UpdateBiomarkerInfo(PLIobject, SignalInfo);
 end
