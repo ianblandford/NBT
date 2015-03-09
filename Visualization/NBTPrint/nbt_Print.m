@@ -236,11 +236,9 @@
             runStats = input('Run statistics (1) or use statistics from NBTstudy object (2)?');
 
             if runStats == 1
-                %%% Run the statistics, will be stored in:
-                %%% NBTstudy.statAnalysis{end}
-
-                
-                
+%                 %%% Run the statistics, will be stored in:
+%                 %%% NBTstudy.statAnalysis{end}
+% 
                 
                 statTestList = NBTstudy.getStatisticsTests(0);
                 for mm=1:size(statTestList,2)
@@ -248,14 +246,9 @@
                 end
                 statTestIdx = input('Please select test above ');
                 S = NBTstudy.getStatisticsTests(statTestIdx);
-                
-                
-                
+                                
                 S.groups = groups;
-                
-                
-                
-                
+
                 disp('Biomarkers')
                 bioms_name = AnalysisObjGrp1.group{1}.originalBiomNames;
                 ll=0;
@@ -268,12 +261,6 @@
                     end
                 end
                 bioms_ind = input('Please select biomarkers above ');
-
-
-                disp('1:Channels');
-                disp('2:Regions');
-                disp('3:Match channels');
-                S.channelsRegionsSwitch  = input('Please select channels, regions, or match channels ');
                 
                 for gp = 1:length(S.groups)
                     for i = 1:length(bioms_ind)
@@ -294,7 +281,7 @@
 
                 NBTstudy.statAnalysis{length(NBTstudy.statAnalysis)+1} = S;
                 disp('Statistics done.')
-                
+
                 
                 %%% Get the pValues
                 pValues = NBTstudy.statAnalysis{end}.pValues;
@@ -398,11 +385,13 @@
         if upperBound > nBioms
             upperBound = nBioms;
         end
+        
+        crossChans = [21:25];
         for i = page * perPage - perPage + 1 : upperBound    
             subaxis(6, maxColumns, 6+mod(i-1,25), 'Spacing', 0.03, 'Padding', 0, 'Margin', 0)
             axis off;
             if biomarkerIndex(i) ~= 0
-                if i > 35 & i < 51
+                if i > 35 & i < 51 | ismember(i,crossChans)
                     biomarkerValues = nanmean(crossChannelBiomarkers(:,:,biomarkerIndex(i)),3);
                 else
                     biomarkerValues = signalBiomarkers(biomarkerIndex(i),:);
@@ -415,7 +404,6 @@
 
                     cmin = min(biomarkerValues);
                     cmax = max(biomarkerValues);
-                    cbType = 'singleGroup';
                 else
                     climit = max(abs(biomarkerValues)); %colorbar limit
                     if(length(find(biomarkerValues>=0)) == length(biomarkerValues(~isnan(biomarkerValues))))  % only positive values
@@ -425,7 +413,6 @@
 
                         cmin = 0;
                         cmax = climit;
-                        cbType = 'diffPos';
                     elseif(length(find(biomarkerValues<=0)) == length(biomarkerValues(~isnan(biomarkerValues)))) % only negative values
                         Blue_cbrewer5colors = load('Blue_cbrewer5colors','Blue_cbrewer5colors');
                         Blue_cbrewer5colors = Blue_cbrewer5colors.Blue_cbrewer5colors;
@@ -433,7 +420,6 @@
 
                         cmin = -1*climit;
                         cmax = 0;
-                        cbType = 'diffNeg';
                     else
                         RedBlue_cbrewer10colors = load('RedBlue_cbrewer10colors','RedBlue_cbrewer10colors');
                         RedBlue_cbrewer10colors = RedBlue_cbrewer10colors.RedBlue_cbrewer10colors;
@@ -443,13 +429,12 @@
                         cmin = -1*climit;
                         cmax = climit;
                         colormap(RedBlue_cbrewercolors);
-                        cbType = 'diffPosNeg';
                     end
                 end
                 
                 figure(fgh(end));
                 %%% Plot topoplotConnect for CrossChannelBiomarkers
-                if i > 35 & i < 51
+                if i > 35 & i < 51 | ismember(i,crossChans)
                     nbt_topoplotConnect(NBTstudy,biomarkerValues,chanChanThreshold)
                     nbt_plotColorbar(i, chanChanThreshold, 1, 6, units, maxColumns);
                 else
@@ -457,7 +442,7 @@
                     %%% Plot the topoplot for the biomarker
                     nbt_topoplot(biomarkerValues,chanLocs,'headrad','rim','emarker2',{find(significanceMask(biomarkerIndex(i),:)==1),'o','g',4,1},'maplimits',[-3 3],'style','map','numcontour',0,'electrodes','on','circgrid',circgrid,'gridscale',gridscale,'shading','flat');
                     set(gca, 'LooseInset', get(gca,'TightInset'));
-                    nbt_plotColorbar(i, cmin, cmax, 6, units, maxColumns, cbType);
+                    nbt_plotColorbar(i, cmin, cmax, 6, units, maxColumns);
                 end
                 
            end

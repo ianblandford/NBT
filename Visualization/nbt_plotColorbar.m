@@ -49,7 +49,7 @@
 % See Readme.txt for additional copyright information.
 % ---------------------------------------------------------------------------------------
 
-function nbt_plotColorbar(subplotIndex, cmin, cmax, maxTicks, unit, maxColumns, cbType)
+function nbt_plotColorbar(subplotIndex, cmin, cmax, maxTicks, unit, maxColumns)
     if ~exist('maxTicks')
         disp('Maximum number of ticks was not specified, using default of 6 ticks.');
         maxTicks = 6;
@@ -76,12 +76,10 @@ function nbt_plotColorbar(subplotIndex, cmin, cmax, maxTicks, unit, maxColumns, 
         cmax = round(cmax);
     end
     
-    if strcmp(cbType,'diffPosNeg')
-        cticks = linspace(cmin,cmax,8);
-    else
-        cticks = linspace(cmin,cmax,maxTicks);
-    end
-    %%% Increase the colobar limits by a very small number, otherwise the
+    %%% Cticks
+    cticks = linspace(cmin,cmax,maxTicks);
+
+    %%% Increase the colorbar limits by a very small number, otherwise the
     %%% first or the last tick might fall off (Fix for Matlab bug)
     %%% Note: if you decrease this number further, ticks will fall off
     caxis([min(cticks)-0.00000000001 max(cticks)+0.00000000001]);
@@ -119,24 +117,10 @@ function nbt_plotColorbar(subplotIndex, cmin, cmax, maxTicks, unit, maxColumns, 
             tickString(k,:) = tickStringOriginal(k,:);
         end
     end
-    
-%     %%% Set the colorbar ticks
-%     if strcmp(cbType,'diffPosNeg')
-%         keepTicks = [1 7 13 19 26 33 39 45 51];
-%         for tick = 1 : length(tickString)
-%             if ~ismember(tick,keepTicks);
-%                 tickString(tick,:) = ' ';
-%             end
-%         end
-%         %set(cbar,'YTickLabel',tickString,'FontName','Helvetica');
-%         set(cbar,'YTick',cticks(keepTicks));
-%     else
-%             
-%     end
-set(cbar,'YTickLabel',tickString,'FontName','Helvetica');    
+
+    set(cbar,'YTickLabel',tickString,'FontName','Helvetica');    
 %      set(cbar,'YTickLabel',tickString,'FontName','FixedWidth');
 
-    
     %%% Freeze the colorbar colors
     cbar = cbfreeze(cbar);
     freezeColors;

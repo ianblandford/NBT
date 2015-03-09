@@ -46,7 +46,7 @@ function nbt_topoplotConnect(NBTstudy,connMatrix,threshold)
 
     for i = 1 : nChannels
         for j = i : nChannels
-            if (connMatrix(i,j) > threshold & connMatrix(i,j) < 0.99 & abs(i-j) > 1)
+            if (connMatrix(i,j) > threshold & connMatrix(i,j) < 0.99)
                 color = floor((cmax-connMatrix(i,j)) / colorStep)+1;
                 plot3([y(i) y(j)],[x(i) x(j)], [ones(size(x(i))) ones(size(x(i)))],'LineWidth',2,'color',Red_cbrewer5colors(color,:));
             end
