@@ -69,6 +69,7 @@ for j=3:length(d)
                         end
                         
                         eval([ oldBiomarkerFields{i} '= convertBiomarker( oldBiomarkers.(oldBiomarkerFields{i}),d(j).name);']);
+                        
                         if isempty(signalName)
                             signalName = cell2mat(inputdlg(['Please type SignalInfoName (e.g. RawSignalInfo) for : ' oldBiomarkerFields{i}]));
                             sigInfo = load([d(j).name(1:end-12) 'info.mat']);
@@ -76,6 +77,32 @@ for j=3:length(d)
                             eval([signalName ' = sigInfo.' signalName ';']);
                         end
                         eval([ oldBiomarkerFields{i} '= nbt_UpdateBiomarkerInfo(' oldBiomarkerFields{i} ',' signalName ');']);
+                        
+                        % check if field frequencyRange exists in the biomarker object
+                        eval([ 'freqRng = isempty(' oldBiomarkerFields{i} '.frequencyRange);' ]);
+                        
+                        if (freqRng == 1)
+                        % hack for filling the freq range field
+                            if (~isempty(strfind(oldBiomarkerFields{i},'alpha'))) || (~isempty(strfind(oldBiomarkerFields{i},'8_13')))
+                                eval([oldBiomarkerFields{i} '.frequencyRange = [8 13];']);
+                            end
+
+                            if (~isempty(strfind(oldBiomarkerFields{i},'beta'))) || (~isempty(strfind(oldBiomarkerFields{i},'13_30')))
+                                eval([oldBiomarkerFields{i} '.frequencyRange = [13 30];']);
+                            end
+
+                            if (~isempty(strfind(oldBiomarkerFields{i},'gamma'))) || (~isempty(strfind(oldBiomarkerFields{i},'30_45')))
+                                eval([oldBiomarkerFields{i} '.frequencyRange = [30 45];']);
+                            end
+
+                            if (~isempty(strfind(oldBiomarkerFields{i},'delta'))) || (~isempty(strfind(oldBiomarkerFields{i},'1_4')))
+                                eval([oldBiomarkerFields{i} '.frequencyRange = [1 4];']);
+                            end
+
+                            if (~isempty(strfind(oldBiomarkerFields{i},'theta'))) || (~isempty(strfind(oldBiomarkerFields{i},'4_8')))
+                                eval([oldBiomarkerFields{i} '.frequencyRange = [4 8];']);
+                            end
+                        end
                         
                         eval([signalName '.listOfBiomarkers = [' signalName '.listOfBiomarkers ; {''' oldBiomarkerFields{i} '''}];']);
                         
