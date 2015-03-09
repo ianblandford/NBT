@@ -251,7 +251,7 @@ end
        end
         %%% Plot the topoplot: check whether test statistic is a ttest or signrank
         chans_Psignificant = find(pValues<0.05);
-        topoplot(diffGrp2Grp1,chanLocs,'headrad','rim','numcontour',0,'electrodes','on','emarker2',{[chans_Psignificant],'o','w',4,1});
+        nbt_topoplot(diffGrp2Grp1,chanLocs,'headrad','rim','numcontour',0,'electrodes','on','emarker2',{[chans_Psignificant],'o','w',4,1});
         
        
 
