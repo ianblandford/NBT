@@ -57,6 +57,9 @@ switch Type
         if(sum(isnan(Pc)) == length(p))
             Pc = [];
         end
+    case 'fdr'
+        % Pc = mafdr(p,'BHFDR','true');
+        [h, crit_p, Pc]=fdr_bh(p,0.05,'pdep','no');        
 end
 if(~isempty(Pc))
     Pindex = nbt_searchvector(pOld,Pc);

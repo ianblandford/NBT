@@ -4,22 +4,23 @@ n_groups = length(ClassificationStatObj.groups);
 DataMatrix = []; % n_sub x (n_freq_bands*n_channels)
 Outcome = [];
 
-% if (ClassificationStatObj.channelsRegionsSwitch == 2) % regions
+if (ClassificationStatObj.channelsRegionsSwitch == 2) % regions
 % StudyObj.groups{1}.chanLocs
+end
 
 for j=1:n_groups
     Data_groups{j} = StudyObj.groups{ClassificationStatObj.groups(j)}.getData(ClassificationStatObj);
-    if (Data_groups{j}.numSubjects == size(Data_groups{j}(),1)) % global biomarker
+    %if (Data_groups{j}.numSubjects == size(Data_groups{j}(),1)) % global biomarker
         DataMatrix = [DataMatrix; Data_groups{j}()];
-    else % biomarker per frequency band, Data_groups{j}() of size (n_subjects*n_freq_bands) x n_channels
-        n_freq_bands = size(Data_groups{j}(),1)/Data_groups{j}.numSubjects;
-        DataMat = Data_groups{j}();
-        for k=1:Data_groups{j}.numSubjects
-            sub_k = DataMat(n_freq_bands*(k-1)+1:n_freq_bands*k,:);
-            sub_k_row = reshape(sub_k',1,size(sub_k,1)*size(sub_k,2));
-            DataMatrix = [DataMatrix; sub_k_row];
-        end
-    end
+%     else % biomarker per frequency band, Data_groups{j}() of size (n_subjects*n_freq_bands) x n_channels
+%         n_freq_bands = size(Data_groups{j}(),1)/Data_groups{j}.numSubjects;
+%         DataMat = Data_groups{j}();
+%         for k=1:Data_groups{j}.numSubjects
+%             sub_k = DataMat(n_freq_bands*(k-1)+1:n_freq_bands*k,:);
+%             sub_k_row = reshape(sub_k',1,size(sub_k,1)*size(sub_k,2));
+%             DataMatrix = [DataMatrix; sub_k_row];
+%         end
+%     end
     Outcome = [Outcome; (j-1).*ones(length(Data_groups{j}.subjectList{1,1}),1)];
 end
 

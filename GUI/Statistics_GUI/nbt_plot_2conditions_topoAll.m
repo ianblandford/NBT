@@ -179,7 +179,7 @@ end
     end
 
     
-    -%% nested functions part
+    %% nested functions part
     function plotGrandAvgTopo(conditionNr,meanGroup,subplotIndex,statType)
         %%% This function plots the topoplots for the grand averages of all channels for group 1 and group 2
         %%% Load the predefined nbt red-white colormap
@@ -215,8 +215,9 @@ end
                 % statType == unpaired
                 if (conditionNr == 1)
                    rowLabel = sprintf('Grand average for group %s (n = %s)',nameGroup1,num2str(nSubjectsGroup1));
+                else
                    rowLabel = sprintf('Grand average for group %s (n = %s)',nameGroup2,num2str(nSubjectsGroup2));
-            end
+                end
             end
         
             %% Fit the label onto the y-axis

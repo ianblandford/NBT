@@ -121,22 +121,22 @@ amplitude_4_8_Hz=nbt_amplitude(number_of_channels,integrated(2,:),[],0,'\muV');
 amplitude_8_13_Hz=nbt_amplitude(number_of_channels,integrated(3,:),[],0,'\muV');
 amplitude_13_30_Hz=nbt_amplitude(number_of_channels,integrated(4,:),[],0,'\muV');
 amplitude_30_45_Hz=nbt_amplitude(number_of_channels,integrated(5,:),[],0,'\muV');
-amplitude_1_4_Hz.FrequencyRange = interval_Hz(1,:);
-amplitude_4_8_Hz.FrequencyRange = interval_Hz(2,:);
-amplitude_8_13_Hz.FrequencyRange = interval_Hz(3,:);
-amplitude_13_30_Hz.FrequencyRange = interval_Hz(4,:);
-amplitude_30_45_Hz.FrequencyRange = interval_Hz(5,:);
+amplitude_1_4_Hz.frequencyRange = interval_Hz(1,:);
+amplitude_4_8_Hz.frequencyRange = interval_Hz(2,:);
+amplitude_8_13_Hz.frequencyRange = interval_Hz(3,:);
+amplitude_13_30_Hz.frequencyRange = interval_Hz(4,:);
+amplitude_30_45_Hz.frequencyRange = interval_Hz(5,:);
 
 amplitude_1_4_Hz_Normalized=nbt_amplitude(number_of_channels,normalized(1,:)*100,[],1,'%');
 amplitude_4_8_Hz_Normalized=nbt_amplitude(number_of_channels,normalized(2,:)*100,[],1,'%');
 amplitude_8_13_Hz_Normalized=nbt_amplitude(number_of_channels,normalized(3,:)*100,[],1,'%');
 amplitude_13_30_Hz_Normalized=nbt_amplitude(number_of_channels,normalized(4,:)*100,[],1,'%');
 amplitude_30_45_Hz_Normalized=nbt_amplitude(number_of_channels,normalized(5,:)*100,[],1,'%');
-amplitude_1_4_Hz_Normalized.FrequencyRange = interval_Hz(1,:);
-amplitude_4_8_Hz_Normalized.FrequencyRange = interval_Hz(2,:);
-amplitude_8_13_Hz_Normalized.FrequencyRange = interval_Hz(3,:);
-amplitude_13_30_Hz_Normalized.FrequencyRange = interval_Hz(4,:);
-amplitude_30_45_Hz_Normalized.FrequencyRange = interval_Hz(5,:);
+amplitude_1_4_Hz_Normalized.frequencyRange = interval_Hz(1,:);
+amplitude_4_8_Hz_Normalized.frequencyRange = interval_Hz(2,:);
+amplitude_8_13_Hz_Normalized.frequencyRange = interval_Hz(3,:);
+amplitude_13_30_Hz_Normalized.frequencyRange = interval_Hz(4,:);
+amplitude_30_45_Hz_Normalized.frequencyRange = interval_Hz(5,:);
 
 %% in case of 129-channel EEG data, compute values at 6 subregions and check plotting option
 
@@ -157,22 +157,22 @@ if isfield(Info.interface,'EEG') && number_of_channels==129
 %     amplitude_8_13_Hz=nbt_amplitude(number_of_channels,integrated(3,:),integrated_regions(3,:),0,'\muV');
 %     amplitude_13_30_Hz=nbt_amplitude(number_of_channels,integrated(4,:),integrated_regions(4,:),0,'\muV');
 %     amplitude_30_45_Hz=nbt_amplitude(number_of_channels,integrated(5,:),integrated_regions(5,:),0,'\muV');
-    amplitude_1_4_Hz.FrequencyRange = interval_Hz(1,:);
-    amplitude_4_8_Hz.FrequencyRange = interval_Hz(2,:);
-    amplitude_8_13_Hz.FrequencyRange = interval_Hz(3,:);
-    amplitude_13_30_Hz.FrequencyRange = interval_Hz(4,:);
-    amplitude_30_45_Hz.FrequencyRange = interval_Hz(5,:);
+    amplitude_1_4_Hz.frequencyRange = interval_Hz(1,:);
+    amplitude_4_8_Hz.frequencyRange = interval_Hz(2,:);
+    amplitude_8_13_Hz.frequencyRange = interval_Hz(3,:);
+    amplitude_13_30_Hz.frequencyRange = interval_Hz(4,:);
+    amplitude_30_45_Hz.frequencyRange = interval_Hz(5,:);
     
 %     amplitude_1_4_Hz_Normalized=nbt_amplitude(number_of_channels,normalized(1,:),normalized_regions(1,:),1,'%');
 %     amplitude_4_8_Hz_Normalized=nbt_amplitude(number_of_channels,normalized(2,:),normalized_regions(2,:),1,'%');
 %     amplitude_8_13_Hz_Normalized=nbt_amplitude(number_of_channels,normalized(3,:),normalized_regions(3,:),1,'%');
 %     amplitude_13_30_Hz_Normalized=nbt_amplitude(number_of_channels,normalized(4,:),normalized_regions(4,:),1,'%');
 %     amplitude_30_45_Hz_Normalized=nbt_amplitude(number_of_channels,normalized(5,:),normalized_regions(5,:),1,'%');
-    amplitude_1_4_Hz_Normalized.FrequencyRange = interval_Hz(1,:);
-    amplitude_4_8_Hz_Normalized.FrequencyRange = interval_Hz(2,:);
-    amplitude_8_13_Hz_Normalized.FrequencyRange = interval_Hz(3,:);
-    amplitude_13_30_Hz_Normalized.FrequencyRange = interval_Hz(4,:);
-    amplitude_30_45_Hz_Normalized.FrequencyRange = interval_Hz(5,:);
+    amplitude_1_4_Hz_Normalized.frequencyRange = interval_Hz(1,:);
+    amplitude_4_8_Hz_Normalized.frequencyRange = interval_Hz(2,:);
+    amplitude_8_13_Hz_Normalized.frequencyRange = interval_Hz(3,:);
+    amplitude_13_30_Hz_Normalized.frequencyRange = interval_Hz(4,:);
+    amplitude_30_45_Hz_Normalized.frequencyRange = interval_Hz(5,:);
 end
 
 

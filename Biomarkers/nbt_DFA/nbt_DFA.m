@@ -131,10 +131,7 @@ classdef nbt_DFA < nbt_SignalBiomarker
             ylabel('log_{10} F(time)','Fontsize',12)
             title(['DFA-exp=', num2str(DFAobject.DFAexp(ChannelID,SubjectID))],'Fontsize',12)
         end
-        
-        
-        
-        
+                
         
     end
 end
