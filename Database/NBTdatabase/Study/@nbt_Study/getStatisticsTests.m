@@ -87,7 +87,7 @@ switch index
       S = nbt_ttest;
         
     case 8 % Non-Parametric (Univariate): Wilcoxon signed rank test
-        
+      S = nbt_signrank;  
       
         
     case 9 % Parametric (Bi-variate): Student unpaired t-test
