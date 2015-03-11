@@ -83,7 +83,7 @@ classdef nbt_NBTelement %< handle
                             parentName = s(i).name;
                         end
                     end
-                end               
+                end
                 if isempty(parentName)
                     disp('Parent Not Found');
                 else
@@ -100,15 +100,15 @@ classdef nbt_NBTelement %< handle
         end
         
         function NBTelement = nbt_isBiomarkerSwitch(NBTelement,biomarkerClass)
-          if(NBTelement.isBiomarker)
-              NBTelement.isBiomarker = false;
-              NBTelement.Biomarkers = cell(0,0);
-              NBTelement.BiomarkerType = cell(0,0);
-          else %not a biomarker > switch
-              NBTelement.isBiomarker = true;
-              NBTelement.Biomarkers = {'Info'};
-              NBTelement.BiomarkerType = {biomarkerClass};
-          end
+            if(NBTelement.isBiomarker)
+                NBTelement.isBiomarker = false;
+                NBTelement.Biomarkers = cell(0,0);
+                NBTelement.BiomarkerType = cell(0,0);
+            else %not a biomarker > switch
+                NBTelement.isBiomarker = true;
+                NBTelement.Biomarkers = {'Info'};
+                NBTelement.BiomarkerType = {biomarkerClass};
+            end
         end
         
         function [NewPoolID, NewKey] = nbt_LimitPool(NBTelement,UpPool, UpPoolKey, DataString)
@@ -119,8 +119,8 @@ classdef nbt_NBTelement %< handle
                 else
                     NewPool = nbt_searchvector(NBTelement.Data, DataString);
                     if(isempty(NewPool)) %then probably DataString is a string and .Data is numeric
-                       DataString = cellfun(@str2num,DataString);
-                       NewPool = nbt_searchvector(NBTelement.Data, DataString);
+                        DataString = cellfun(@str2num,DataString);
+                        NewPool = nbt_searchvector(NBTelement.Data, DataString);
                     end
                 end
             else
@@ -206,17 +206,19 @@ classdef nbt_NBTelement %< handle
                 [StripOff, NewPoolIDstpup] = strtok(NewPoolID,'.');
                 NewPoolIDstpup=nbt_TrimCellStr(NewPoolIDstpup);
                 if(UplinkMissing == 1)
-                    UplinkSteps = 1;
                     [tmpKey, TreeKey] = strtok(NBTelement.Key, '.');
-                    [tmpKey, TreeKey] = strtok(TreeKey,'.');
-                     
-                    while(~strcmp(['.' UpPoolKey], TreeKey))
-                        [tmpKey, TreeKey] = strtok(TreeKey,'.');
-                        UplinkSteps = UplinkSteps +1;
+                    while(isempty(strfind(TreeKey,UpPoolKey)))
+                        [StripOff, UpPoolKey] = strtok(UpPoolKey,'.');
+                        [StripOff, UpPool] = strtok(UpPool,'.');
                     end
-                    for mm = 1:UplinkSteps
+                    UpPool=nbt_TrimCellStr(UpPool);
+                    
+                    uplinkstage = strfind(TreeKey,UpPoolKey);
+                    uplinksteps = length(strfind(TreeKey(1:uplinkstage),'.')) -1;
+                    for i=1:uplinksteps
                         [StripOff, NewPoolIDstpup] = strtok(NewPoolIDstpup,'.');
                     end
+                    
                     NewPoolIDstpup=nbt_TrimCellStr(NewPoolIDstpup);
                 end
                 
@@ -239,7 +241,7 @@ classdef nbt_NBTelement %< handle
                 NewKey = UpPoolKey;
             end
         end
-    end   
+    end
 end
 
 
