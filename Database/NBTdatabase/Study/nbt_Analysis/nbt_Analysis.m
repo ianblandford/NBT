@@ -13,6 +13,7 @@ classdef nbt_Analysis
         channels
         channelsRegionsSwitch
         uniqueBiomarkers
+        data
     end
     
     methods

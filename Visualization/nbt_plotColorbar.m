@@ -49,16 +49,20 @@
 % See Readme.txt for additional copyright information.
 % ---------------------------------------------------------------------------------------
 
-function nbt_plotColorbar(subplotIndex, cmin, cmax, maxTicks, unit, maxColumns)
+function nbt_plotColorbar(subplotIndex, cmin, cmax, maxTicks, units, maxColumns, cbType)
     if ~exist('maxTicks')
         disp('Maximum number of ticks was not specified, using default of 6 ticks.');
         maxTicks = 6;
     end
     
+    if strcmp(cbType,'diff')
+        maxTicks = 8;
+    end
+    
     %%% Plot the colorbar on the righthand side of the topoplot
     cbar = colorbar('location','west');
     posish = get(cbar,'position');
-    set(cbar,'position',[0.14 + mod(subplotIndex-1, maxColumns)*.205,posish(2),0.01,posish(4)+.2*posish(4)],'fontsize',10);               
+    set(cbar,'position',[0.14 + mod(subplotIndex-1, maxColumns)*.205,posish(2),0.01,posish(4)+.2*posish(4)],'fontsize',11);               
     
     %%% Set caxis
     if cmin ~= cmax
@@ -87,7 +91,7 @@ function nbt_plotColorbar(subplotIndex, cmin, cmax, maxTicks, unit, maxColumns)
 
     if((abs(cmax) - abs(cmin))/maxTicks<=1)
         cticks = round(cticks/0.01)*0.01;
-        if strcmp(unit,'%')
+        if strcmp(units(subplotIndex),'%')
             % For relative biomarkers
             cticks = cticks * 100;
         end
@@ -125,11 +129,9 @@ function nbt_plotColorbar(subplotIndex, cmin, cmax, maxTicks, unit, maxColumns)
     cbar = cbfreeze(cbar);
     freezeColors;
     
-    %%% hack: No labels for connectivity measures
-%     if subplotIndex <= 35
-%         %%% Put the unit on the colorbar
-%         set(get(cbar,'title'),'String',unit,'interpreter','tex','fontsize',8,'FontName','Helvetica');
-%     end
+    %%% Put the unit on the colorbar
+    set(get(cbar,'title'),'String',units(subplotIndex),'interpreter','tex','fontsize',10,'FontName','Helvetica','FontWeight','demi');
+
     
     %%% Change the colorbar position [left, bottom, width, height]
     cbarPos = [0.14+mod(subplotIndex-1,5)*.205, posish(2), 0.008, posish(4)+.2*posish(4)];

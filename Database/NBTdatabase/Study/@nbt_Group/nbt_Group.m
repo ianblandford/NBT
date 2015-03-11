@@ -12,6 +12,7 @@ classdef nbt_Group %NBT GroupObject - contains group definitions + Database poin
         identList
         chanLocs
         listRegData
+        DataObj
     end
     
     methods (Access = public)

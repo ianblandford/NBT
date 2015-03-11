@@ -66,7 +66,7 @@ function obj = nbt_generateBiomarkerList(NBTstudy,grpNumber)
     freqBandsFixedOrderNames = {'Delta', 'Theta', 'Alpha', 'Beta', 'Gamma'};
     
     biomarkersFixedOrder = {'NBTe_nbt_PeakFit', 'NBTe_nbt_PeakFit', 'NBTe_nbt_PeakFit', 'NBTe_nbt_DFA', 'NBTe_nbt_PLI','NBTe_nbt_PeakFit','NBTe_nbt_PeakFit','NBTe_nbt_AmplitudeCorr','NBTe_nbt_Coher','NBTe_nbt_PhaseLocking'};
-    subBiomarkersFixedOrder = {'AbsolutePower', 'RelativePower', 'CentralFreq', 'MarkerValues', 'pliVal','BandWidth','SpectralEdge','','',''};
+    subBiomarkersFixedOrder = {'AbsolutePower', 'RelativePower', 'CentralFreq', 'markerValues', 'pliVal','Bandwidth','SpectralEdge','','',''};
     
     % Iterate along all fixed biomarkers and then check whether a present
     % biomarker corresponds to the fixed biomarker and store it in the
@@ -75,19 +75,22 @@ function obj = nbt_generateBiomarkerList(NBTstudy,grpNumber)
     %obj.group{1}.biomarkerIndex = zeros(1,50);
     i = 1;
     for presentBiomarker = 1 : length(biomarkerList)
-        currentBiom = biomarkerList{presentBiomarker}
-        [biomName, identifiers, subBiomName, ~, biomarkerUnits] = nbt_parseBiomarkerIdentifiers(currentBiom);
+        currentBiom = biomarkerList{presentBiomarker};
         
-        %%% Check whetehr freq range is present
-        if ismember('frequencyRange',identifiers)
-            freqRange = identifiers{1,2};
+        [biomName, tail] = strtok(currentBiom,'.');
+        subBiomName = strrep(tail,'.','');
+
+        if strfind(biomName,'{')
+            [biomName, biomIdent] = strtok(biomName,'{');
+            [~, tail] = strtok(biomIdent,'_');
+            [~, freqRange] = strtok(tail,'_');
+            freqRange = strrep(freqRange,'_','');
+            freqRange = strrep(freqRange,'}','');
         else
-            if strcmp(subBiomName,'_')
-                [~, freqRange] = strtok(subBiomName,'_');
-                freqRange = strrep(freqRange,'_','');
-            end
-        end
-        
+            [subBiomName, freqRange] = strtok(subBiomName,'_');
+            freqRange = strrep(freqRange,'_','');
+        end     
+
         for biomarker = 1 : 10
             for freqBand = 1 : 5
                 %% For all biomarkers except PeakFit
@@ -101,7 +104,7 @@ function obj = nbt_generateBiomarkerList(NBTstudy,grpNumber)
                     obj.group{1}.biomarkerIndex((biomarker-1)*5 + freqBand) = i;
 
                     index = evalin('base',['find(strcmp(' biomName '.Biomarkers , ''' subBiomName '''))']);
-                    obj.group{1}.units{(biomarker-1)*5 + freqBand} = biomarkerUnits;
+                    obj.group{1}.units{(biomarker-1)*5 + freqBand} = evalin('base', [biomName '.BiomarkerUnit{' num2str(index) '};']);
 
                     i = i + 1;
                 elseif strcmp(biomName,biomarkersFixedOrder{biomarker}) & strcmp(subBiomName,subBiomarkersFixedOrder{biomarker}) & strcmp(freqRange,freqBandsFixedOrderNames{freqBand})
@@ -117,7 +120,7 @@ function obj = nbt_generateBiomarkerList(NBTstudy,grpNumber)
                     
                     index = evalin('base',['find(strcmp(' biomName '.Biomarkers , ''' subBiomName '''))']);
             
-                   % obj.group{grpNumber}.units{(biomarker-1)*5 + freqBand} = evalin('base', [biomName '.BiomarkerUnit{' num2str(index) '};']);
+                    obj.group{grpNumber}.units{(biomarker-1)*5 + freqBand} = evalin('base', [biomName '.BiomarkerUnit{' num2str(index) '};']);
                 
                     i = i + 1;
                 end
