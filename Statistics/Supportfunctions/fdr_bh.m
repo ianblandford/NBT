@@ -1,3 +1,5 @@
+% Function from the Mass Univariate ERP Toolbox by David Groppe (http://www.mathworks.com/matlabcentral/fileexchange/29274-mass-univariate-erp-toolbox/)
+% Covered by BSD license.
 % fdr_bh() - Executes the Benjamini & Hochberg (1995) and the Benjamini &
 %            Yekutieli (2001) procedure for controlling the false discovery 
 %            rate (FDR) of a family of hypothesis tests. FDR is the expected
