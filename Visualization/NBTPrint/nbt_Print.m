@@ -305,18 +305,16 @@
                 %%% Statistics threshold
                 sigThresh = input('Significance threshold? (0.05)');
                 
-                significanceMask = zeros(nBioms,nChannels);
+                %significanceMask = zeros(nBioms,nChannels);
                 %significantChannels = zeros(nBioms,nChannels);
                 for biomID = 1 : nBioms
                     if ismember(biomID,bioms_ind)
                         biomIndex = find(ismember(bioms_ind,biomID));
-                        if find(pValues(:,biomIndex)' <= sigThresh)
-                            significanceMask(biomID,:) = pValues(:,biomIndex)' <= sigThresh;
+                        if find(pValues{biomIndex}' <= sigThresh)
+                            significanceMask{biomID} = pValues{biomIndex}' <= sigThresh;
                         end
                     end
                 end
-                disp('test')
-                
             elseif runStats == 2
 %                 %%% Use previously computed statistics
 %                 disp('Which statistics object do you want to choose from NBTstudy.statAnalysis?');
@@ -459,7 +457,7 @@
                 else
                     %%% Biomarker is not a CrossChannelBiomarker
                     %%% Plot the topoplot for the biomarker
-                    nbt_topoplot(biomarkerValues,chanLocs,'headrad','rim','emarker2',{find(significanceMask(biomarkerIndex(i),:)==1),'o','g',4,1},'maplimits',[-3 3],'style','map','numcontour',0,'electrodes','on','circgrid',circgrid,'gridscale',gridscale,'shading','flat');
+                    nbt_topoplot(biomarkerValues,chanLocs,'headrad','rim','emarker2',{find(significanceMask{biomarkerIndex(i)}==1),'o','g',4,1},'maplimits',[-3 3],'style','map','numcontour',0,'electrodes','on','circgrid',circgrid,'gridscale',gridscale,'shading','flat');
                     set(gca, 'LooseInset', get(gca,'TightInset'));
                     nbt_plotColorbar(i, cmin, cmax, 6, units, maxColumns, cbType);
                 end

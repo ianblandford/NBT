@@ -17,7 +17,7 @@ classdef nbt_ttest2 < nbt_UnPairedStat
             Data2 = StudyObj.groups{obj.groups(2)}.getData(obj); 
             %Perform test
             for bID=1:Data1.numBiomarkers  
-                [~, obj.pValues(:,bID), ~, obj.statStruct{bID,1}] = ttest2(Data1{bID,1}',Data2{bID,1}','tail',  obj.testOptions.tail,'vartype', obj.testOptions.vartype);
+                [~, obj.pValues{bID}, ~, obj.statStruct{bID,1}] = ttest2(Data1{bID,1}',Data2{bID,1}','tail',  obj.testOptions.tail,'vartype', obj.testOptions.vartype);
             end
         end
     end
