@@ -101,7 +101,7 @@ function obj = nbt_generateBiomarkerList(NBTstudy,grpNumber)
                 obj.group{1}.biomarkerIdentifiers{i} = {'frequencyRange' freqRange};
                 obj.group{1}.classes{i} = biomarkerClass;
                 obj.group{1}.biomarkerIndex((biomIndex-1)*5 + freqIndex) = i;
-                obj.group{1}.units{(biomIndex-1)*5 + freqIndex} = ''; %biomarkerUnit;
+                obj.group{1}.units{(biomIndex-1)*5 + freqIndex} = biomarkerUnit;
 
                 i = i + 1;
             elseif ismember(freqRange,freqBandsFixedOrderNames)
@@ -116,7 +116,7 @@ function obj = nbt_generateBiomarkerList(NBTstudy,grpNumber)
                 obj.group{1}.biomarkerIdentifiers{i} = [];
                 obj.group{1}.classes{i} = biomarkerClass;
                 obj.group{1}.biomarkerIndex((biomIndex-1)*5 + freqIndex) = i;
-                obj.group{1}.units{(biomIndex-1)*5 + freqIndex} = '';
+                obj.group{1}.units{(biomIndex-1)*5 + freqIndex} = biomarkerUnit;
 
                 i = i + 1;
             end
