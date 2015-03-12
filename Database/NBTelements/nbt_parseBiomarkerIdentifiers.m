@@ -36,7 +36,7 @@ else
     biomName = biom(1:identStart(1)-1);
     index = evalin('base',['find(strcmp(' biomName '.Biomarkers , ''' biomarker '''))']);
     biomarkerClass = evalin('base',[biomName '.BiomarkerType{' num2str(index) '};']);
-    biomarkerUnit = evalin('base',[biomName '.BiomarkerUnit;']);
+    biomarkerUnit = evalin('base',[biomName '.BiomarkerUnit{' num2str(index) ,'};']);
 end
 
 
