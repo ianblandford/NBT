@@ -53,6 +53,11 @@ classdef nbt_AmplitudeCorr < nbt_CrossChannelBiomarker
             BiomarkerObject.lastUpdate = datestr(now);
             BiomarkerObject.primaryBiomarker = 'MarkerValues';
             BiomarkerObject.biomarkers ={'MarkerValues','MaxCorr', 'MinCorr','MedianCorr','MeanCorr','StdCorr','IQRCorr','RangeCorr'};
+            BiomarkerObject = setUniqueIdentifiers(BiomarkerObject);
+        end
+        
+        function BiomarkerObject = setUniqueIdentifiers(BiomarkerObject)
+            BiomarkerObject.uniqueIdentifiers = {'frequencyRange'};
         end
         
         function Output=nbt_GetAmplitudeCorr(AmpCorrObject,SubjectRange, ChId1, ChId2)

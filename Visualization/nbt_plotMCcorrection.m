@@ -27,6 +27,9 @@ for i=1:size(pvalues,2)
     if(~isempty(nbt_MCcorrect(pvalues(:,i),'bonfi')))
         PtoPlot(i,4) = 1;
     end
+    if(~isempty(nbt_MCcorrect(pvalues(:,i),'fdr')))
+        PtoPlot(i,4) = 1;
+    end
 end
 
 PtoPlot = PtoPlot';
@@ -71,7 +74,7 @@ set(cbh,'YTickLabel', {'N.S.','Significant'})
     set(gca, 'XTick', 1:length(bioms_name))
     set(gca, 'XTickLabel', bioms_name)
     set(gca,'YTick',1:size(PtoPlot,1))
-    set(gca,'YTickLabel',{'Holm', 'Hochberg', 'Binomial', 'Bonferroni'},'Fontsize',10)
+    set(gca,'YTickLabel',{'Holm', 'Hochberg', 'Binomial', 'Bonferroni', 'False Discovery Rate},'Fontsize',10)
    
     ylabel('Correction method')
 

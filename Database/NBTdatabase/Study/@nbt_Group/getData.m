@@ -74,7 +74,7 @@ function  DataObj = getData(GrpObj,StatObj)
             case 'File'
         end
 
-        %DataObj.numSubjects = length(DataObj.subjectList{1,1}); %we assume there not different number of subjects per biomarker!
+        DataObj.numSubjects = length(DataObj.subjectList{1,1}); %we assume there not different number of subjects per biomarker!
         DataObj.numBiomarkers = size(DataObj.dataStore,1);
         % Call outputformating here >
     end
@@ -123,13 +123,13 @@ function  DataObj = getData(GrpObj,StatObj)
         [DataObj.dataStore{bID,1}, DataObj.pool{bID,1},  DataObj.poolKey{bID,1}, DataObj.units{bID,1}] = evalin('base', NBTelementCall);
         snb = strfind(NBTelementCall,',');
         subNBTelementCall = NBTelementCall(snb(1):snb(end)-1);
+            try
+                [DataObj.subjectList{bID,1}] = evalin('base', ['nbt_GetData(Subject' subNBTelementCall ');']);
+            catch me
+                %Only one Subject?
+             %   disp('Assuming only One subject?');
+             %   [DataObj.subjectList{bID,1}] = evalin('base', 'constant{nbt_searchvector(constant , {''Subject''}),2};');
+
+            end
     end
-%             try
-%                 [DataObj.subjectList{bID,1}] = evalin('base', ['nbt_GetData(Subject' subNBTelementCall ');']);
-%             catch me
-%                 %Only one Subject?
-%              %   disp('Assuming only One subject?');
-%              %   [DataObj.subjectList{bID,1}] = evalin('base', 'constant{nbt_searchvector(constant , {''Subject''}),2};');
-%
-%             end
 end
