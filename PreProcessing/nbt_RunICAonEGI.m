@@ -51,6 +51,7 @@ for j=3:length(d)
             Signalname = [];
 
             for i = 1:length(VariableList(:))
+                %%% SH: report fixed number of channels
                 if(VariableList(i).size(1) == 129 && VariableList(i).size(2) > 1)
                     Signalname = VariableList(i).name;
                     break

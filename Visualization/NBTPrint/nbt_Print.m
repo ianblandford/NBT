@@ -123,6 +123,7 @@
                     %%% Get the data
                     DataObj = getData(Group1,AnalysisObj);
 
+                    save('Data.mat','DataObj');
                     %%% Number of subjects
                     nSubjects = size(DataObj{1,1},2);
                     
@@ -229,7 +230,7 @@
             disp('You chose to show all channels, not running statistics');
             
             %%% No statistics, no significance mask or threshold
-            significanceMask = zeros(nBioms,nChannels);
+            significanceMask = cell(nBioms,nChannels);
             sigThresh = 0;
         case 'sig'
             %%% We only run statistics if the user wants to show
@@ -375,17 +376,15 @@
         xLeft = (30-xSize)/2; yTop = (21-ySize)/2;
         set(gcf,'PaperPosition',[xLeft yTop xSize ySize]);
         set(gcf,'Position',[0 0 xSize*50 ySize*50]);
-        
-        set(gcf, 'PaperType', 'a4');
-        %set(gcf, 'PaperUnits', 'centimeters');
         set(gcf, 'PaperOrientation', 'landscape');
-        
-        %set(gcf, 'PaperSize', [21 29.7]);
         
         
         if plotQual == 2
             set(gcf,'Renderer','painters');
             circgrid = 300;
+            %% SECTION TITLE
+            % DESCRIPTIVE TEXT
+            
             gridscale = 100;
         elseif plotQual == 3
             set(gcf,'Renderer','painters');
@@ -403,7 +402,7 @@
         
         crossChans = [21:25];
         for i = page * perPage - perPage + 1 : upperBound    
-            subaxis(6, maxColumns, 6+mod(i-1,25), 'SpacingHoriz', 0, 'SpacingVert', 0.045, 'Padding', 0, 'Margin', 0)
+            subaxis(6, maxColumns, 6+mod(i-1,25), 'Spacing', 0.03, 'Padding', 0, 'Margin', 0)
             axis off;
             if biomarkerIndex(i) ~= 0
                 cbType = '';

@@ -118,11 +118,15 @@ if (standalone)
     uimenu(ch_loc,'label','by number', 'callback','nbt_EEGLABwrp(@nbt_plotchanloc,Signal,SignalInfo, SignalPath,0,''number'');');
    
     PreProc = uimenu(NBTMenu, 'label', '&Pre-processing');
-    uimenu(PreProc,'label', 'Remove artifacts current NBT Signal', 'callback', 'SignalInfo=nbt_get_artifacts(Signal,SignalInfo,SignalPath);');
-    uimenu(PreProc,'label', 'Remove artifacts multiple NBT Signals', 'callback', 'nbt_NBTcompute(@nbt_get_artifacts);');
-    uimenu(PreProc,'label', 'Find & add bad channel to Info.BadChannels','callback',['[Signal,SignalInfo] = nbt_EEGLABwrp(@nbt_FindBadChannels, Signal, SignalInfo, SignalPath,0);']);
-    uimenu(PreProc,'label', 'Re-reference to average reference (exclude bad channels)','callback', ['[Signal, SignalInfo] = nbt_EEGLABwrp(@nbt_ReRef,Signal, SignalInfo, [],0,[]);']);
-   ICAsub = uimenu(PreProc, 'label', '&ICA');
+    ArtifactsMenuSub = uimenu(PreProc, 'label', '&Artifact removal');
+    uimenu(ArtifactsMenuSub,'label', 'Remove artifacts for current NBT signal', 'callback', 'SignalInfo=nbt_get_artifacts(Signal,SignalInfo,SignalPath);');
+    uimenu(ArtifactsMenuSub,'label', 'Remove artifacts for multiple NBT signals', 'callback', 'nbt_NBTcompute(@nbt_get_artifacts);');
+    
+    BadChannelMenuSub = uimenu(PreProc, 'label', '&Find bad channels');   
+    uimenu(BadChannelMenuSub,'label', 'Find & add bad channel to Info.BadChannels','callback',['[Signal,SignalInfo] = nbt_EEGLABwrp(@nbt_FindBadChannels, Signal, SignalInfo, SignalPath,0);']);
+    uimenu(BadChannelMenuSub,'label', 'Re-reference to average reference (exclude bad channels)','callback', ['[Signal, SignalInfo] = nbt_EEGLABwrp(@nbt_ReRef,Signal, SignalInfo, [],0,[]);']);
+    
+    ICAsub = uimenu(PreProc, 'label', '&ICA');
     uimenu(ICAsub,'label', 'Run ICA on good channels only','callback',['[Signal, SignalInfo] = nbt_EEGLABwrp2(@nbt_filterbeforeICA, Signal, SignalInfo, SignalPath,0, ''EEG.data = nbt_filter_firHp(EEG.data,0.5,EEG.srate,4);'',4);[Signal, SignalInfo] = nbt_EEGLABwrp2(@nbt_rejectICAcomp, Signal, SignalInfo, SignalPath, 0,''EEG.data = nbt_filter_firHp(EEG.data,0.5,EEG.srate,4);'',4,1);']);
     uimenu(ICAsub,'label', 'Filter ICA components', 'callback',['[Signal, SignalInfo] = nbt_EEGLABwrp(@nbt_rejectICAcomp, Signal, SignalInfo, SignalPath, 0,''EEG.data = nbt_filter_firHp(EEG.data,0.5,EEG.srate,4);'',4,1);'],'Tag','NBTICAfilter');
     VisICAsub = uimenu(ICAsub, 'label', '&Visualize ICA');
@@ -133,6 +137,13 @@ if (standalone)
 	uimenu(ICAsub,'label', 'Mark ICA components as bad', 'callback','[Signal, SignalInfo] = nbt_EEGLABwrp(@nbt_MarkICBadChannel,Signal,SignalInfo,SignalPath,0);');
    	uimenu(ICAsub,'label', 'Reject filtered ICA components','callback',['[Signal, SignalInfo] = nbt_EEGLABwrp(@nbt_rejectICAcomp,Signal,SignalInfo,SignalPath,0,[],[],2);'],'Enable','off','Tag','NBTICAreject');
     uimenu(ICAsub,'label', 'Auto reject ICA components', 'callback',['[Signal, SignalInfo] = nbt_EEGLABwrp(@nbt_AutoRejectICA,Signal,SignalInfo,SignalPath,0,[],1);'],'Enable','on');
+    
+    %%% CSD Menu
+    CSDMenuSub = uimenu(PreProc, 'label', '&Current source density');
+    uimenu(CSDMenuSub,'label', 'Run CSD for current NBT signal','callback',['[Signal, SignalInfo] = nbt_CSD(Signal,SignalInfo,SignalPath)']);
+    uimenu(CSDMenuSub,'label', 'Run CSD for multiple NBT signals','callback',['nbt_NBTcompute(@nbt_CSD)']);
+
+    
     AutoCleanMenuSub = uimenu(PreProc, 'label', '&Auto Clean functions');
     AutoCleanMenuSetup = uimenu(AutoCleanMenuSub,'label','Setup');
     uimenu(AutoCleanMenuSetup,'label', 'Set Eye Channels','callback','nbt_setEyeCh');
