@@ -92,8 +92,17 @@ catch
     Loaded = load([path  name]);
     Infofields = fieldnames(Loaded);
       idx = 1;
-    while(isempty(strfind(Infofields(idx),'Signal')))
-        idx = idx +1;
+    find_signal = strfind(Infofields(idx),'Signal');
+    if strcmp(class(find_signal),'cell')
+        while(isempty(find_signal{1}))
+            find_signal = strfind(Infofields(idx),'Signal');
+            idx = idx +1;
+        end
+    else
+        while(isempty(find_signal))
+            find_signal = strfind(Infofields(idx),'Signal');
+            idx = idx +1;
+        end
     end
     InfoToLoad = Infofields{idx};
     clear Loaded Infofields;
@@ -331,7 +340,9 @@ u(6) = uicontrol(Chans_RegsSelection,'Units', 'pixels','style','text','Position'
 %             for i = 1:length(G)
 %                 G(i).chansregs = data;
 %             end
-        NBTstudy.groups{1}.listRegData = data.listregdata;
+        for k=1: size(NBTstudy.groups,2) % # of groups
+            NBTstudy.groups{k}.listRegData = data.listregdata;
+        end
         else %  we have two groups with different channel locations
             G(group_ind(1)).chansregs = data;
             %load SignalInfo for group to

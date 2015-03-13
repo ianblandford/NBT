@@ -5,7 +5,18 @@ DataMatrix = []; % n_sub x (n_freq_bands*n_channels)
 Outcome = [];
 
 if (ClassificationStatObj.channelsRegionsSwitch == 2) % regions
-% StudyObj.groups{1}.chanLocs
+n_chans = size(StudyObj.groups{1}.chanLocs,2);
+n_bioms = size(DataMatrix,2)/n_chans;
+load default_regions19
+NewDataMat = [];
+
+for i=1:n_bioms
+    DataMat = DataMatrix(:,(i-1)*n_chans+1:n_chans*i);
+    for j=1:length(reg)
+        NewDataMat = [NewDataMat nanmean(DataMat(:,reg(j).reg.channel_nr),2)];    
+    end
+end
+
 end
 
 for j=1:n_groups

@@ -49,10 +49,10 @@ function  DataObj = getData(GrpObj,StatObj)
                 for bID=1:numBiomarkers
 
                     if isempty(GrpObj.groupDifference) % regular group
-                        DataObj = createDataObj(DataObj,bID,GrpObj);
+                        DataObj = createDataObj(DataObj,bID,GrpObj,StatObj.channelsRegionsSwitch);
                     else
-                        DataObj = createDataObj(DataObj,bID,NBTstudy.groups{GrpObj.groupDifference(1)});
-                        DataObj2 = createDataObj(DataObj,bID,NBTstudy.groups{GrpObj.groupDifference(2)});
+                        DataObj = createDataObj(DataObj,bID,NBTstudy.groups{GrpObj.groupDifference(1)},StatObj.channelsRegionsSwitch);
+                        DataObj2 = createDataObj(DataObj,bID,NBTstudy.groups{GrpObj.groupDifference(2)},StatObj.channelsRegionsSwitch);
                         d1 = DataObj.dataStore{bID};
                         d2 = DataObj2.dataStore{bID};
                         for k=1:size(d1)
@@ -74,12 +74,16 @@ function  DataObj = getData(GrpObj,StatObj)
             case 'File'
         end
 
-        DataObj.numSubjects = length(DataObj.subjectList{1,1}); %we assume there not different number of subjects per biomarker!
+       if isempty(GrpObj.groupDifference) % regular group
+           DataObj.numSubjects = length(DataObj.subjectList{1,1}); %we assume there not different number of subjects per biomarker!
+       else
+           DataObj.numSubjects = length(DataObj2.subjectList{1,1});
+       end
         DataObj.numBiomarkers = size(DataObj.dataStore,1);
         % Call outputformating here >
     end
 
-    function DataObj = createDataObj(DataObj,bID,GrpObj)
+    function DataObj = createDataObj(DataObj,bID,GrpObj,ChansOrRegs)
         
         biomarker = DataObj.biomarkers{bID};
         subBiomarker = DataObj.subBiomarkers{bID};
@@ -131,5 +135,22 @@ function  DataObj = getData(GrpObj,StatObj)
              %   [DataObj.subjectList{bID,1}] = evalin('base', 'constant{nbt_searchvector(constant , {''Subject''}),2};');
 
             end
+            
+            if (ChansOrRegs == 2) % regions
+                n_chans = size(GrpObj.chanLocs,2);
+                regions = GrpObj.listRegData;
+                DataMat = DataObj{bID,1}; % n_chans x n_subjects
+                RegData = [];
+                for j=1:length(regions)
+                    RegData = [RegData; nanmean(DataMat(regions(j).reg.channel_nr,:),1)];    
+                end
+                n_subjects = size(RegData,2);
+                Regs = cell(n_subjects,1);
+                for k=1:n_subjects
+                    Regs{k} = RegData(:,k);
+                end
+                DataObj.dataStore{bID} = Regs;
+            end
+                
     end
 end
