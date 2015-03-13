@@ -20,7 +20,7 @@ function nbt_topoplotConnect(NBTstudy,connMatrix,threshold)
         rmax = 0.5;
         plotrad = 0.8011;
 
-        for i = 1 : 129
+        for i = 1 : nChannels
             Th(i) = chanLocs(i).theta;
             Rd(i) = chanLocs(i).radius;
         end

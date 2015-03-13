@@ -49,7 +49,7 @@
 % See Readme.txt for additional copyright information.
 % ---------------------------------------------------------------------------------------
 
-function obj = nbt_generateBiomarkerList(NBTstudy,grpNumber)
+function obj = nbt_generateBiomarkerList(NBTstudy,signal,grpNumber)
     % Create a new analysis object
     obj = nbt_Analysis;
     
@@ -76,49 +76,58 @@ function obj = nbt_generateBiomarkerList(NBTstudy,grpNumber)
         currentBiom = biomarkerList{presentBiomarker};
         [biomName, identifiers, subBiomName, biomarkerClass, biomarkerUnit] = nbt_parseBiomarkerIdentifiers(currentBiom);
         
-        %%% Check whether there is a frequencyRange
-        if ismember('frequencyRange',identifiers)
-            %%% Get the index of the frequencyRange identifier
-            identIndex = find(ismember(identifiers,'frequencyRange'));
-            freqRange = identifiers{identIndex,2};
-        else
-            %%% For PeakFit
-            [subBiomName, freqRange] = strtok(subBiomName,'_');
-            freqRange = strrep(freqRange,'_','');
-        end            
+        if ~ismember('Signals',identifiers)
+            identifiers{end+1,1} = 'Signals';
+            identifiers{end,2} = signal;
+        end
         
-        if ismember(biomName,biomarkersFixedOrder) & ismember(subBiomName,subBiomarkersFixedOrder)
-            biomIndex = find(ismember(subBiomarkersFixedOrder,subBiomName));
-            %%% For all biomarkers except PeakFit
-            if ismember(freqRange,freqBandsFixedOrder)
-                freqIndex = find(ismember(freqBandsFixedOrder,freqRange));
-                
-                %%% Store the biomarker in the analysis object
-                obj.group{1}.originalBiomNames{i} = currentBiom;
-                obj.group{1}.biomarkers{i} = biomName;
-                obj.group{1}.subBiomarkers{i} = subBiomName;
-
-                obj.group{1}.biomarkerIdentifiers{i} = {'frequencyRange' freqRange};
-                obj.group{1}.classes{i} = biomarkerClass;
-                obj.group{1}.biomarkerIndex((biomIndex-1)*5 + freqIndex) = i;
-                obj.group{1}.units{(biomIndex-1)*5 + freqIndex} = biomarkerUnit;
-
-                i = i + 1;
-            elseif ismember(freqRange,freqBandsFixedOrderNames)
+        %%% Pick out the biomarkers for the specified signal
+        %%% Pick out all if no signal identifier is present
+        if ismember(signal,identifiers)
+        %%% Check whether there is a frequencyRange
+            if ismember('frequencyRange',identifiers)
+                %%% Get the index of the frequencyRange identifier
+                identIndex = find(ismember(identifiers,'frequencyRange'));
+                freqRange = identifiers{identIndex,2};
+            else
                 %%% For PeakFit
-                freqIndex = find(ismember(freqBandsFixedOrderNames,freqRange));
-                
-                %%% Store the biomarker in the analysis object
-                obj.group{1}.originalBiomNames{i} = currentBiom;
-                obj.group{1}.biomarkers{i} = biomName;
-                obj.group{1}.subBiomarkers{i} = [subBiomName '_' freqRange];
+                [subBiomName, freqRange] = strtok(subBiomName,'_');
+                freqRange = strrep(freqRange,'_','');
+            end            
 
-                obj.group{1}.biomarkerIdentifiers{i} = [];
-                obj.group{1}.classes{i} = biomarkerClass;
-                obj.group{1}.biomarkerIndex((biomIndex-1)*5 + freqIndex) = i;
-                obj.group{1}.units{(biomIndex-1)*5 + freqIndex} = biomarkerUnit;
+            if ismember(biomName,biomarkersFixedOrder) & ismember(subBiomName,subBiomarkersFixedOrder)
+                biomIndex = find(ismember(subBiomarkersFixedOrder,subBiomName));
+                %%% For all biomarkers except PeakFit
+                if ismember(freqRange,freqBandsFixedOrder)
+                    freqIndex = find(ismember(freqBandsFixedOrder,freqRange));
 
-                i = i + 1;
+                    %%% Store the biomarker in the analysis object
+                    obj.group{1}.originalBiomNames{i} = currentBiom;
+                    obj.group{1}.biomarkers{i} = biomName;
+                    obj.group{1}.subBiomarkers{i} = subBiomName;
+
+                    obj.group{1}.biomarkerIdentifiers{i} = {'frequencyRange' freqRange};
+                    obj.group{1}.classes{i} = biomarkerClass;
+                    obj.group{1}.biomarkerIndex((biomIndex-1)*5 + freqIndex) = i;
+                    obj.group{1}.units{(biomIndex-1)*5 + freqIndex} = biomarkerUnit;
+
+                    i = i + 1;
+                elseif ismember(freqRange,freqBandsFixedOrderNames)
+                    %%% For PeakFit
+                    freqIndex = find(ismember(freqBandsFixedOrderNames,freqRange));
+
+                    %%% Store the biomarker in the analysis object
+                    obj.group{1}.originalBiomNames{i} = currentBiom;
+                    obj.group{1}.biomarkers{i} = biomName;
+                    obj.group{1}.subBiomarkers{i} = [subBiomName '_' freqRange];
+
+                    obj.group{1}.biomarkerIdentifiers{i} = [];
+                    obj.group{1}.classes{i} = biomarkerClass;
+                    obj.group{1}.biomarkerIndex((biomIndex-1)*5 + freqIndex) = i;
+                    obj.group{1}.units{(biomIndex-1)*5 + freqIndex} = biomarkerUnit;
+
+                    i = i + 1;
+                end
             end
         end
     end

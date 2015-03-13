@@ -4,7 +4,10 @@
     
     %%% Number of groups
     nGroups = size(groups,2);
-       
+    
+    %%% Select Signal
+    signal = input('For which signal do you want to plot the biomarkers? (Example: Signal, ICASignal, CSDSignal) ','s');
+    
     %% Display the NBT Print visualization window
     %% NBT Print visualization options
     dataType = '';
@@ -30,7 +33,7 @@
                     
                 else
                     %%% Generate fixed biomarker list
-                    AnalysisObj = nbt_generateBiomarkerList(NBTstudy,groups);
+                    AnalysisObj = nbt_generateBiomarkerList(NBTstudy,signal,groups);
                     
                     %%% Get the data
                     DataObj = getData(Group1,AnalysisObj);
@@ -57,7 +60,7 @@
                         end
                     end
                     biomarkerIndex = AnalysisObj.group{1}.biomarkerIndex;
-%                     units = AnalysisObj.group{groups}.units;
+                    units = AnalysisObj.group{1}.units;
                 end
             elseif nGroups == 2
                 %%% Get groups NBTstudy
@@ -68,8 +71,8 @@
                 nChannels = size(NBTstudy.groups{groups(1)}.chanLocs,2);
                 
                 %%% Generate fixed biomarker list
-                AnalysisObjGrp1 = nbt_generateBiomarkerList(NBTstudy,groups(1));
-                AnalysisObjGrp2 = nbt_generateBiomarkerList(NBTstudy,groups(2));
+                AnalysisObjGrp1 = nbt_generateBiomarkerList(NBTstudy,signal,groups(1));
+                AnalysisObjGrp2 = nbt_generateBiomarkerList(NBTstudy,signal,groups(2));
                 
                 %%% Get the data
                 DataObjGrp1 = getData(Group1,AnalysisObjGrp1);
@@ -100,7 +103,7 @@
                     end
                 end
                 biomarkerIndex = AnalysisObjGrp1.group{1}.biomarkerIndex;
-%                 units = AnalysisObjGrp1.group{groups(1)}.units;
+                units = AnalysisObjGrp1.group{groups(1)}.units;
             else
                 error('nbt_Print can not handle more than two groups');
             end            
@@ -118,7 +121,7 @@
                     
                 else
                     %%% Generate fixed biomarker list
-                    AnalysisObj = nbt_generateBiomarkerList(NBTstudy,groups);
+                    AnalysisObj = nbt_generateBiomarkerList(NBTstudy,signal,groups);
 
                     %%% Get the data
                     DataObj = getData(Group1,AnalysisObj);
@@ -151,7 +154,7 @@
                         end
                     end
                     biomarkerIndex = AnalysisObj.group{1}.biomarkerIndex;
-                    units = AnalysisObj.group{groups}.units;
+                    units = AnalysisObj.group{1}.units;
                 end
             elseif nGroups == 2
                 %%% Get groups NBTstudy
@@ -162,8 +165,8 @@
                 nChannels = size(NBTstudy.groups{groups(1)}.chanLocs,2);
                 
                 %%% Generate fixed biomarker list
-                AnalysisObjGrp1 = nbt_generateBiomarkerList(NBTstudy,groups(1));
-                AnalysisObjGrp2 = nbt_generateBiomarkerList(NBTstudy,groups(2));
+                AnalysisObjGrp1 = nbt_generateBiomarkerList(NBTstudy,signal,groups(1));
+                AnalysisObjGrp2 = nbt_generateBiomarkerList(NBTstudy,signal,groups(2));
                 
                 %%% Get the data
                 DataObjGrp1 = getData(Group1,AnalysisObjGrp1);
@@ -191,8 +194,8 @@
                         if size(biomDataGroup1,1) ~= size(biomDataGroup2,1)
                             biomName = AnalysisObjGrp1.group{1}.biomarkers(biomID);
                             subBiomName = AnalysisObjGrp1.group{1}.subBiomarkers(biomID);
-                            %error(['The number of subjects differs between the groups for biomarker: ', biomName{1}, '.', subBiomName{1}]);
-                            disp('Warning');
+                            error(['The number of subjects differs between the groups for biomarker: ', biomName{1}, '.', subBiomName{1}]);
+                            %disp('Warning');
                             nSubjects = min(size(biomDataGroup1,1),size(biomDataGroup2,1));
                         else
                             nSubjects = size(biomDataGroup1,1);

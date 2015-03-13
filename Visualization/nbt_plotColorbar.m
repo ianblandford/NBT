@@ -72,12 +72,16 @@ function nbt_plotColorbar(subplotIndex, cmin, cmax, maxTicks, units, maxColumns,
     end
     
     %%% Round the ticks to 2 decimals
-    if((abs(cmax) - abs(cmin))/maxTicks<=1)
-        cmin = round(cmin/0.01)*0.01;
-        cmax = round(cmax/0.01)*0.01;
-    else
-        cmin = round(cmin);
-        cmax = round(cmax);
+    %%% Except if values are smaller than 0.01
+    if abs(cmin) >= 0.01 | abs(cmax) >= 0.01
+        
+        if((abs(cmax) - abs(cmin))/maxTicks<=1)
+            cmin = round(cmin/0.01)*0.01;
+            cmax = round(cmax/0.01)*0.01;
+        else
+            cmin = round(cmin);
+            cmax = round(cmax);
+        end
     end
     
     %%% Cticks
