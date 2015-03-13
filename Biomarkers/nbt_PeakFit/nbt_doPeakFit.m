@@ -272,7 +272,7 @@ for ChId=1:size(NBTSignal(:,:),2)
         
         try
             PeakFitObject.AbsolutePower{i,1}(ChId) = AbsolutePower(i);
-            PeakFitObject.RelativePower{i,1}(ChId) = AbsolutePower(i)/sum(p1(findex3:findex4));
+            PeakFitObject.RelativePower{i,1}(ChId) = AbsolutePower(i)/sum(p1(findex3:findex4))*100; %%% SH: Store RelativePower as % instead of ratio
             RelativePower(i) = PeakFitObject.RelativePower{i,1}(ChId);
             % for the following biomarkers see Vural et al 2010.
             PeakFitObject.CentralFreq{i,1}(ChId) = sum(p1(findex1:findex2).*f1(findex1:findex2))/sum(p1(findex1:findex2));
