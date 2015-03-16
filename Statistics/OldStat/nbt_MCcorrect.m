@@ -28,47 +28,61 @@
 % -------------------------------------------------------------------------
 % --------------
 
-function [Pindex, pOut] = nbt_MCcorrect(p,Type)
-%would be interesting to add more functions..like permutation test
-pOld = p;
+function [Pindex, pOut] = nbt_MCcorrect(p,Type,varargin)
+    %%% Input for FDR
+    if nargin == 3
+        q = varargin{1};
+    end
 
-p = p(~isnan(p));
-if(isempty(p))
-    Pindex = [];
-    return
-end
-switch Type
-    case 'holm'
-        %holm correct
-        Pc=nbt_holmcorrect(p);
-    case 'hochberg'
-        %hochberg correct
-        Pc = nbt_HochbergCorrect(p);
-    case 'bino'
-        %bino correct
-        if((1-binocdf(length(find(p<0.05)),length(p),0.05))< 0.05)
+    %would be interesting to add more functions..like permutation test
+    pOld = p;
+
+    p = p(~isnan(p));
+    
+    if(isempty(p))
+        Pindex = [];
+        return
+    end
+    switch Type
+        case 'no'
             Pc = p(p<0.05);
-        else
-            Pc = [];
-        end
-    case 'bonfi'
-        Pc = p;
-        Pc(p > (0.05/length(p))) = nan;
-        if(sum(isnan(Pc)) == length(p))
-            Pc = [];
-        end
-    case 'fdr'
-        % Pc = mafdr(p,'BHFDR','true');
-        [h, crit_p, Pc]=fdr_bh(p,0.05,'pdep','no');        
-end
-if(~isempty(Pc))
-    Pindex = nbt_searchvector(pOld,Pc);
-    Pindex = unique(Pindex);
-else
-    Pindex = [];
-end
+        case 'holm'
+            %holm correct
+            Pc=nbt_holmcorrect(p);
+        case 'hochberg'
+            %hochberg correct
+            Pc = nbt_HochbergCorrect(p);
+        case 'binomial'
+            %bino correct
+            if((1-binocdf(length(find(p<0.05)),length(p),0.05))< 0.05)
+                Pc = p(p<0.05);
+            else
+                Pc = [];
+            end
+        case 'bonferroni'
+            Pc = p;
+            Pc(p > (0.05/length(p))) = nan;
+            if(sum(isnan(Pc)) == length(p))
+                Pc = [];
+            end
+        case 'fdr'
+            % Pc = mafdr(p,'BHFDR','true');
+            if ~exist('q')
+                q = input('Specify the desired false discovery rate: (default = 0.05) ');
+            end
+            if isempty(q)
+                q = 0.05;
+            end
+            [h, crit_p, Pc]=fdr_bh(p,q,'pdep','no');
+    end
+    if(~isempty(Pc))
+        Pindex = nbt_searchvector(pOld,Pc);
+        Pindex = unique(Pindex);
+    else
+        Pindex = [];
+    end
 
 
-pOut = ones(length(pOld),1);
-pOut(Pindex) = pOld(Pindex);
+    pOut = ones(length(pOld),1);
+    pOut(Pindex) = pOld(Pindex);
 end

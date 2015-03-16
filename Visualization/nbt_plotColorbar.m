@@ -95,10 +95,6 @@ function nbt_plotColorbar(subplotIndex, cmin, cmax, maxTicks, units, maxColumns,
 
     if((abs(cmax) - abs(cmin))/maxTicks<=1)
         cticks = round(cticks/0.01)*0.01;
-        if strcmp(units(subplotIndex),'%')
-            % For relative biomarkers
-            cticks = cticks * 100;
-        end
     else
         cticks = round(cticks);
     end

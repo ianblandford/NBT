@@ -25,9 +25,6 @@
                 %%% Get groups NBTstudy
                 Group1 = NBTstudy.groups{groups};
                 
-                %%% Number of channels
-                nChannels = size(NBTstudy.groups{groups}.chanLocs,2);
-                
                 %%% Check whether the group is a difference group
                 if ~isempty(Group1.groupType)
                     
@@ -38,6 +35,9 @@
                     %%% Get the data
                     DataObj = getData(Group1,AnalysisObj);
 
+                    %%% Number of channels
+                    nChannels = size(DataObj{1,1},1);
+                
                     %%% Number of subjects
                     nSubjects = size(DataObj{1,1},2);
                     
@@ -67,9 +67,6 @@
                 Group1 = NBTstudy.groups{groups(1)};
                 Group2 = NBTstudy.groups{groups(2)};
                 
-                %%% Number of channels
-                nChannels = size(NBTstudy.groups{groups(1)}.chanLocs,2);
-                
                 %%% Generate fixed biomarker list
                 AnalysisObjGrp1 = nbt_generateBiomarkerList(NBTstudy,signal,groups(1));
                 AnalysisObjGrp2 = nbt_generateBiomarkerList(NBTstudy,signal,groups(2));
@@ -77,6 +74,9 @@
                 %%% Get the data
                 DataObjGrp1 = getData(Group1,AnalysisObjGrp1);
                 DataObjGrp2 = getData(Group2,AnalysisObjGrp2);
+                
+                %%% Number of channels
+                nChannels = size(DataObjGrp1{1,1},1);
                 
                 %%% Number of subjects
                 nSubjects = size(DataObjGrp1{1,1},2);
@@ -113,9 +113,6 @@
                 %%% Get groups NBTstudy
                 Group1 = NBTstudy.groups{groups};
                 
-                %%% Number of channels
-                nChannels = size(NBTstudy.groups{groups}.chanLocs,2);
-                
                 %%% Check whether the group is a difference group
                 if ~isempty(Group1.groupType)
                     
@@ -125,8 +122,10 @@
 
                     %%% Get the data
                     DataObj = getData(Group1,AnalysisObj);
-
-                    save('Data.mat','DataObj');
+                    
+                    %%% Number of channels
+                    nChannels = size(DataObj{1,1},1);
+                
                     %%% Number of subjects
                     nSubjects = size(DataObj{1,1},2);
                     
@@ -136,6 +135,7 @@
                     signalBiomarkers = zeros(nBioms,nChannels);
                     crossChannelBiomarkers = zeros(nChannels,nChannels,nBioms);
                     for biomID = 1 : nBioms
+                        biomID
                         biomDataGroup1 = DataObj.dataStore{biomID};
                         if size(biomDataGroup1{1},2) == nChannels
                             chanValues = zeros(nChannels,nChannels);
@@ -161,9 +161,6 @@
                 Group1 = NBTstudy.groups{groups(1)};
                 Group2 = NBTstudy.groups{groups(2)};
                 
-                %%% Number of channels
-                nChannels = size(NBTstudy.groups{groups(1)}.chanLocs,2);
-                
                 %%% Generate fixed biomarker list
                 AnalysisObjGrp1 = nbt_generateBiomarkerList(NBTstudy,signal,groups(1));
                 AnalysisObjGrp2 = nbt_generateBiomarkerList(NBTstudy,signal,groups(2));
@@ -171,6 +168,9 @@
                 %%% Get the data
                 DataObjGrp1 = getData(Group1,AnalysisObjGrp1);
                 DataObjGrp2 = getData(Group2,AnalysisObjGrp2);
+                
+                %%% Number of channels
+                nChannels = size(DataObjGrp1{1,1},1);
                 
                 %%% Number of subjects
                 nSubjects = size(DataObjGrp1{1,1},2);
@@ -255,18 +255,20 @@
                                 
                 S.groups = groups;
 
-                disp('Biomarkers')
+%                 disp('Biomarkers')
                 bioms_name = AnalysisObjGrp1.group{1}.originalBiomNames;
-                ll=0;
-                for mm=1:length(bioms_name)
-                    disp([int2str(mm) ':' bioms_name{1,mm} ])
-                    ll=ll+1;
-                    if(ll ==20)
-                        input('More (press enter)');
-                        ll = 0;
-                    end
-                end
-                bioms_ind = input('Please select biomarkers above ');
+%                 ll=0;
+%                 for mm=1:length(bioms_name)
+%                     disp([int2str(mm) ':' bioms_name{1,mm} ])
+%                     ll=ll+1;
+%                     if(ll ==20)
+%                         input('More (press enter)');
+%                         ll = 0;
+%                     end
+%                 end
+%                 bioms_ind = input('Please select biomarkers above ');
+                %%% Compute the statistics for all biomarkers
+                bioms_ind = 1:nBioms;
                 
                 for gp = 1:length(S.groups)
                     for i = 1:length(bioms_ind)
@@ -300,25 +302,38 @@
                 S = S.calculate(NBTstudy);
 
                 NBTstudy.statAnalysis{length(NBTstudy.statAnalysis)+1} = S;
-                disp('Statistics done.')
-
                 
                 %%% Get the pValues
                 pValues = NBTstudy.statAnalysis{end}.pValues;
-
-                %%% Statistics threshold
-                sigThresh = input('Significance threshold? (0.05)');
                 
-                %significanceMask = zeros(nBioms,nChannels);
-                %significantChannels = zeros(nBioms,nChannels);
+                %%% Multiple comparisons
+                multiComp = input('Correct for multiple comparisons? (no / fdr / bonfi / holm) ','s');
+                
+                if strcmp(multiComp,'fdr')
+                    q = input('Specify the desired false discovery rate: (default = 0.05) ');
+                end
+                
                 for biomID = 1 : nBioms
                     if ismember(biomID,bioms_ind)
                         biomIndex = find(ismember(bioms_ind,biomID));
-                        if find(pValues{biomIndex}' <= sigThresh)
-                            significanceMask{biomID} = pValues{biomIndex}' <= sigThresh;
+                        if strcmp(multiComp,'fdr')
+                            [significanceMask{biomID}, ~] = nbt_MCcorrect(pValues{biomID},multiComp,q);
+                        else
+                            [significanceMask{biomID}, ~] = nbt_MCcorrect(pValues{biomID},multiComp);
                         end
                     end
                 end
+                
+                %%% Change the string for fdr
+                if strcmp(multiComp,'fdr')
+                    multiComp = ['fdr(', num2str(q), ')'];
+                end
+                
+                %%% Adjust the string for fdr for plotting
+%                 if strcomp(multiComp,'fdr')
+%                     multiComp = [multiComp '(' 
+                
+                disp('Statistics done.')
             elseif runStats == 2
 %                 %%% Use previously computed statistics
 %                 disp('Which statistics object do you want to choose from NBTstudy.statAnalysis?');
@@ -348,6 +363,7 @@
         
     %%% Get the channel locations from one of the two groups
     chanLocs = Group1.chanLocs;
+    chanLocs = verifyChanLocs(chanLocs);
     
     if nBioms < 25
         perPage = nBioms;
@@ -496,10 +512,7 @@
                     group1 = strtrim(regexprep(Group1.groupName,'Group \d : ',''));
                     group2 = strtrim(regexprep(Group2.groupName,'Group \d : ',''));
                     text(0.5,0.93,['Average difference between ', group1 ,' and ', group2, ' ({\itn} = ', num2str(nSubjects),'), reference electrode: ',chanLocs(1).ref],'horizontalalignment','center','FontSize',14,'Interpreter','tex');
-                    if sigThresh ~= 0
-                        %%% No statistics have been computed
-                        text(0.5,0.90,['Significance threshold = ', num2str(sigThresh)],'horizontalalignment','center','FontSize',12,'Interpreter','tex');
-                    end
+                    text(0.5,0.90,['Multiple comparisons: ', multiComp],'horizontalalignment','center','FontSize',12,'Interpreter','tex');
                 else
                     text(0.5,0.93,['Average of ',int2str(Group1.fileList),' subjects ({\itn} = ', num2str(nSubjects) ,'), reference electrode: ',chanLocs(1).ref],'horizontalalignment','center','FontSize',14,'Interpreter','tex');
                 end
@@ -575,27 +588,12 @@
         end
     end
 
-    function declareFreqBands()
-        disp('Default frequency bands:');
-        disp('Delta = [1,4];')
-        disp('Theta = [4,8];')
-        disp('Alpha = [8,13];')
-        disp('Beta = [13,30];')
-        disp('Gamma = [30,45];')
-
-        temp=input('Declare own frequency bands?[y/n]: ','s');
-        if strcmp(temp,'y')
-            Delta = (input('Specify Delta [lowF highF]: '));
-            Theta = (input('Specify Theta [lowF highF]: '));
-            Alpha = (input('Specify Alpha [lowF highF]: '));
-            Beta = (input('Specify Beta [lowF highF]: '));
-            Gamma = (input('Specify Gamma [lowF highF]: '));
-        else
-            Delta = [1,4];
-            Theta = [4,8];
-            Alpha = [8,13];
-            Beta = [13,30];
-            Gamma = [30,45];
+    function chanLocs = verifyChanLocs(chanLocs)
+        if isempty(chanLocs(1).ref)
+            disp('No reference electrode is specified, assuming average');
+            for channel = 1 : size(chanLocs,2)
+                chanLocs(channel).ref = 'average';
+            end
         end
     end
 end
