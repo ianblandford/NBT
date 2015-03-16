@@ -111,7 +111,7 @@ end
 
         %%% pValues - corrected for multiple comparision
         pValues = StatObj.pValues(:,biomID);
-        [~, pValues] = nbt_MCcorrect(pValues, NBTstudy.settings.visual.mcpCorrection);
+        [~, pValues] = nbt_MCcorrect(pValues{1}, NBTstudy.settings.visual.mcpCorrection);
    
         
         %%% Properties for plotting
