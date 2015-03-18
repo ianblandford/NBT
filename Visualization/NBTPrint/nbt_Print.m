@@ -512,7 +512,10 @@
                     group1 = strtrim(regexprep(Group1.groupName,'Group \d : ',''));
                     group2 = strtrim(regexprep(Group2.groupName,'Group \d : ',''));
                     text(0.5,0.93,['Average difference between ', group1 ,' and ', group2, ' ({\itn} = ', num2str(nSubjects),'), reference electrode: ',chanLocs(1).ref],'horizontalalignment','center','FontSize',14,'Interpreter','tex');
-                    text(0.5,0.90,['Multiple comparisons: ', multiComp],'horizontalalignment','center','FontSize',12,'Interpreter','tex');
+                    try
+                        text(0.5,0.90,['Multiple comparisons: ', multiComp],'horizontalalignment','center','FontSize',12,'Interpreter','tex');
+                    catch
+                    end
                 else
                     text(0.5,0.93,['Average of ',int2str(Group1.fileList),' subjects ({\itn} = ', num2str(nSubjects) ,'), reference electrode: ',chanLocs(1).ref],'horizontalalignment','center','FontSize',14,'Interpreter','tex');
                 end
