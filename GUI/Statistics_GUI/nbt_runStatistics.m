@@ -62,6 +62,10 @@ if strcmp(class(S),'nbt_lssvm')
     end    
 end
 
+if isa(S,'nbt_PairedStat') || isa(S,'nbt_UnPairedStat')
+    NBTstudy.settings.visual.mcpCorrection = input('Input desired multiple comparison correction: "holm", "hochberg", "bino", "bonfi" or "fdr" ', 's');
+end
+    
 S = S.calculate(NBTstudy);
 
 NBTstudy.statAnalysis{length(NBTstudy.statAnalysis)+1} = S;

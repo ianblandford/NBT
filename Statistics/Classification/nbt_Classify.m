@@ -4,20 +4,20 @@ n_groups = length(ClassificationStatObj.groups);
 DataMatrix = []; % n_sub x (n_freq_bands*n_channels)
 Outcome = [];
 
-if (ClassificationStatObj.channelsRegionsSwitch == 2) % regions
-n_chans = size(StudyObj.groups{1}.chanLocs,2);
-n_bioms = size(DataMatrix,2)/n_chans;
-load default_regions19
-NewDataMat = [];
-
-for i=1:n_bioms
-    DataMat = DataMatrix(:,(i-1)*n_chans+1:n_chans*i);
-    for j=1:length(reg)
-        NewDataMat = [NewDataMat nanmean(DataMat(:,reg(j).reg.channel_nr),2)];    
-    end
-end
-
-end
+% if (ClassificationStatObj.channelsRegionsSwitch == 2) % regions
+% n_chans = size(StudyObj.groups{1}.chanLocs,2);
+% n_bioms = size(DataMatrix,2)/n_chans;
+% load default_regions19
+% NewDataMat = [];
+% 
+% for i=1:n_bioms
+%     DataMat = DataMatrix(:,(i-1)*n_chans+1:n_chans*i);
+%     for j=1:length(reg)
+%         NewDataMat = [NewDataMat nanmean(DataMat(:,reg(j).reg.channel_nr),2)];    
+%     end
+% end
+% 
+% end
 
 for j=1:n_groups
     Data_groups{j} = StudyObj.groups{ClassificationStatObj.groups(j)}.getData(ClassificationStatObj);
@@ -35,6 +35,11 @@ for j=1:n_groups
     Outcome = [Outcome; (j-1).*ones(length(Data_groups{j}.subjectList{1,1}),1)];
 end
 
+% clear DataMatrix
+% clear Outcome
+% load DataMatrixCorr
+% load Outcome
+
 %following should be removed in later versions and be set before the call
 %of nbt_Classify
 if isempty(ClassificationStatObj.nCrossVals) 
@@ -42,7 +47,11 @@ if isempty(ClassificationStatObj.nCrossVals)
 end
 NCrossVals = ClassificationStatObj.nCrossVals;
 % temp=Data_groups{1};
-ClassificationStatObj.channels = 1:size(Data_groups{1}{1,1},1);
+if (ClassificationStatObj.channelsRegionsSwitch == 2) % regions
+    ClassificationStatObj.regions = 1:size(Data_groups{1}{1,1},1);
+else
+    ClassificationStatObj.channels = 1:size(Data_groups{1}{1,1},1);
+end
 warning('Now just using all channels - .channels should be set properly')
 ClassificationStatObj.classificationType = 'crossValidate';
 Type = 'crossValidate';
@@ -62,21 +71,21 @@ if ~isempty(ClassificationStatObj.dimensionReduction)
             
         case 'PLS'
             
-            n_comps = floor(size(DataMatrix,2)/2);
-            %n_comps = 10;
-            [XL,yl,XS,YS,beta,PCTVAR] = plsregress(DataMatrix,Outcome,n_comps);
-            plot(1:10,cumsum(100*PCTVAR(2,:)),'-bo');
-            tmp=cumsum(PCTVAR(2,:)); % PCTVAR - 1st row: % variance explained in X, 2nd row Y (labels)
-            nr = find(tmp/tmp(end)>0.90,1);
-            [XL,yl,XS,YS,beta,PCTVAR,MSE,stats] = plsregress(DataMatrix,Outcome,nr);
-            yfit = [ones(size(DataMatrix,1),1) DataMatrix]*beta;
-            DataMatrix = XS;
-            plot(y,yfit,'o')
-            TSS = sum((y-mean(y)).^2);
-            RSS = sum((y-yfit).^2);
-            Rsquared = 1 - RSS/TSS
+%             n_comps = floor(size(DataMatrix,2)/2);
+%             %n_comps = 10;
+%             [XL,yl,XS,YS,beta,PCTVAR] = plsregress(DataMatrix,Outcome,n_comps);
+%             plot(1:n_comps,cumsum(100*PCTVAR(2,:)),'-bo');
+%             tmp=cumsum(PCTVAR(2,:)); % PCTVAR - 1st row: % variance explained in X, 2nd row Y (labels)
+%             nr = find(tmp/tmp(end)>0.90,1);
+%             [XL,yl,XS,YS,beta,PCTVAR,MSE,stats] = plsregress(DataMatrix,Outcome,nr);
+%             yfit = [ones(size(DataMatrix,1),1) DataMatrix]*beta;
+%             DataMatrix = XS;
+%             plot(Outcome,yfit,'o')
+%             TSS = sum((Outcome-mean(Outcome)).^2);
+%             RSS = sum((Outcome-yfit).^2);
+%             Rsquared = 1 - RSS/TSS
             
-            ClassificationStatObj.removeFeaturesType = 'Partial Least Squares';
+            ClassificationStatObj.removeFeaturesType{1,2} = 'PLS';
             
         case 'ICA'
             % DataMatrix = fastica(DataMatrix'); % from FastICA package
@@ -133,9 +142,10 @@ ClassificationStatObj.modelVars=cell(NCrossVals,1);
 switch lower(Type)
     case 'crossvalidate'
         % Type CrossValidate
+        tic
         disp('Cross validation needs work')
         %   DataMatrix = abs(DataMatrix);
-        DataMatrix = zscore(DataMatrix);
+        DataMatrix = nanzscore(DataMatrix);
                 
         modelVars = cell(1, NCrossVals);
         if(ClassificationStatObj.statOptions.UseParallel)
@@ -246,15 +256,16 @@ end
 
 function  [FP, TP, FN, TN, SE, SP, PP, NN, LP, LN, MM, AUC, H, ACC, modelVars] = runClassification(DataMatrix,Outcome,ClassificationStatObj)
 [ TrainMatrix,  TestMatrix, TrainOutcome, TestOutcome] = nbt_RandomSubsampler(DataMatrix, Outcome,ClassificationStatObj.subSampleType,ClassificationStatObj.subSampleLimit,ClassificationStatObj.subSampleStratification);
-%if ~isstruct(ClassificationStatObj.channels) && length(ClassificationStatObj.channels)>1 % using channels, not regions
-[TrainMatrix, BiomsToUse] = nbt_RemoveFeatures(TrainMatrix, TrainOutcome,ClassificationStatObj.removeFeaturesType{1,1}, ClassificationStatObj.channels, ClassificationStatObj.uniqueBiomarkers);
+if (ClassificationStatObj.channelsRegionsSwitch == 1) % using channels, not regions
+    [TrainMatrix, BiomsToUse] = nbt_RemoveFeatures(TrainMatrix, TrainOutcome,ClassificationStatObj.removeFeaturesType{1,1}, ClassificationStatObj.channels, ClassificationStatObj.uniqueBiomarkers);
 
-NewTestMatrix = nan(size(TestMatrix,1),size(TrainMatrix,2));
-for ii=1:size(TrainMatrix,2)
-    NewTestMatrix(:,ii) = nanmedian(TestMatrix(:,BiomsToUse{1,ii}),2);
+    NewTestMatrix = nan(size(TestMatrix,1),size(TrainMatrix,2));
+    for ii=1:size(TrainMatrix,2)
+        NewTestMatrix(:,ii) = nanmedian(TestMatrix(:,BiomsToUse{1,ii}),2);
+    end
+    TestMatrix = NewTestMatrix;
+    clear NewTestMatrix;
 end
-TestMatrix = NewTestMatrix;
-clear NewTestMatrix;
 
 %clear NaNs
 if(sum(sum(isnan(TrainMatrix))))

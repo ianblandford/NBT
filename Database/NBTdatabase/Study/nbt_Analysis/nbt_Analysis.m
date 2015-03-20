@@ -11,6 +11,7 @@ classdef nbt_Analysis
         %biomarkerIdentifiers = cell(1,1);
         %subBiomarkers
         channels
+        regions
         channelsRegionsSwitch
         uniqueBiomarkers
         data

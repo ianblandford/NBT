@@ -6,6 +6,7 @@ classdef nbt_Group %NBT GroupObject - contains group definitions + Database poin
         groupName
         groupType % e.g. difference group, average group
         groupDifference % [group1 group2] if it is a difference group group1-group2
+        groupDifferenceType % regular, absolute difference or squared (L2) difference...
         fileList
         parameters %for additional search parameters.
         biomarkerList

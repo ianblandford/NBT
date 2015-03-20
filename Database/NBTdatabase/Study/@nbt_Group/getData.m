@@ -56,9 +56,14 @@ function  DataObj = getData(GrpObj,StatObj)
                         d1 = DataObj.dataStore{bID};
                         d2 = DataObj2.dataStore{bID};
                         for k=1:size(d1)
-                            d1{k} = d1{k}-d2{k};
-                            %d3{k} = abs(d1{k}-d2{k}); % abs difference
-                            %d3{k} = (d1{k}-d2{k}).^2; % square difference
+                            switch NBTstudy.groups{end}.groupDifferenceType
+                                case 'regular'
+                                    d1{k} = d1{k}-d2{k};
+                                case 'absolute'
+                                    d1{k} = abs(d1{k}-d2{k}); % abs difference
+                                case 'squared'
+                                    d1{k} = (d1{k}-d2{k}).^2; % square difference
+                            end
                         end
 
                         %                DataObj.dataStore = cellfun(@minus, DataObj.dataStore{1}, DataObj2.dataStore{1},'Un',0);

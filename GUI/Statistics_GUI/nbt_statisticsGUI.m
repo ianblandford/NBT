@@ -166,6 +166,8 @@ downButton = uicontrol(StatSelection,'Style','pushbutton','String','\/','Positio
             else
                 warning('The two groups must have same number of subjects!')
             end
+            
+            NBTstudy.groups{end}.groupDifferenceType = input('Which kind of difference? Please type "regular", "absolute" or "squared": ','s');
 
         end
 
