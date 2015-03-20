@@ -122,6 +122,9 @@ for ChId=1:size(NBTSignal(:,:),2)
         PeakFitObject.Pminus1overf(ChId) = sum(p_minus1overf);
         PeakFitObject.Fminus1overf(ChId) = sum(p_minus1overf > 0.5*median(p_minus1overf));
     catch
+        PeakFitObject.OneOverf_Alpha{ChId,1}=nan;
+        PeakFitObject.Pminus1overf(ChId) = nan;
+        PeakFitObject.Fminus1overf(ChId) = nan;
     end
     %and fit Gaussian to the peak
     try
@@ -134,6 +137,9 @@ for ChId=1:size(NBTSignal(:,:),2)
             PeakFitObject.PeakWidth(ChId,1)= s1.c1;
         end
     catch
+        PeakFitObject.AlphaFreq(ChId,1) = nan;
+        PeakFitObject.corrected_power(ChId,1) = nan;
+        PeakFitObject.PeakWidth(ChId,1) = nan;
     end
     
     %% Find second alpha peak if it exists
@@ -150,6 +156,12 @@ for ChId=1:size(NBTSignal(:,:),2)
             PeakFitObject.Alpha2PeakWidth(ChId,1)= s1.c2;
         end
     catch
+            PeakFitObject.AlphaFreq1(ChId,1) = nan;
+            PeakFitObject.Alpha1corrected_power(ChId,1)= nan;
+            PeakFitObject.Alpha1PeakWidth(ChId,1)= nan;
+            PeakFitObject.AlphaFreq2(ChId,1) = nan;
+            PeakFitObject.Alpha2corrected_power(ChId,1)= nan;
+            PeakFitObject.Alpha2PeakWidth(ChId,1)= nan; 
     end
     %% Find TF theta see e.g. Klimesch 1999, EEG alpha and theta
     % oscillations reflect cognitive and memory performance: a review
@@ -157,7 +169,6 @@ for ChId=1:size(NBTSignal(:,:),2)
     try
         freqIndex = find(f1 < s1.b1);
         [dummy,index] = min(p1(2:freqIndex(end)));
-        
         PeakFitObject.TF(ChId,1) = f1(index+1);
     catch
         PeakFitObject.TF(ChId,1) = nan(1,1);
@@ -207,6 +218,9 @@ for ChId=1:size(NBTSignal(:,:),2)
             PeakFitObject.BetaPeakWidth(ChId,1)= s1.c1;
         end
     catch
+            PeakFitObject.BetaFreq(ChId,1) = nan;
+            PeakFitObject.Betacorrected_power(ChId,1)= nan;
+            PeakFitObject.BetaPeakWidth(ChId,1)= nan;
     end
     %% Find second beta peak (if it exists)
     % adding new algorithm per 12 april 2012. Now only fitting the second
@@ -238,6 +252,10 @@ for ChId=1:size(NBTSignal(:,:),2)
             end
         end
     catch
+        PeakFitObject.BetaFreq2(ChId,1) = nan;
+        PeakFitObject.Beta2corrected_power(ChId,1)= nan;
+        PeakFitObject.Beta2PeakWidth(ChId,1)= nan;
+        PeakFitObject.Beta2PeakDistance(ChId,1) = nan;
     end
     
     %Power spectrum analysis. Only if FrequencyBands exists
@@ -251,10 +269,10 @@ for ChId=1:size(NBTSignal(:,:),2)
          try
              PeakFitObject.IAF(ChId,1) = FrequencyBands(10,1);
          catch
+            PeakFitObject.IAF(ChId,1) = nan;
          end
     end
     
-        
     
     AbsolutePower = nan(size(FrequencyBands,1),1);
     RelativePower = nan(size(FrequencyBands,1),1);
@@ -281,6 +299,12 @@ for ChId=1:size(NBTSignal(:,:),2)
             temprange = findex1:findex2;
             PeakFitObject.SpectralEdge{i,1}(ChId) = f1(temprange(find(cumsum(p1(findex1:findex2))./sum(p1(findex1:findex2)) >= 0.9,1)));
         catch
+            PeakFitObject.AbsolutePower{i,1}(ChId) = nan;
+            PeakFitObject.RelativePower{i,1}(ChId) = nan;
+            PeakFitObject.CentralFreq{i,1}(ChId) = nan;
+            PeakFitObject.CentralPower{i,1}(ChId) = nan;
+            PeakFitObject.Bandwidth{i,1}(ChId)   = nan;
+            PeakFitObject.SpectralEdge{i,1}(ChId) = nan;
         end
         clear temprange;
     end

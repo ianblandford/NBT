@@ -77,7 +77,11 @@ end
         SignalInfo.timeOfRecording =  filename((IDdots(2)+1):(IDdots(3)-1));
         SignalInfo.signalName = SignalName;                  %The name of the signal
         SignalInfo.signalID   = nbt_MakeNBTDID;                    %A unique ID genearated by nbt_makeNBTDID;
-        SignalInfo.signalSHA256  =  nbt_getHash(Signal);             %The SHA256 hash of the Signal
+        try
+            SignalInfo.signalSHA256  =  nbt_getHash(single(Signal));             %The SHA256 hash of the Signal
+        catch
+            disp('NBT: SHA256 hash of signal is missing due to out of memory');
+        end
         SignalInfo.nbtVersion   = nbt_getVersion;               % The NBT version using nbt_getVersion
         SignalInfo.convertedSamplingFrequency = Fs;
         SubjectInfo.lastUpdate = datestr(now);
