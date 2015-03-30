@@ -114,7 +114,15 @@ end
     
 %% check if there are more signals (i.e. rawsignal, clean signal...)
 fi=fields(LoadedInfo);
-if length(fields(LoadedInfo))>1
+iim = 0;
+for ii=1:length(fi)
+    if(~isempty(strfind(fi{ii},'Signal')))
+        iim = iim + 1;
+       fiToUse{iim} =  fi{ii};
+    end
+end
+fi = fiToUse;
+if length(fi)>1
     [index] =listdlg('Liststring',fi,'promptstring','Which of the following Signals do you want to load?');
     name=fi{index};
     try
@@ -127,10 +135,9 @@ if length(fields(LoadedInfo))>1
     SignalInfo=eval(['LoadedInfo.',name]);
     disp('NBT Signal and Info Object loaded')
 else
-    fi = fields(Loaded);
-    Signal=eval(['Loaded.',fi{1}]);
+    Signal=eval(['Loaded.',fi{1}(1:(end-4))]);
     try
-    SignalInfo=eval(['LoadedInfo.',fi{1},'Info']);
+    SignalInfo=eval(['LoadedInfo.',fi{1}]);
     catch
         SignalInfo = LoadedInfo.SignalInfo;
     end
