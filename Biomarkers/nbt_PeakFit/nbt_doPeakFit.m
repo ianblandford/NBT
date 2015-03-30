@@ -122,7 +122,7 @@ for ChId=1:size(NBTSignal(:,:),2)
         PeakFitObject.Pminus1overf(ChId) = sum(p_minus1overf);
         PeakFitObject.Fminus1overf(ChId) = sum(p_minus1overf > 0.5*median(p_minus1overf));
     catch
-        PeakFitObject.OneOverf_Alpha{ChId,1}=nan;
+        PeakFitObject.OneOverF_Alpha{ChId,1}=nan;
         PeakFitObject.Pminus1overf(ChId) = nan;
         PeakFitObject.Fminus1overf(ChId) = nan;
     end
