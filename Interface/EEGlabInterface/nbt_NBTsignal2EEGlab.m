@@ -95,7 +95,7 @@ catch
     EEG = eeg_emptyset;
 end
 
-EEG.setname  = SignalInfo.subjectInfo(1:end-9);
+EEG.setname  = SignalInfo.subjectInfo;
 
 if isempty(SignalInfo.convertedSamplingFrequency);
     EEG.srate = SignalInfo.originalSamplingFrequency;
