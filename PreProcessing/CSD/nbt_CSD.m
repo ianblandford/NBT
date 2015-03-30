@@ -51,7 +51,7 @@
 % See Readme.txt for additional copyright information.
 % ---------------------------------------------------------------------------------------
 
-function [CSDSignal, CSDSignalInfo] = nbt_CSD(Signal,SignalInfo,SaveDir)
+function [CSDSignal, CSDSignalInfo] = nbt_CSD(Signal,SignalInfo)
     %%% Get the channel information
     chanLocs = SignalInfo.interface.EEG.chanlocs;
     
@@ -60,38 +60,41 @@ function [CSDSignal, CSDSignalInfo] = nbt_CSD(Signal,SignalInfo,SaveDir)
     chanInfo.lab = cell(nChannels,1);
     chanInfo.theta = zeros(nChannels,1);
     chanInfo.phi = zeros(nChannels,1);
+    chanInfo.xy = zeros(nChannels,2);
     for chan = 1 : nChannels
         chanInfo.lab{chan} = chanLocs(chan).labels;
         chanInfo.theta(chan) = chanLocs(chan).sph_theta;
         chanInfo.phi(chan) = chanLocs(chan).sph_phi;
+        chanInfo.xy(chan,:) = [chanLocs(chan).X chanLocs(chan).Y];
     end
     
-    %%% Spline flexibility
-    splineFlexibility = 4;
+    %%% CSD parameters
+    %%% Spline flexibility, smoothingConstant and headRadius
+    splineFlexibility = 4;          % (default = 4)
+    smoothingConstant = 1.0e-5;     %(default = 1.0e-5)
+    headRadius = 1.0;
     
     tic
     %%% Compute G and H using CSD toolbox 'GetGH.m'
     [G,H] = GetGH(chanInfo,splineFlexibility);
     
-    %%% Define CSDSignal
-    nTimePoints = size(Signal,1);
-    CSDSignal = zeros(nTimePoints,size(Signal,2));
-
     %%% Compute CSD using CSD toolbox 'CSD.m'
-    disp(['Computing scalp current source density for ', num2str(nTimePoints), ' time points']);
-    for timePoint = 1 : size(Signal,1)
-        CSDSignal(timePoint,:) = computeCSD(Signal(timePoint,:)',G,H);
-    end
-    toc
+    %%% CSD.m requires transpose of signal
+    disp(['Computing scalp current source density for ', num2str(size(Signal,1)), ' time points']);
+    CSDSignal = computeCSD(Signal',G,H,smoothingConstant,headRadius);
+    
+    %%% Transpose it back
+    CSDSignal = CSDSignal';
     
     %%% Set the SignalInfo
     CSDSignalInfo = SignalInfo;
     CSDSignalInfo.signalName = 'CSDSignal';
     CSDSignalInfo.signalType = 'CSDSignal';
-    CSDSignalInfo.filterSettings = struct('splineFlexibility',splineFlexibility);
+    CSDSignalInfo.filterSettings = struct('splineFlexibility',splineFlexibility,'smoothingConstant',smoothingConstant,'headRadius',headRadius);
     
     %%% Save the Signal and SignalInfo
-    disp('Appending to existing signal file.');
-    save(strcat([SaveDir '\' SignalInfo.subjectInfo '.mat']),'CSDSignal','-append');
-    save(strcat([SaveDir '\' SignalInfo.subjectInfo '_info.mat']),'CSDSignalInfo','-append');
+    %%% If the filename contains _info.mat, remove '.mat'
+    if strfind(CSDSignalInfo.subjectInfo,'_info.mat')
+        CSDSignalInfo.subjectInfo = strrep(CSDSignalInfo.subjectInfo,'_info.mat','');
+    end
 end

@@ -2,226 +2,88 @@
     %%% Check whether the input is valid
     checkInput();
     
-    %%% Number of groups
-    nGroups = size(groups,2);
-    
-    %%% Select Signal
-    signal = input('For which signal do you want to plot the biomarkers? (Example: Signal, ICASignal, CSDSignal) ','s');
-    
     %% Display the NBT Print visualization window
     %% NBT Print visualization options
     dataType = '';
     VIZ_LAYOUT = '';
     VIZ_SIG = '';
     waitfor(VizQuerry);
-%     if ~isempty(G(group_ind).group_difference)
-%         prompt = {'Alpha sig. threshold:'}; dlg_title = 'Alpha'; num_lines = 1; def = {'0.05'};
-%         alpha = str2double(inputdlg(prompt,dlg_title,num_lines,def));
-%     end
-    switch dataType
-        case 'raw'
-            disp('Getting raw values');
-            if nGroups == 1          
-                %%% Get groups NBTstudy
-                Group1 = NBTstudy.groups{groups};
-                
-                %%% Check whether the group is a difference group
-                if ~isempty(Group1.groupType)
-                    
-                else
-                    %%% Generate fixed biomarker list
-                    AnalysisObj = nbt_generateBiomarkerList(NBTstudy,signal,groups);
-                    
-                    %%% Get the data
-                    DataObj = getData(Group1,AnalysisObj);
-
-                    %%% Number of channels
-                    nChannels = size(DataObj{1,1},1);
-                
-                    %%% Number of subjects
-                    nSubjects = size(DataObj{1,1},2);
-                    
-                    %%% Number of biomarkers
-                    nBioms = DataObj.numBiomarkers;
-                    
-                    %%% Get subject number from the command line
-                    subjectNumber = input('Specify the number of the subject');
-
-                    signalBiomarkers = zeros(nBioms,nChannels);
-                    crossChannelBiomarkers = zeros(nChannels,nChannels,nBioms);
-                    for biomID = 1 : nBioms
-                        biomDataGroup1 = DataObj.dataStore{biomID};
-                        if size(biomDataGroup1{1},2) == nChannels
-                            %% chan * chan biomarker
-                            crossChannelBiomarkers(:,:,biomID) = biomDataGroup1{subjectNumber};
-                        else
-                            %% Get raw biomarker data, compute means and store them
-                            signalBiomarkers(biomID,:) = DataObj{biomID,1};
-                        end
-                    end
-                    biomarkerIndex = AnalysisObj.group{1}.biomarkerIndex;
-                    units = AnalysisObj.group{1}.units;
-                end
-            elseif nGroups == 2
-                %%% Get groups NBTstudy
-                Group1 = NBTstudy.groups{groups(1)};
-                Group2 = NBTstudy.groups{groups(2)};
-                
-                %%% Generate fixed biomarker list
-                AnalysisObjGrp1 = nbt_generateBiomarkerList(NBTstudy,signal,groups(1));
-                AnalysisObjGrp2 = nbt_generateBiomarkerList(NBTstudy,signal,groups(2));
-                
-                %%% Get the data
-                DataObjGrp1 = getData(Group1,AnalysisObjGrp1);
-                DataObjGrp2 = getData(Group2,AnalysisObjGrp2);
-                
-                %%% Number of channels
-                nChannels = size(DataObjGrp1{1,1},1);
-                
-                %%% Number of subjects
-                nSubjects = size(DataObjGrp1{1,1},2);
-                    
-                %%% Number of biomarkers
-                nBioms = DataObjGrp1.numBiomarkers;
-                
-                %%% Get subject number from the command line
-                subjectNumber = input('Specify the number of the subject');
- 
-                signalBiomarkers = zeros(nBioms,nChannels);
-                crossChannelBiomarkers = zeros(nChannels,nChannels,nBioms);
-                for biomID = 1 : nBioms
-                    biomDataGroup1 = DataObjGrp1.dataStore{biomID};
-                    biomDataGroup2 = DataObjGrp2.dataStore{biomID};
-                    
-                    %% Check whether the biomarker is a cross channel biomarker
-                    if size(biomDataGroup1{1},2) == nChannels
-                        %% chan * chan biomarker
-                        crossChannelBiomarkers(:,:,biomID) = biomDataGroup2{subjectNumber} - biomDataGroup1{subjectNumber};
-                    else
-                        %% Get raw biomarker data, and store them
-                        signalBiomarkers(biomID,:) = DataObjGrp2{biomID,1} - DataObjGrp1{biomID,1};
-                    end
-                end
-                biomarkerIndex = AnalysisObjGrp1.group{1}.biomarkerIndex;
-                units = AnalysisObjGrp1.group{groups(1)}.units;
-            else
-                error('nbt_Print can not handle more than two groups');
-            end            
-        case 'mean'
-            disp('Computing means');
-            if nGroups == 1    
-                %%% Get groups NBTstudy
-                Group1 = NBTstudy.groups{groups};
-                
-                %%% Check whether the group is a difference group
-                if ~isempty(Group1.groupType)
-                    
-                else
-                    %%% Generate fixed biomarker list
-                    AnalysisObj = nbt_generateBiomarkerList(NBTstudy,signal,groups);
-
-                    %%% Get the data
-                    DataObj = getData(Group1,AnalysisObj);
-                    
-                    %%% Number of channels
-                    nChannels = size(DataObj{1,1},1);
-                
-                    %%% Number of subjects
-                    nSubjects = size(DataObj{1,1},2);
-                    
-                    %%% Number of biomarkers
-                    nBioms = DataObj.numBiomarkers;
-
-                    signalBiomarkers = zeros(nBioms,nChannels);
-                    crossChannelBiomarkers = zeros(nChannels,nChannels,nBioms);
-                    for biomID = 1 : nBioms
-                        biomID
-                        biomDataGroup1 = DataObj.dataStore{biomID};
-                        if size(biomDataGroup1{1},2) == nChannels
-                            chanValues = zeros(nChannels,nChannels);
-                            for subject = 1 : size(biomDataGroup1,1)
-                                chanValues = chanValues + biomDataGroup1{subject};
-                            end
-                            
-                            %% chan * chan biomarker
-                            crossChannelBiomarkers(:,:,biomID) = chanValues / size(biomDataGroup1,1);
-                        else
-                            %% Get raw biomarker data, compute means and store them
-                            chanValuesGroup1 = DataObj{biomID,1};
-
-                            meanGroup1 = nanmean(chanValuesGroup1',1);
-                            signalBiomarkers(biomID,:) = meanGroup1;
-                        end
-                    end
-                    biomarkerIndex = AnalysisObj.group{1}.biomarkerIndex;
-                    units = AnalysisObj.group{1}.units;
-                end
-            elseif nGroups == 2
-                %%% Get groups NBTstudy
-                Group1 = NBTstudy.groups{groups(1)};
-                Group2 = NBTstudy.groups{groups(2)};
-                
-                %%% Generate fixed biomarker list
-                AnalysisObjGrp1 = nbt_generateBiomarkerList(NBTstudy,signal,groups(1));
-                AnalysisObjGrp2 = nbt_generateBiomarkerList(NBTstudy,signal,groups(2));
-                
-                %%% Get the data
-                DataObjGrp1 = getData(Group1,AnalysisObjGrp1);
-                DataObjGrp2 = getData(Group2,AnalysisObjGrp2);
-                
-                %%% Number of channels
-                nChannels = size(DataObjGrp1{1,1},1);
-                
-                %%% Number of subjects
-                nSubjects = size(DataObjGrp1{1,1},2);
-                
-                %%% Number of biomarkers
-                nBioms = DataObjGrp1.numBiomarkers;
- 
-                signalBiomarkers = zeros(nBioms,nChannels);
-                crossChannelBiomarkers = zeros(nChannels,nChannels,nBioms);
-                for biomID = 1 : nBioms
-                    biomDataGroup1 = DataObjGrp1.dataStore{biomID};
-                    biomDataGroup2 = DataObjGrp2.dataStore{biomID};
-                    
-                    %% Check whether the biomarker is a cross channel biomarker
-                    if size(biomDataGroup1{1},2) == nChannels
-                        chanValuesGroup1 = zeros(nChannels,nChannels);
-                        chanValuesGroup2 = zeros(nChannels,nChannels);
-
-                        %%% nSubjects is minimum of subjects for which the
-                        %%% biomarker is computed
-                        if size(biomDataGroup1,1) ~= size(biomDataGroup2,1)
-                            biomName = AnalysisObjGrp1.group{1}.biomarkers(biomID);
-                            subBiomName = AnalysisObjGrp1.group{1}.subBiomarkers(biomID);
-                            error(['The number of subjects differs between the groups for biomarker: ', biomName{1}, '.', subBiomName{1}]);
-                            %disp('Warning');
-                            nSubjects = min(size(biomDataGroup1,1),size(biomDataGroup2,1));
-                        else
-                            nSubjects = size(biomDataGroup1,1);
-                        end
-                        
-                        %% chan * chan biomarker
-                        for subject = 1 : nSubjects
-                            chanValuesGroup1 = chanValuesGroup1 + biomDataGroup1{subject};
-                            chanValuesGroup2 = chanValuesGroup2 + biomDataGroup2{subject};
-                        end
-                        
-                        crossChannelBiomarkers(:,:,biomID) = (chanValuesGroup2/nSubjects) - (chanValuesGroup1/nSubjects);
-                    else
-                        %% Get raw biomarker data, compute means and store them
-                        chanValuesGroup1 = DataObjGrp1{biomID,1};
-                        chanValuesGroup2 = DataObjGrp2{biomID,1};
-                        
-                        signalBiomarkers(biomID,:) = nanmean(chanValuesGroup2',1) - nanmean(chanValuesGroup1',1);
-                    end
-                end
-                biomarkerIndex = AnalysisObjGrp1.group{1}.biomarkerIndex;
-                units = AnalysisObjGrp1.group{groups(1)}.units;
-            else
-                error('nbt_Print can not handle more than two groups');
-            end
+    
+    %%% Select Signal
+    signal = input('For which signal do you want to plot the biomarkers? (Example: Signal, ICASignal, CSDSignal) ','s');
+        
+    %%% If the user wants to print raw biomarker values, then we get the
+    %%% subject number from the command line
+    if strcmp(dataType,'raw')
+        subjectNumber = input('Specify the number of the subject');
+    else
+        subjectNumber = [];
     end
+    
+    %%% Get the number of groups
+    nGroups = size(groups,2);
+    
+    %%% Extract the biomarkers
+    if nGroups == 1
+        % Check whether the group is a difference group
+        if strcmp(NBTstudy.groups{groups(1)}.groupType,'difference')
+            % Set the groupType for plotting later on
+            groupType = 'difference';
+            
+            % Compute the difference
+            groups = NBTstudy.groups{groups(1)}.groupDifference;
+            [Group1, Group2, signalBiomarkers, crossChannelBiomarkers] = extractBiomarkers(NBTstudy,groups);
+        else
+            % It's a single group
+            % Set the groupType for plotting later on
+            groupType = 'single';
+            
+            Group1 = NBTstudy.groups{groups(1)};
+            AnalysisObjGrp1 = nbt_generateBiomarkerList(NBTstudy,signal,groups);
+            DataObj = getData(Group1,AnalysisObjGrp1);
+
+            % Get the biomarker values from the data object
+            [signalBiomarkers, crossChannelBiomarkers] = getBiomarkerValues(DataObj,subjectNumber);
+        end
+    elseif nGroups == 2
+        % Set the groupType for plotting later on
+        groupType = 'difference';
+        
+        % Check whether the first group is a difference group
+        if strcmp(NBTstudy.groups{groups(1)}.groupType,'difference')
+            groups1 = NBTstudy.groups{groups(1)}.groupDifference;
+            
+            [Group1, Group2, signalBiomarkersGrp1, crossChannelBiomarkersGrp1] = extractBiomarkers(NBTstudy,groups1);
+        else
+            Group1 = NBTstudy.groups{groups(1)};
+            AnalysisObjGrp1 = nbt_generateBiomarkerList(NBTstudy,signal,groups(1));
+            DataObjGrp1 = getData(Group1,AnalysisObjGrp1);
+            
+            [signalBiomarkersGrp1, crossChannelBiomarkersGrp1] = getBiomarkerValues(DataObjGrp1,subjectNumber);
+        end
+        
+        % Check whether the second group is a difference group
+        if strcmp(NBTstudy.groups{groups(2)}.groupType,'difference')
+            groups2 = NBTstudy.groups{groups(2)}.groupDifference;
+            
+            [Group1, Group2, signalBiomarkersGrp2, crossChannelBiomarkersGrp2] = extractBiomarkers(NBTstudy,groups2);
+        else
+            Group2 = NBTstudy.groups{groups(2)};
+            AnalysisObjGrp2 = nbt_generateBiomarkerList(NBTstudy,signal,groups(2));
+            DataObjGrp2 = getData(Group2,AnalysisObjGrp2);
+            
+            [signalBiomarkersGrp2, crossChannelBiomarkersGrp2] = getBiomarkerValues(DataObjGrp2,subjectNumber);
+        end
+        
+        % Extract group2 from group1
+        signalBiomarkers = signalBiomarkersGrp1 - signalBiomarkersGrp2;
+        crossChannelBiomarkers = crossChannelBiomarkersGrp1 - crossChannelBiomarkersGrp2;
+    end
+    
+    % Get the fixed-order biomarker index and the units from the AnalysisObj
+    biomarkerIndex = AnalysisObjGrp1.group{1}.biomarkerIndex;
+    units = AnalysisObjGrp1.group{1}.units;
+
     switch VIZ_LAYOUT
         case 'dflt'
              omega=50;%max amount of defined biomarkers UPDATE from nbt_PrintSort
@@ -419,26 +281,26 @@
             upperBound = nBioms;
         end
         
-        crossChans = [21:25];
+        crossChans = [21:25,36:40,41:45,46:50];
         for i = page * perPage - perPage + 1 : upperBound    
             subaxis(6, maxColumns, 6+mod(i-1,25), 'Spacing', 0.03, 'Padding', 0, 'Margin', 0)
             axis off;
             if biomarkerIndex(i) ~= 0
                 cbType = '';
-                if i > 35 & i < 51 | ismember(i,crossChans)
+                if ismember(i,crossChans)
                     biomarkerValues = nanmean(crossChannelBiomarkers(:,:,biomarkerIndex(i)),3);
                 else
                     biomarkerValues = signalBiomarkers(biomarkerIndex(i),:);
                 end
                 
-                if nGroups == 1
+                if strcmp(groupType,'single')
                     Red_cbrewer5colors = load('Red_cbrewer5colors','Red_cbrewer5colors');
                     Red_cbrewer5colors = Red_cbrewer5colors.Red_cbrewer5colors;
                     colormap(Red_cbrewer5colors);
 
                     cmin = min(biomarkerValues);
                     cmax = max(biomarkerValues);
-                else
+                elseif strcmp(groupType,'difference')
                     climit = max(abs(biomarkerValues)); %colorbar limit
                     if(length(find(biomarkerValues>=0)) == length(biomarkerValues(~isnan(biomarkerValues))))  % only positive values
                         Red_cbrewer5colors = load('Red_cbrewer5colors','Red_cbrewer5colors');
@@ -469,13 +331,13 @@
                 
                 figure(fgh(end));
                 %%% Plot topoplotConnect for CrossChannelBiomarkers
-                if i > 35 & i < 51 | ismember(i,crossChans)
+                if ismember(i,crossChans)
                     nbt_topoplotConnect(NBTstudy,biomarkerValues,chanChanThreshold)
                     nbt_plotColorbar(i, chanChanThreshold, 1, 6, units, maxColumns, 'normal');
                 else
                     %%% Biomarker is not a CrossChannelBiomarker
                     %%% Plot the topoplot for the biomarker
-                    nbt_topoplot(biomarkerValues,chanLocs,'headrad','rim','emarker2',{find(significanceMask{biomarkerIndex(i)}==1),'o','g',4,1},'maplimits',[-3 3],'style','map','numcontour',0,'electrodes','on','circgrid',circgrid,'gridscale',gridscale,'shading','flat');
+                    nbt_topoplot(biomarkerValues,chanLocs,'headrad','rim','emarker2',{significanceMask{i},'o','g',4,1},'maplimits',[-3 3],'style','map','numcontour',0,'electrodes','on','circgrid',circgrid,'gridscale',gridscale,'shading','flat');
                     set(gca, 'LooseInset', get(gca,'TightInset'));
                     nbt_plotColorbar(i, cmin, cmax, 6, units, maxColumns, cbType);
                 end
@@ -505,34 +367,28 @@
         end
         
         ha = axes('Position',[0 0 1 1],'Xlim',[0 1],'Ylim',[0 1],'Box','off','Visible','off','Units','normalized', 'clipping' , 'off');
-        switch dataType
-            case 'zscore'
-            case {'mean' 'raw'}
-                if nGroups == 2 % there are two groups
-                    group1 = strtrim(regexprep(Group1.groupName,'Group \d : ',''));
-                    group2 = strtrim(regexprep(Group2.groupName,'Group \d : ',''));
-                    text(0.5,0.93,['Average difference between ', group1 ,' and ', group2, ' ({\itn} = ', num2str(nSubjects),'), reference electrode: ',chanLocs(1).ref],'horizontalalignment','center','FontSize',14,'Interpreter','tex');
-                    try
-                        text(0.5,0.90,['Multiple comparisons: ', multiComp],'horizontalalignment','center','FontSize',12,'Interpreter','tex');
-                    catch
-                    end
-                else
-                    text(0.5,0.93,['Average of ',int2str(Group1.fileList),' subjects ({\itn} = ', num2str(nSubjects) ,'), reference electrode: ',chanLocs(1).ref],'horizontalalignment','center','FontSize',14,'Interpreter','tex');
-                end
+        
+        % If it is a difference group:
+        if strcmp(groupType,'difference')
+             switch dataType
+                case 'mean'
+                    text(0.5,0.93,['Average difference of ', Group1.groupName ,' minus ', Group2.groupName, ' ({\itn} = ', num2str(nSubjects),'), reference electrode: ',chanLocs(1).ref],'horizontalalignment','center','FontSize',14,'Interpreter','tex');
+                case 'raw'
+                    text(0.5,0.93,['Raw difference of ', Group1.groupName ,' minus ', Group2.groupName, ' ({\itn} = ', num2str(nSubjects),'), reference electrode: ',chanLocs(1).ref],'horizontalalignment','center','FontSize',14,'Interpreter','tex');
+            end
+
+            text(0.5, 0.99,strcat('NBT print for groups ',{' '}, Group1.groupName ,' and ',{' '}, Group2.groupName),'HorizontalAlignment','center','VerticalAlignment', 'top','FontSize',22,'Interpreter','tex');
+            try
+                text(0.5,0.90,['Multiple comparisons: ', multiComp],'horizontalalignment','center','FontSize',12,'Interpreter','tex');
+            catch
+            end
+        else
+            if strcmp(dataType,'mean')
+                text(0.5,0.93,['Average of subjects ({\itn} = ', num2str(nSubjects) ,'), reference electrode: ',chanLocs(1).ref],'horizontalalignment','center','FontSize',14,'Interpreter','tex');
+            end
+            text(0.5, 0.99,strcat('NBT print for group ',{' '},Group1.groupName),'HorizontalAlignment','center','VerticalAlignment', 'top','FontSize',22,'Interpreter','tex');
         end
-        switch dataType
-            case {'mean' 'raw'}
-                if nGroups>1 % there are two groups
-                    group1=strtrim(regexprep(Group1.groupName,'Group \d : ',''));
-                    group2=strtrim(regexprep(Group2.groupName,'Group \d : ',''));
-                    text(0.5, 0.99,strcat('NBT print for groups ',{' '}, group1 ,' and ',{' '}, group2),'HorizontalAlignment','center','VerticalAlignment', 'top','FontSize',22,'Interpreter','tex');
-                else
-                    group_name=strtrim(regexprep(Group1.groupName,'Group \d : ',''));
-                text(0.5, 0.99,strcat('NBT print for group ',{' '},group_name),'HorizontalAlignment','center','VerticalAlignment', 'top','FontSize',22,'Interpreter','tex');
-                end
-%              otherwise
-%                 text(0.5, 0.99,['NBT print for ',regexprep(G(group_ind).fileslist(index).name,'_analysis.mat',' ')],'HorizontalAlignment','center','VerticalAlignment', 'top','FontSize',18,'Interpreter','tex');
-        end
+        
         switch VIZ_LAYOUT
             case 'dflt'
                 if page==1
@@ -596,6 +452,65 @@
             disp('No reference electrode is specified, assuming average');
             for channel = 1 : size(chanLocs,2)
                 chanLocs(channel).ref = 'average';
+            end
+        end
+    end
+
+    function [Group1, Group2, signalBiomarkers, crossChannelBiomarkers] = extractBiomarkers(NBTstudy,groups)
+        %%% Get groups NBTstudy
+        Group1 = NBTstudy.groups{groups(1)};
+        Group2 = NBTstudy.groups{groups(2)};
+
+        %%% Generate fixed biomarker list
+        AnalysisObjGrp1 = nbt_generateBiomarkerList(NBTstudy,signal,groups(1));
+        AnalysisObjGrp2 = nbt_generateBiomarkerList(NBTstudy,signal,groups(2));
+
+        %%% Get the data
+        DataObjGrp1 = getData(Group1,AnalysisObjGrp1);
+        DataObjGrp2 = getData(Group2,AnalysisObjGrp2);
+
+        [signalBiomarkersGrp1, crossChannelBiomarkersGrp1] = getBiomarkerValues(DataObjGrp1,subjectNumber);
+        [signalBiomarkersGrp2, crossChannelBiomarkersGrp2] = getBiomarkerValues(DataObjGrp2,subjectNumber);
+
+        signalBiomarkers = signalBiomarkersGrp1 - signalBiomarkersGrp2;
+        crossChannelBiomarkers = crossChannelBiomarkersGrp1 - crossChannelBiomarkersGrp2;
+    end
+    
+    function [signalBiomarkers, crossChannelBiomarkers] = getBiomarkerValues(DataObj, subjectNumber)
+        % Get information from DataObj
+        nChannels = 129;
+        nSubjects = size(DataObj{1,1},2);
+        nBioms = DataObj.numBiomarkers;
+
+        % Initialize matrices for signalBiomarkers and
+        % crossChannelBiomarkers
+        signalBiomarkers = zeros(nBioms,nChannels);
+        crossChannelBiomarkers = zeros(nChannels,nChannels,nBioms);
+        for biomID = 1 : nBioms
+            biomDataGroup1 = DataObj.dataStore{biomID};
+            switch dataType
+                case 'raw'
+                    if size(biomDataGroup1{1},2) == nChannels
+                        %% chan * chan biomarker
+                        crossChannelBiomarkers(:,:,biomID) = biomDataGroup1{subjectNumber};
+                    else
+                        %% Get raw biomarker data, compute means and store them
+                        signalBiomarkers(biomID,:) = DataObj{biomID,1};
+                    end
+                case 'mean'
+                    if size(biomDataGroup1{1},2) == nChannels
+                        chanValues = zeros(nChannels,nChannels);
+                        for subject = 1 : size(biomDataGroup1,1)
+                            chanValues = chanValues + biomDataGroup1{subject};
+                        end
+                        crossChannelBiomarkers(:,:,biomID) = chanValues / size(biomDataGroup1,1);
+                    else
+                        %% Get raw biomarker data, compute means and store them
+                        chanValuesGroup1 = DataObj{biomID,1};
+                        meanGroup1 = nanmean(chanValuesGroup1',1);
+                        
+                        signalBiomarkers(biomID,:) = meanGroup1;
+                    end
             end
         end
     end

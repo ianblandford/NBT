@@ -34,6 +34,7 @@ function [Pindex, pOut] = nbt_MCcorrect(p,Type,varargin)
         q = varargin{1};
     end
 
+    Pc = [];
     %would be interesting to add more functions..like permutation test
     pOld = p;
 
