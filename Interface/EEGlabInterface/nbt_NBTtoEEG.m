@@ -54,7 +54,7 @@ catch
 end
 EEG.data = Signal(:,:)';
 EEG.srate = SignalInfo.convertedSamplingFrequency;
-EEG.setname = SignalInfo.subjectInfo(1:end-9);
+EEG.setname = SignalInfo.subjectInfo;
 
 EEG.pnts = size(EEG.data,2);
 SignalInfo.interface.EEG=[];

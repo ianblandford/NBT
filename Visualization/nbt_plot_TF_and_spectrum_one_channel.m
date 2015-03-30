@@ -113,7 +113,7 @@ function plotting
         mtcsg(Signal(interval,channel_nr),nFFT,Info.convertedSamplingFrequency,[],[],[],[],[],frequency_interval,type);
     else
        
-        fs=Info.converted_sample_frequency;
+        fs=Info.convertedSamplingFrequency;
         [W,p,s] = nbt_wavelet33(Signal(interval,channel_nr),1/fs,1,F_step,frequency_interval(1)*1.033,frequency_interval(2)*1.033);
         if strcmp(type,'a')
             W=sqrt(W);
